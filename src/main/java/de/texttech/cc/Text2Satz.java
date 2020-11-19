@@ -1,17 +1,11 @@
 package de.texttech.cc;
 
 
-import de.texttech.cc.converter.ConvertPdf;
-import de.texttech.cc.converter.Html2Text;
-//import de.texttech.ce.BonusTags;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 import java.io.*;
 import java.text.BreakIterator;
 import java.util.*;
-
-// Referenced classes of package de.texttech.cc:
-//            CharacterIteratorStream
 
 public class Text2Satz
 {

@@ -3,25 +3,14 @@ import java.util.*;
 import java.io.*;
 import java.lang.*;
 
+import de.uni_leipzig.asv.toolbox.viterbitagger.train.Word;
 import te.indexer.*;
 import te.utils.*;
-//import textMine.GraphDB.Labels;
-//import textMine.GraphDB.RelationshipTypes;
-//import textMine.GraphDB.Labels;
-//import Labels;
-//import RelationshipTypes;
-import JLanI.kernel.DataSourceException;
-import JLanI.kernel.LanIKernel;
-import JLanI.kernel.Request;
-import JLanI.kernel.RequestException;
-import JLanI.kernel.Response;
 
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
 import de.uni_leipzig.asv.toolbox.viterbitagger.Tagger;
 import de.uni_leipzig.asv.utils.Pretree;
 
-import org.json.JSONArray;      // JSON library from http://www.json.org/java/
-import org.json.JSONObject;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -30,14 +19,6 @@ import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.kernel.*;
-//import org.neo4j.kernel.Traversal;
-
-import org.neo4j.graphalgo.GraphAlgoFactory;
-import org.neo4j.graphalgo.PathFinder;
-import org.neo4j.graphalgo.WeightedPath;
-
 
 public class Cooccs{
 
@@ -286,7 +267,7 @@ public class Cooccs{
 
 				
 				lineorig = lineorig.replaceAll("\\[[0-9]+\\]", "");
-				lineorig = lineorig.replaceAll("[^a-zA-Z 0-9 ä ö ü Ä Ö Ü ß | \\- ## ]", ""); //- /*{1,2}*/
+				lineorig = lineorig.replaceAll("[^a-zA-Z 0-9 ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ | \\- ## ]", ""); //- /*{1,2}*/
 
 				//System.out.println(lineorig);
 
@@ -3491,7 +3472,7 @@ public double getPositionDistance2(Vector pos1, Vector pos2) {
 		
 		if( term1cooccs.size() == 0 || term2cooccs.size() == 0 ) return sim;
 
-        // prüfe die Länge der beiden Vektoren. iteriere über den Kürzeren der beiden
+        // prï¿½fe die Lï¿½nge der beiden Vektoren. iteriere ï¿½ber den Kï¿½rzeren der beiden
         if( term1cooccs.size() > term2cooccs.size() ) {
             List temp = term1cooccs;
             term1cooccs = term2cooccs;

@@ -1,23 +1,10 @@
 import java.io.*;
 import java.util.*;
 
-import de.uni_leipzig.asv.toolbox.ChineseWhispers.algorithm.ChineseWhispers;
-import de.uni_leipzig.asv.toolbox.viterbitagger.Tagger;
-import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
-import de.uni_leipzig.asv.utils.Pretree;
+import de.uni_leipzig.asv.toolbox.viterbitagger.train.Word;
 import de.texttech.cc.*;
 import te.indexer.*;
 import te.utils.*;
-import JLanI.kernel.DataSourceException;
-import JLanI.kernel.LanIKernel;
-import JLanI.kernel.Request;
-import JLanI.kernel.RequestException;
-import JLanI.kernel.Response;
-
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.Transformer;
-import org.json.JSONArray;      // JSON library from http://www.json.org/java/
-import org.json.JSONObject;
 
 
 import org.apache.tika.exception.TikaException;  
@@ -419,7 +406,7 @@ public class TextProcessing {
       					System.out.println("Filling termlist..." );
       					Map cooccsmap = mycooccs.getCooccMap();
       					
-      					//Liste aller Terme füllen (dient als Lookup von Pos zu String)
+      					//Liste aller Terme fï¿½llen (dient als Lookup von Pos zu String)
       					Set keys = cooccsmap.keySet();
       					for(Iterator j=keys.iterator(); j.hasNext(); ){
       						String curStr = (String)j.next();
@@ -432,7 +419,7 @@ public class TextProcessing {
 
       					cooccmatrix = new float[termlist.size()][termlist.size()];
       					
-      					// Kookkurrenzmatrix füllen
+      					// Kookkurrenzmatrix fï¿½llen
       					
     				      try {
     					 System.out.println("Filling co-occurrence matrix...");
@@ -479,7 +466,7 @@ public class TextProcessing {
     									} else {
     					
     										cooccmatrix[keyindex][keyindex2] = (float) 0.01;
-    										//Man könnte hier auch statt 0 einen kleinen Wert wie 1 verwenden.
+    										//Man kï¿½nnte hier auch statt 0 einen kleinen Wert wie 1 verwenden.
     										
     										
     									}
@@ -491,7 +478,7 @@ public class TextProcessing {
     							
     											
     							
-    						} //cooccmatrix füllen
+    						} //cooccmatrix fï¿½llen
     				  
    
     				 
@@ -1303,7 +1290,7 @@ public class TextProcessing {
     	  Cooccs mycooccs = new Cooccs();
     	  Vector resultquery = new Vector();
     	  
-    	  //noch prüfen, ob Topic überhaupt vorhanden ist
+    	  //noch prï¿½fen, ob Topic ï¿½berhaupt vorhanden ist
     	  Vector topindex = null;
 	      
 	      try
@@ -1512,7 +1499,7 @@ void activatedNodes(int termcount, String topic) {
     	  Cooccs mycooccs = new Cooccs();
     	  Vector resultquery = new Vector();
     	  
-    	  //noch prüfen, ob Topic überhaupt vorhanden ist
+    	  //noch prï¿½fen, ob Topic ï¿½berhaupt vorhanden ist
     	  Vector topindex = null;
 	      
 	      try
@@ -2000,7 +1987,7 @@ void activatedNodes(int termcount, String topic) {
     					System.out.println("Filling termlist..." );
     					Map cooccsmap = mycooccs.getCooccMap();
     					
-    					//Liste aller Terme füllen (dient als Lookup von Pos zu String)
+    					//Liste aller Terme fï¿½llen (dient als Lookup von Pos zu String)
     					Set keys = cooccsmap.keySet();
     					for(Iterator j=keys.iterator(); j.hasNext(); ){
     						String curStr = (String)j.next();
@@ -2077,7 +2064,7 @@ void activatedNodes(int termcount, String topic) {
   							
   											
   							
-  						} //cooccmatrix füllen
+  						} //cooccmatrix fï¿½llen
 
   						
   						
@@ -2831,7 +2818,7 @@ void activatedNodes(int termcount, String topic) {
      		  //Paths (1840)--[IS_CONNECTED,161832]-->(20040)--[IS_CONNECTED,161929]-->(12164)--[IS_CONNECTED,161940]-->(2200)<--[IS_CONNECTED,10432]--(1261)--[IS_CONNECTED,8298]-->(1604) weight:48.5083663778567
      		  //Length of shortest path: 5
      		  //Weight of shortest path: 48.5083663778567
-     		  //Betrug->Entschädigungszahlung->Kreditwirtschaft->Sparkasse->Bank->Geld
+     		  //Betrug->Entschï¿½digungszahlung->Kreditwirtschaft->Sparkasse->Bank->Geld
      		  
      		  //Paths (4210)<--[IS_CONNECTED,254325]--(2171)<--[IS_CONNECTED,179099]--(491)<--[IS_CONNECTED,58910]--(1604) weight:51.05117686804598
      		  //Length of shortest path: 3

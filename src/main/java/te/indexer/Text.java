@@ -4,11 +4,7 @@ import java.util.*;
 
 import de.uni_leipzig.asv.toolbox.viterbitagger.train.Word;
 import te.utils.*;
-import de.uni_leipzig.asv.toolbox.viterbitagger.Tagger;
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
-import de.uni_leipzig.asv.utils.Pretree;
-// Referenced classes of package te.indexer:
-//            Word
 
 public class Text
 {
