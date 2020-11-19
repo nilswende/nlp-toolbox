@@ -641,12 +641,12 @@ public class Tagger {
 							}
 						} // fi prob>0
 						else {
-							break; // e ist sortiert: gr��er als 0.0 wird's
+							break; // e ist sortiert: größer als 0.0 wird's
 							// nicht mehr
 						}
 					} // fi beamwidth
 					else {
-						break; // maximale Zahl an ber�cksichtigten items
+						break; // maximale Zahl an berücksichtigten items
 						// erreicht
 					}
 				} // rof
@@ -846,7 +846,7 @@ public class Tagger {
 		 * lines.add(inputline); }
 		 *  // loop over lines=words for (String line : lines) { if (this.d) {
 		 * System.out.println("Tagging line:" + line); }
-		 *  // Info der Eingabezeile �bernehmen int parseFlag = parseLine(line,
+		 *  // Info der Eingabezeile übernehmen int parseFlag = parseLine(line,
 		 * history);
 		 *
 		 * if ( parseFlag != 0 ) { // Wenn noch was auszugeben... if (
@@ -859,7 +859,7 @@ public class Tagger {
 		 * if ( !this.eval ) { // line ausgeben... (Satz-tag oder Zeile ohne
 		 * Eintrag in Wortspalte) currentOutputline =
 		 * addAndPrintErgebnis(currentOutputline, line, ausgabeformat,
-		 * parseFlag); } } else { // maxprobs und backpoints f�r aktuelles Wort
+		 * parseFlag); } } else { // maxprobs und backpoints für aktuelles Wort
 		 * bestimmen history.fillMaxprobsAndBackpoints();
 		 *  // wenn eindeutig, dann Teilergebnis ausgeben if (
 		 * history.isLastWordUnambiguous() ) { String teilergebnis =
@@ -871,7 +871,7 @@ public class Tagger {
 		 *
 		 * if ( !teilergebnis.equals("") || (currentOutputline.length() > 0) ) {
 		 * currentOutputline = addAndPrintErgebnis(currentOutputline,
-		 * teilergebnis, ausgabeformat, 4); // 4 steht f�r 0 + Ende-Markierung }
+		 * teilergebnis, ausgabeformat, 4); // 4 steht für 0 + Ende-Markierung }
 		 * finished = (int)(new File(textfile)).length();
 		 * textFileReader.close();
 		 */
@@ -899,11 +899,11 @@ public class Tagger {
 				teilergebnis = makeHorizontal(teilergebnis);
 			}
 
-			// falls schon Daten vorhanden, Einheitentrenner an Ausgabe anf�gen
+			// falls schon Daten vorhanden, Einheitentrenner an Ausgabe anfügen
 			if (currentOutputline.length() > 0) {
 				currentOutputline.append(" ");
 			}
-			// Teilergebnis an Ausgabe anf�gen
+			// Teilergebnis an Ausgabe anfügen
 			currentOutputline.append(teilergebnis);
 
 			if (parseFlag == 4) {
@@ -952,16 +952,16 @@ public class Tagger {
 				|| inputline.startsWith(InputLine.getSatzTagBeginnExtended())) {
 			int pos = inputline.indexOf(">");
 			if (pos > 0) {
-				// Satz-tag anf�gen
+				// Satz-tag anfügen
 				lines.add(inputline.substring(0, pos + 1));
-				// Zeile k�rzen
+				// Zeile kürzen
 				inputline = inputline.substring(pos + 1, inputline.length());
 			}
 		}
 		boolean endsWithSatzTag = inputline
 				.endsWith(InputLine.getSatzTagEnde());
 		if (endsWithSatzTag) {
-			// Zeile k�rzen
+			// Zeile kürzen
 			inputline = inputline.substring(0, inputline.lastIndexOf(InputLine
 					.getSatzTagEnde()));
 		}
@@ -976,7 +976,7 @@ public class Tagger {
 			}
 		}
 
-		// gegebenenfalls Ende-tag anf�gen
+		// gegebenenfalls Ende-tag anfügen
 		if (endsWithSatzTag) {
 			lines.add(InputLine.getSatzTagEnde());
 		}

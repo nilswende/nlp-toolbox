@@ -283,7 +283,7 @@ public class Cooccs {
 
 
 				lineorig = lineorig.replaceAll("\\[[0-9]+\\]", "");
-				lineorig = lineorig.replaceAll("[^a-zA-Z 0-9 � � � � � � � | \\- ## ]", ""); //- /*{1,2}*/
+				lineorig = lineorig.replaceAll("[^a-zA-Z 0-9 ä ö ü Ä Ö Ü ß | \\- ## ]", ""); //- /*{1,2}*/
 
 				//System.out.println(lineorig);
 
@@ -3301,7 +3301,7 @@ public class Cooccs {
 
 		if (term1cooccs.size() == 0 || term2cooccs.size() == 0) return sim;
 
-		// pr�fe die L�nge der beiden Vektoren. iteriere �ber den K�rzeren der beiden
+		// prüfe die Länge der beiden Vektoren. iteriere über den Kürzeren der beiden
 		if (term1cooccs.size() > term2cooccs.size()) {
 			List temp = term1cooccs;
 			term1cooccs = term2cooccs;

@@ -396,7 +396,7 @@ public class TextProcessing {
 					System.out.println("Filling termlist...");
 					Map cooccsmap = mycooccs.getCooccMap();
 
-					//Liste aller Terme f�llen (dient als Lookup von Pos zu String)
+					//Liste aller Terme füllen (dient als Lookup von Pos zu String)
 					Set keys = cooccsmap.keySet();
 					for (Iterator j = keys.iterator(); j.hasNext(); ) {
 						String curStr = (String) j.next();
@@ -409,7 +409,7 @@ public class TextProcessing {
 
 					cooccmatrix = new float[termlist.size()][termlist.size()];
 
-					// Kookkurrenzmatrix f�llen
+					// Kookkurrenzmatrix füllen
 
 					try {
 						System.out.println("Filling co-occurrence matrix...");
@@ -455,7 +455,7 @@ public class TextProcessing {
 										} else {
 
 											cooccmatrix[keyindex][keyindex2] = (float) 0.01;
-											//Man k�nnte hier auch statt 0 einen kleinen Wert wie 1 verwenden.
+											//Man könnte hier auch statt 0 einen kleinen Wert wie 1 verwenden.
 
 
 										}
@@ -466,7 +466,7 @@ public class TextProcessing {
 							}
 
 
-						} //cooccmatrix f�llen
+						} //cooccmatrix füllen
 
 
 						List pageranks = calculatePageRanks(termlist, cooccmatrix);
@@ -1190,7 +1190,7 @@ public class TextProcessing {
 		Cooccs mycooccs = new Cooccs();
 		Vector resultquery = new Vector();
 
-		//noch pr�fen, ob Topic �berhaupt vorhanden ist
+		//noch prüfen, ob Topic überhaupt vorhanden ist
 		Vector topindex = null;
 
 		try {
@@ -1381,7 +1381,7 @@ public class TextProcessing {
 		Cooccs mycooccs = new Cooccs();
 		Vector resultquery = new Vector();
 
-		//noch pr�fen, ob Topic �berhaupt vorhanden ist
+		//noch prüfen, ob Topic überhaupt vorhanden ist
 		Vector topindex = null;
 
 		try {
@@ -1833,7 +1833,7 @@ public class TextProcessing {
 					System.out.println("Filling termlist...");
 					Map cooccsmap = mycooccs.getCooccMap();
 
-					//Liste aller Terme f�llen (dient als Lookup von Pos zu String)
+					//Liste aller Terme füllen (dient als Lookup von Pos zu String)
 					Set keys = cooccsmap.keySet();
 					for (Iterator j = keys.iterator(); j.hasNext(); ) {
 						String curStr = (String) j.next();
@@ -1907,7 +1907,7 @@ public class TextProcessing {
 							}
 
 
-						} //cooccmatrix f�llen
+						} //cooccmatrix füllen
 
 
 						List pageranks = calculatePageRanks(termlist, cooccmatrix);
@@ -2597,7 +2597,7 @@ public class TextProcessing {
 			//Paths (1840)--[IS_CONNECTED,161832]-->(20040)--[IS_CONNECTED,161929]-->(12164)--[IS_CONNECTED,161940]-->(2200)<--[IS_CONNECTED,10432]--(1261)--[IS_CONNECTED,8298]-->(1604) weight:48.5083663778567
 			//Length of shortest path: 5
 			//Weight of shortest path: 48.5083663778567
-			//Betrug->Entsch�digungszahlung->Kreditwirtschaft->Sparkasse->Bank->Geld
+			//Betrug->Entschädigungszahlung->Kreditwirtschaft->Sparkasse->Bank->Geld
 
 			//Paths (4210)<--[IS_CONNECTED,254325]--(2171)<--[IS_CONNECTED,179099]--(491)<--[IS_CONNECTED,58910]--(1604) weight:51.05117686804598
 			//Length of shortest path: 3
