@@ -1,20 +1,44 @@
-import java.io.*;
-import java.util.*;
+import JLanI.kernel.DataSourceException;
+import JLanI.kernel.LanIKernel;
+import JLanI.kernel.Request;
+import JLanI.kernel.RequestException;
+import JLanI.kernel.Response;
+import de.texttech.cc.Text2Satz;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import te.indexer.Word;
+import te.utils.Parameters;
 
-import de.uni_leipzig.asv.toolbox.viterbitagger.train.Word;
-import de.texttech.cc.*;
-import te.indexer.*;
-import te.utils.*;
-
-
-import org.apache.tika.exception.TikaException;  
-import org.apache.tika.metadata.Metadata;  
-import org.apache.tika.parser.AutoDetectParser;  
-import org.apache.tika.parser.ParseContext;  
-import org.apache.tika.parser.Parser;  
-import org.apache.tika.sax.BodyContentHandler;  
-import org.xml.sax.ContentHandler;  
-import org.xml.sax.SAXException; 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.Vector;
 
 
 //-Xms128m -Xmx1500m -Xverify:none
@@ -70,7 +94,7 @@ public class TextProcessing {
 		  File outputDir = new File (outputDirPath);	 
 		  	cleanDir(outputDir);
 		 
-		  LanIKernel.propertyFile="config/lanikernel";  
+		  LanIKernel.propertyFile="config/lanikernel";
 	    }
 	  
 	  

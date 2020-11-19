@@ -1,11 +1,27 @@
 package de.texttech.cc;
 
 
+import de.texttech.cc.converter.ConvertPdf;
+import de.texttech.cc.converter.Html2Text;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
-import java.io.*;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.BreakIterator;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 public class Text2Satz
 {

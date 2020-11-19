@@ -1,6 +1,6 @@
 package te.utils;
 
-import de.uni_leipzig.asv.toolbox.viterbitagger.train.Word;
+import te.indexer.Word;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -1,10 +1,33 @@
 package te.indexer;
 
-import java.util.*;
-
-import de.uni_leipzig.asv.toolbox.viterbitagger.train.Word;
-import te.utils.*;
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
+import te.utils.BaseTaggerConvertIterator;
+import te.utils.Dekompost;
+import te.utils.DornseiffLookup;
+import te.utils.ExternalData;
+import te.utils.KnowledgeBase;
+import te.utils.NoTagger;
+import te.utils.POSTagConverterException;
+import te.utils.POSTagConverterManager;
+import te.utils.Parameters;
+import te.utils.PhraseExtractor;
+import te.utils.Porter;
+import te.utils.QTagIterator;
+import te.utils.Stemmer;
+import te.utils.TNTInterface;
+import te.utils.TNTIteratorException;
+import te.utils.TNTRunTimeException;
+import te.utils.TermString;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 
 public class Text
 {

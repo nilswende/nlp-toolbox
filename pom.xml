@@ -1,8 +1,101 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>de.fernuni_hagen.kn.nlp</groupId>
   <artifactId>nlp-toolbox</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Hagen NLPToolbox</name>
   <description>Hagen NLPToolbox</description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>7</source>
+          <target>7</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- ASV Toolbox -->
+    <dependency>
+      <groupId>de.uni_leipzig.asv.toolbox</groupId>
+      <artifactId>de.uni_leipzig.asv.toolbox.utils</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>de.uni_leipzig.asv.toolbox</groupId>
+      <artifactId>de.uni_leipzig.asv.toolbox.baseforms</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>de.uni_leipzig.asv.toolbox</groupId>
+      <artifactId>de.uni_leipzig.asv.toolbox.viterbitagger</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <!-- Neo4j -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-graphdb-api</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-graph-algo</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>unknown.external.jar</groupId>
+      <artifactId>text-processing</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.texttech.cc</groupId>
+      <artifactId>cc</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-app</artifactId>
+      <version>1.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>gnu.getopt</groupId>
+      <artifactId>java-getopt</artifactId>
+      <version>1.0.13</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <name>TU-Darmstadt Repository</name>
+      <id>TU-Darmstadt</id>
+      <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
 </project>
