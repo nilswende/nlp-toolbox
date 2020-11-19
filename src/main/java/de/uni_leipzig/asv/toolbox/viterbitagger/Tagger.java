@@ -8,6 +8,9 @@
 
 package de.uni_leipzig.asv.toolbox.viterbitagger;
 
+import de.uni_leipzig.asv.toolbox.viterbitagger.train.InputLine;
+import de.uni_leipzig.asv.utils.tokenizer.ImprovedWordTokenizer;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,32 +21,28 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import de.uni_leipzig.asv.toolbox.viterbitagger.train.InputLine;
-import de.uni_leipzig.asv.utils.tokenizer.ImprovedWordTokenizer;
-
 /**
- * 
  * @author BIEMANN
  */
 public class Tagger {
 	boolean d = !true; // debugging
 
 	private boolean e = false; // display results while evaluating, only
-								// accessible via code here
+	// accessible via code here
 
 	private boolean eval; // evaluation statistics
 
 	private boolean taggedOut; // write tagged text to console
 
 	protected boolean transform = !true; // transforms ","->_KOM_, ".!?"->
-											// _ESENT[ESF]_ or more strange
-											// things ;) // for de_old!!
+	// _ESENT[ESF]_ or more strange
+	// things ;) // for de_old!!
 
 	private boolean fast; // if true uses fast transitions that waste tons of
-							// memory
+	// memory
 
 	private boolean extern; // if true uses extern bin-file for transitions
-							// (overwrites "fast")
+	// (overwrites "fast")
 
 	private String tagfile = "";
 
@@ -64,7 +63,7 @@ public class Tagger {
 	private CondProbs condprobs;
 
 	private final int beamwidth = 5; // 5 is a safe choice, as 3 is usually
-										// suficient.
+	// suficient.
 
 	private String evalResult;
 
@@ -78,20 +77,23 @@ public class Tagger {
 
 	private boolean replaceNumbers, appendStar = true;
 
-	/** Creates a new instance of Tagger */
+	/**
+	 * Creates a new instance of Tagger
+	 */
 	/*
 	 * public Tagger(String taglistfile, String lexiconfile, String
 	 * transitionfile, boolean use_eval) { this(taglistfile, lexiconfile,
 	 * transitionfile, use_eval); }
 	 */
-
 	public void setAppendStar(boolean appendStar) {
 		this.appendStar = appendStar;
 	}
 
-	/** Creates a new instance of Tagger */
+	/**
+	 * Creates a new instance of Tagger
+	 */
 	public Tagger(String taglistfile, String lexiconfile,
-			String transitionfile, boolean use_eval) {
+				  String transitionfile, boolean use_eval) {
 		this(taglistfile, lexiconfile, transitionfile, null, use_eval);
 	}
 
@@ -99,12 +101,12 @@ public class Tagger {
 		// load lexicon
 		if (this.extern) {
 			this.lexicon = new Lexicon_extern(lexiconfile, false, false); // lexfile,
-																			// setsmooth,
-																			// setpretree
+			// setsmooth,
+			// setpretree
 		} else {
 			this.lexicon = new Lexicon_ram(lexiconfile, false, false); // lexfile,
-																		// setsmooth,
-																		// setpretree
+			// setsmooth,
+			// setpretree
 		}
 		if (this.extern) {
 			this.transitions = new Transitions_extern(transitionfile,
@@ -121,9 +123,11 @@ public class Tagger {
 
 	}
 
-	/** Creates a new instance of Tagger */
+	/**
+	 * Creates a new instance of Tagger
+	 */
 	public Tagger(String taglistfile, String lexiconfile,
-			String transitionfile, String condprobsfile, boolean use_eval) {
+				  String transitionfile, String condprobsfile, boolean use_eval) {
 		this.tagfile = taglistfile;
 		this.lexiconfile = lexiconfile;
 		this.transitionfile = transitionfile;
@@ -143,12 +147,12 @@ public class Tagger {
 		// load lexicon
 		if (this.extern) {
 			this.lexicon = new Lexicon_extern(lexiconfile, false, true); // lexfile,
-																			// setsmooth,
-																			// setpretree
+			// setsmooth,
+			// setpretree
 		} else {
 			this.lexicon = new Lexicon_ram(lexiconfile, false, true); // lexfile,
-																		// setsmooth,
-																		// setpretree
+			// setsmooth,
+			// setpretree
 		}
 
 		if (this.d) {
@@ -188,7 +192,7 @@ public class Tagger {
 		}
 
 	} // end public Tagger(String taglistfile,String lexiconfile,String
-		// transitionfile) constructor
+	// transitionfile) constructor
 
 	public String tagSentence(String sentence) {
 		this.transform = false;
@@ -210,7 +214,7 @@ public class Tagger {
 		}
 
 		sentence = "<BOS> <BOS> " + sentence; // add dummy words
-												// BeginOfSentence
+		// BeginOfSentence
 
 		String[] items = sentence.split(" +");
 		int nr_of_words = items.length; // # of words in current sentence
@@ -261,7 +265,7 @@ public class Tagger {
 
 			if (i == this.taglist.getCodeForTag("-")) {
 				inval = inval + 1.0; // for upranking of BPOS tag in
-										// initialisation
+				// initialisation
 			}
 			tagmaxprob.add(new DoubleAndIntValue(inval, i));
 		} // rof i
@@ -305,8 +309,8 @@ public class Tagger {
 			int count = 0;
 
 			double absmaxprob = 0.0; // for multiplication in case of
-										// underflow
-			for (Enumeration e = tagmaxprob.elements(); e.hasMoreElements();) {
+			// underflow
+			for (Enumeration e = tagmaxprob.elements(); e.hasMoreElements(); ) {
 
 				DoubleAndIntValue current = (DoubleAndIntValue) e.nextElement();
 				if (count < this.beamwidth) {
@@ -348,7 +352,7 @@ public class Tagger {
 				 * maxprob[pos-1][T2] * sequence probability ending on T2 *
 				 * transition(tag|T1,T2) * probability of tag given last 2 tags *
 				 * lex(tag|word). probability of tag, given word
-				 * 
+				 *
 				 * This is iterated over all possible T2s. The maximal prob and
 				 * the respective T2 is saved in matrices
 				 */
@@ -358,14 +362,14 @@ public class Tagger {
 				double lexprob = allLexProbs[tag];
 
 				for (Enumeration pt = acceptTags.elements(); pt
-						.hasMoreElements();) {
+						.hasMoreElements(); ) {
 
 					int prevtag = ((Integer) pt.nextElement()).intValue();
 					int prevprevtag = backpoint[pos - 1][prevtag]; // code of
-																	// T1
+					// T1
 					double prev_sequence_prob = maxprob[pos - 1][prevtag]; // maxprob
-																			// of
-																			// T2
+					// of
+					// T2
 					double trans_prob = this.transitions.getTransProb(
 							prevprevtag, prevtag, tag);
 					double curr_prob = prev_sequence_prob * trans_prob
@@ -464,10 +468,10 @@ public class Tagger {
 
 			if (this.eval) {
 				line = "<BOS>|- <BOS>|- " + line; // add dummy words
-													// BeginOfSentence
+				// BeginOfSentence
 			} else {
 				line = "<BOS> <BOS> " + line; // add dummy words
-												// BeginOfSentence
+				// BeginOfSentence
 			}
 
 			String[] items = line.split(" +");
@@ -563,7 +567,7 @@ public class Tagger {
 
 				if (i == this.taglist.getCodeForTag("-")) {
 					inval = inval + 1.0; // for upranking of BPOS tag in
-											// initialisation
+					// initialisation
 				}
 				tagmaxprob.add(new DoubleAndIntValue(inval, i));
 			} // rof i
@@ -618,8 +622,8 @@ public class Tagger {
 				int count = 0;
 
 				double absmaxprob = 0.0; // for multiplication in case of
-											// underflow
-				for (Enumeration e = tagmaxprob.elements(); e.hasMoreElements();) {
+				// underflow
+				for (Enumeration e = tagmaxprob.elements(); e.hasMoreElements(); ) {
 
 					DoubleAndIntValue current = (DoubleAndIntValue) e
 							.nextElement();
@@ -637,13 +641,13 @@ public class Tagger {
 							}
 						} // fi prob>0
 						else {
-							break; // e ist sortiert: größer als 0.0 wird's
-									// nicht mehr
+							break; // e ist sortiert: grï¿½ï¿½er als 0.0 wird's
+							// nicht mehr
 						}
 					} // fi beamwidth
 					else {
-						break; // maximale Zahl an berücksichtigten items
-								// erreicht
+						break; // maximale Zahl an berï¿½cksichtigten items
+						// erreicht
 					}
 				} // rof
 
@@ -670,7 +674,7 @@ public class Tagger {
 					 * maxprob[pos-1][T2] * sequence probability ending on T2 *
 					 * transition(tag|T1,T2) * probability of tag given last 2
 					 * tags * lex(tag|word). probability of tag, given word
-					 * 
+					 *
 					 * This is iterated over all possible T2s. The maximal prob
 					 * and the respective T2 is saved in matrices
 					 */
@@ -685,14 +689,14 @@ public class Tagger {
 					}
 
 					for (Enumeration pt = acceptTags.elements(); pt
-							.hasMoreElements();) {
+							.hasMoreElements(); ) {
 
 						int prevtag = ((Integer) pt.nextElement()).intValue();
 						int prevprevtag = backpoint[pos - 1][prevtag]; // code
-																		// of T1
+						// of T1
 						double prev_sequence_prob = maxprob[pos - 1][prevtag]; // maxprob
-																				// of
-																				// T2
+						// of
+						// T2
 						double trans_prob = this.transitions.getTransProb(
 								prevprevtag, prevtag, tag);
 						double curr_prob = prev_sequence_prob * trans_prob
@@ -805,9 +809,9 @@ public class Tagger {
 	}
 
 	public void tagFile(String textfile, int spalteAusgangskategorie,
-			int spalteZielkategorie, int spalteZwischenkategorie,
-			String eingabeformat, String ausgabeformat,
-			boolean transitionsOverSentenceTagsAndGaps) throws IOException,
+						int spalteZielkategorie, int spalteZwischenkategorie,
+						String eingabeformat, String ausgabeformat,
+						boolean transitionsOverSentenceTagsAndGaps) throws IOException,
 			FileNotFoundException {
 		BufferedReader textFileReader = new BufferedReader(new FileReader(
 				textfile));
@@ -842,12 +846,12 @@ public class Tagger {
 		 * lines.add(inputline); }
 		 *  // loop over lines=words for (String line : lines) { if (this.d) {
 		 * System.out.println("Tagging line:" + line); }
-		 *  // Info der Eingabezeile übernehmen int parseFlag = parseLine(line,
+		 *  // Info der Eingabezeile ï¿½bernehmen int parseFlag = parseLine(line,
 		 * history);
-		 * 
+		 *
 		 * if ( parseFlag != 0 ) { // Wenn noch was auszugeben... if (
 		 * history.hasDataForOutput() ) {
-		 * 
+		 *
 		 * String teilergebnis = getTeilErgebnis(history, totalparagraphs);
 		 * currentOutputline = addAndPrintErgebnis(currentOutputline,
 		 * teilergebnis, ausgabeformat, 0); } if (
@@ -855,26 +859,26 @@ public class Tagger {
 		 * if ( !this.eval ) { // line ausgeben... (Satz-tag oder Zeile ohne
 		 * Eintrag in Wortspalte) currentOutputline =
 		 * addAndPrintErgebnis(currentOutputline, line, ausgabeformat,
-		 * parseFlag); } } else { // maxprobs und backpoints für aktuelles Wort
+		 * parseFlag); } } else { // maxprobs und backpoints fï¿½r aktuelles Wort
 		 * bestimmen history.fillMaxprobsAndBackpoints();
 		 *  // wenn eindeutig, dann Teilergebnis ausgeben if (
 		 * history.isLastWordUnambiguous() ) { String teilergebnis =
 		 * getTeilErgebnis(history, totalparagraphs); currentOutputline =
 		 * addAndPrintErgebnis(currentOutputline, teilergebnis, ausgabeformat,
 		 * parseFlag); } } } }
-		 * 
+		 *
 		 * String teilergebnis = getErgebnis(history, totalparagraphs);
-		 * 
+		 *
 		 * if ( !teilergebnis.equals("") || (currentOutputline.length() > 0) ) {
 		 * currentOutputline = addAndPrintErgebnis(currentOutputline,
-		 * teilergebnis, ausgabeformat, 4); // 4 steht für 0 + Ende-Markierung }
+		 * teilergebnis, ausgabeformat, 4); // 4 steht fï¿½r 0 + Ende-Markierung }
 		 * finished = (int)(new File(textfile)).length();
 		 * textFileReader.close();
 		 */
 	} // end void tagFile();
 
 	private StringBuilder addAndPrintErgebnis(StringBuilder currentOutputline,
-			String teilergebnis, String ausgabeformat, int parseFlag) {
+											  String teilergebnis, String ausgabeformat, int parseFlag) {
 		if (ausgabeformat.equals("horizontal")) {
 			// Wortspalte leer
 			if (parseFlag == 3) {
@@ -895,11 +899,11 @@ public class Tagger {
 				teilergebnis = makeHorizontal(teilergebnis);
 			}
 
-			// falls schon Daten vorhanden, Einheitentrenner an Ausgabe anfügen
+			// falls schon Daten vorhanden, Einheitentrenner an Ausgabe anfï¿½gen
 			if (currentOutputline.length() > 0) {
 				currentOutputline.append(" ");
 			}
-			// Teilergebnis an Ausgabe anfügen
+			// Teilergebnis an Ausgabe anfï¿½gen
 			currentOutputline.append(teilergebnis);
 
 			if (parseFlag == 4) {
@@ -919,12 +923,12 @@ public class Tagger {
 	}
 
 	private String getTeilErgebnis(TaggerDataHistoryAndParameter history,
-			int totalparagraphs) {
+								   int totalparagraphs) {
 		return history.getResults(totalparagraphs, false);
 	}
 
 	private String getErgebnis(TaggerDataHistoryAndParameter history,
-			int totalparagraphs) {
+							   int totalparagraphs) {
 		return history.getResults(totalparagraphs, true);
 	}
 
@@ -932,7 +936,7 @@ public class Tagger {
 		InputLine lineInfo = new InputLine(line, history
 				.getSpalteAusgangskategorie(),
 				history.getSpalteZielkategorie(), history
-						.getSpalteZwischenkategorie());
+				.getSpalteZwischenkategorie());
 
 		if (lineInfo.getFlag() == 0) {
 			history.addLineInfo(line, lineInfo);
@@ -948,16 +952,16 @@ public class Tagger {
 				|| inputline.startsWith(InputLine.getSatzTagBeginnExtended())) {
 			int pos = inputline.indexOf(">");
 			if (pos > 0) {
-				// Satz-tag anfügen
+				// Satz-tag anfï¿½gen
 				lines.add(inputline.substring(0, pos + 1));
-				// Zeile kürzen
+				// Zeile kï¿½rzen
 				inputline = inputline.substring(pos + 1, inputline.length());
 			}
 		}
 		boolean endsWithSatzTag = inputline
 				.endsWith(InputLine.getSatzTagEnde());
 		if (endsWithSatzTag) {
-			// Zeile kürzen
+			// Zeile kï¿½rzen
 			inputline = inputline.substring(0, inputline.lastIndexOf(InputLine
 					.getSatzTagEnde()));
 		}
@@ -972,7 +976,7 @@ public class Tagger {
 			}
 		}
 
-		// gegebenenfalls Ende-tag anfügen
+		// gegebenenfalls Ende-tag anfï¿½gen
 		if (endsWithSatzTag) {
 			lines.add(InputLine.getSatzTagEnde());
 		}
@@ -1049,7 +1053,6 @@ class DoubleAndIntValue implements Comparable {
 
 	/**
 	 * Creates new Object.
-	 * 
 	 */
 	public DoubleAndIntValue(double _prob, int _tag) {
 		this.probability = _prob;
