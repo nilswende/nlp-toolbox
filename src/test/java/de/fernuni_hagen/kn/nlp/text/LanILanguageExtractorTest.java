@@ -15,21 +15,24 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class LanguageExtractorTest {
+class LanILanguageExtractorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void test(final String sentence, final Locale locale) throws IOException {
+	void test(final String sentence, final int inputLength, final Locale locale) throws IOException {
+		final int length = inputLength == -1 ? sentence.length() : inputLength;
 		try (final var reader = new StringReader(sentence)) {
-			final var language = new LanguageExtractor().extract(reader, sentence.length());
+			final var language = new LanILanguageExtractor().extract(reader, length);
 			assertEquals(locale, language);
 		}
 	}
 
 	static Stream<Arguments> test() {
 		return Stream.of(
-				arguments("my pony is over the ocean, my bonny is over the see", Locale.ENGLISH),
-				arguments("° und last but not least, bin ich ein _kurzer_ deutscher Satz (hubergel)!", Locale.GERMAN)
+				arguments("my pony is over the ocean, my bonny is over the see", -1, Locale.ENGLISH),
+				arguments("° und last but not least, bin ich ein _kurzer_ deutscher Satz (hubergel)!", -1, Locale.GERMAN),
+				arguments("ein _kurzer_ deutscher Satz", 10, Locale.GERMAN),
+				arguments("° und last but not least, bin ich ein _kurzer_ deutscher Satz (hubergel)!", 1000, Locale.GERMAN)
 				// ,arguments("qwerty asdf yxcv", Locale.ENGLISH) // produces random language
 		);
 	}

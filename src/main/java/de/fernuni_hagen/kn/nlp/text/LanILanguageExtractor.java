@@ -6,6 +6,7 @@ import JLanI.kernel.Request;
 import JLanI.kernel.RequestException;
 import JLanI.kernel.Response;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.input.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
@@ -21,14 +22,9 @@ import java.util.Map;
  *
  * @author Nils Wende
  */
-public class LanguageExtractor {
+public class LanILanguageExtractor implements LanguageExtractor {
 
-	/**
-	 * Extracts the language from a text file.
-	 *
-	 * @param textFile text file
-	 * @return a Locale representing the text's language
-	 */
+	@Override
 	public Locale extract(final File textFile) {
 		try (final var reader = FileHelper.newFileReader(textFile)) {
 			return extract(reader, getInputLength(textFile));
