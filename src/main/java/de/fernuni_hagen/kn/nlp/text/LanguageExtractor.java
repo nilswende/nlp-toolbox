@@ -69,7 +69,7 @@ public class LanguageExtractor {
 		final var result = (Map<String, Double>) response.getResult();
 		final var language = result.entrySet().stream()
 				.max(Map.Entry.comparingByValue())
-				.orElse(new AbstractMap.SimpleEntry<>("en", 0.0))
+				.orElseGet(() -> new AbstractMap.SimpleEntry<>("en", 0.0))
 				.getKey();
 		return new Locale(language);
 	}
