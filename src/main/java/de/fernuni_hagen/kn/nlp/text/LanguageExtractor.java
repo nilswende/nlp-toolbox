@@ -49,8 +49,8 @@ public class LanguageExtractor {
 
 	private String getTestString(final Reader reader, final int inputLength) throws IOException {
 		final var chars = new char[inputLength];
-		IOUtils.read(reader, chars);
-		return String.valueOf(chars);
+		final var read = IOUtils.read(reader, chars);
+		return String.valueOf(chars, 0, read);
 	}
 
 	private Response evaluate(final String testString) {

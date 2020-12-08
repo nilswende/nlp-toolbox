@@ -29,8 +29,8 @@ class LanguageExtractorTest {
 	static Stream<Arguments> test() {
 		return Stream.of(
 				arguments("my pony is over the ocean, my bonny is over the see", Locale.ENGLISH),
-				arguments("° und last but not least, bin ich ein _kurzer_ deutscher Satz (hubergel)!", Locale.GERMAN),
-				arguments("qwerty asdf yxcv", Locale.ENGLISH)
+				arguments("° und last but not least, bin ich ein _kurzer_ deutscher Satz (hubergel)!", Locale.GERMAN)
+				// ,arguments("qwerty asdf yxcv", Locale.ENGLISH) // produces random language
 		);
 	}
 
