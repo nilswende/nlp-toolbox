@@ -28,7 +28,7 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 		start = 0;
 		final var length = reader.getLength();
 		if (length > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException(String.format("File in reader %s is too big for interface CharacterIterator", reader));
+			throw new IllegalArgumentException(String.format("File in reader %s is too big for the CharacterIterator interface", reader));
 		}
 		this.end = (int) length;
 		pos = 0;

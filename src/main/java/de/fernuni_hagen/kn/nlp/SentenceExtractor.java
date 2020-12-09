@@ -8,6 +8,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
+@FunctionalInterface
 public interface SentenceExtractor {
 
 	/**

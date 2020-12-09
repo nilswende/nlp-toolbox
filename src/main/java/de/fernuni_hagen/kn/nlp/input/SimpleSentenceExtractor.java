@@ -4,10 +4,11 @@ import de.fernuni_hagen.kn.nlp.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.text.BufferedFileCharacterIterator;
 import de.fernuni_hagen.kn.nlp.text.BufferedFileReader;
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,21 +37,26 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 
 	@Override
 	public Stream<String> extract(final File textFile) {
-		final BreakIterator boundary = getBreakIterator(textFile);
-		boundary.setText(new BufferedFileCharacterIterator(new BufferedFileReader(textFile, StandardCharsets.UTF_8)));
-		return extractSentences(textFile, boundary).stream();
+		try (final var iter = new BufferedFileCharacterIterator(new BufferedFileReader(textFile, Config.DEFAULT_CHARSET))) {
+			final BreakIterator boundary = getBreakIterator(textFile);
+			boundary.setText(iter);
+			return extractSentences(textFile, boundary).stream();
+		} catch (final IOException e) {
+			throw new UncheckedException(e);
+		}
 	}
 
-	private List<String> extractSentences(final File textFile, final BreakIterator boundary) {
-		final var fileReader = new BufferedFileReader(textFile, StandardCharsets.UTF_8);
-		final var sentences = new ArrayList<String>();
-		int start = boundary.first();
-		for (int end = boundary.next();
-			 end != BreakIterator.DONE;
-			 start = end, end = boundary.next()) {
-			sentences.add(extractSentence(fileReader, start, end));
+	private List<String> extractSentences(final File textFile, final BreakIterator boundary) throws IOException {
+		try (final var fileReader = new BufferedFileReader(textFile, Config.DEFAULT_CHARSET)) {
+			final var sentences = new ArrayList<String>();
+			int start = boundary.first();
+			for (int end = boundary.next();
+				 end != BreakIterator.DONE;
+				 start = end, end = boundary.next()) {
+				sentences.add(extractSentence(fileReader, start, end));
+			}
+			return sentences; //TODO lazily populate stream?
 		}
-		return sentences; //TODO lazily populate stream?
 	}
 
 	private BreakIterator getBreakIterator(final File textFile) {

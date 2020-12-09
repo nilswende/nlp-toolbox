@@ -1,14 +1,14 @@
 package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
+import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
@@ -22,6 +22,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
  */
 public class Config {
 
+	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+	private static final String EMPTY_JSON = "{}";
 	private static final String DEFAULT_BASE_DIR = "data";
 	private static final String DEFAULT_CONFIG_DIR = "config";
 	private static final String DEFAULT_CONFIG_FILENAME = "config.json";
@@ -55,23 +57,15 @@ public class Config {
 	 */
 	public static Config fromJson(final String configFileName) {
 		final var configFile = (configFileName == null ? getDefaultConfigFilePath() : Path.of(configFileName)).toFile();
-		if (configFile.exists()) {
-			return fromJson(configFile);
-		} else {
-			return fromJson(new StringReader("{}"));
-		}
+		return configFile.exists() ? fromJson(configFile) : fromJson(new StringReader(EMPTY_JSON));
 	}
 
 	private static Config fromJson(final File configFile) {
-		try (final var reader = newFileReader(configFile)) {
+		try (final var reader = FileHelper.newFileReader(configFile)) {
 			return fromJson(reader);
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}
-	}
-
-	private static Reader newFileReader(final File file) throws IOException {
-		return new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
 	}
 
 	private static Config fromJson(final Reader reader) {

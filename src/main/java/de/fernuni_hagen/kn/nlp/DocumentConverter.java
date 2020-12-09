@@ -7,6 +7,7 @@ import java.io.File;
  *
  * @author Nils Wende
  */
+@FunctionalInterface
 public interface DocumentConverter {
 
 	/**

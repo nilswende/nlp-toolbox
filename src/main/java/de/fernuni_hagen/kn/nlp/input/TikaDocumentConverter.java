@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Converts documents from any format to plain text using Apache Tika.
@@ -32,12 +31,10 @@ public class TikaDocumentConverter implements DocumentConverter {
 
 	@Override
 	public File convert(final File file) {
-		try {
-			final var tempFile = FileHelper.createTempFile(".txt");
-			try (final var writer = new OutputStreamWriter(new FileOutputStream(tempFile), StandardCharsets.UTF_8)) {
-				parseInput(file, writer);
-				return tempFile;
-			}
+		final var tempFile = FileHelper.createTempFile(".txt");
+		try (final var writer = new OutputStreamWriter(new FileOutputStream(tempFile), Config.DEFAULT_CHARSET)) {
+			parseInput(file, writer);
+			return tempFile;
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}

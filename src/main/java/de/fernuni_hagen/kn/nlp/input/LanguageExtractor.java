@@ -8,6 +8,7 @@ import java.util.Locale;
  *
  * @author Nils Wende
  */
+@FunctionalInterface
 public interface LanguageExtractor {
 
 	/**

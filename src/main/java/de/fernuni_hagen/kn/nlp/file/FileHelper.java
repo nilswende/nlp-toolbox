@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.file;
 
+import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +47,7 @@ public class FileHelper {
 	}
 
 	public static Reader newFileReader(final File file) throws IOException {
-		return new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+		return new InputStreamReader(new FileInputStream(file), Config.DEFAULT_CHARSET);
 	}
 
 }

@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.text;
 
+import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -48,6 +48,9 @@ public class BufferedFileReader implements Closeable {
 		try {
 			ensureReader(pos);
 			final var read = getReader().read();
+			if (read == IOUtils.EOF) {
+				return read;
+			}
 			offset++;
 			return read;
 		} catch (final IOException e) {
@@ -71,15 +74,15 @@ public class BufferedFileReader implements Closeable {
 	}
 
 	private void resetReader() throws IOException {
-		getReader().close();
+		reader.close();
 		reader = null;
 		offset = 0;
 	}
 
 	/**
-	 * Reads {@code length} characters from the position {@code start}.
+	 * Reads {@code length} characters starting at the position {@code start}.
 	 *
-	 * @param start  the position to be read from
+	 * @param start  the position to start reading from
 	 * @param length the number of characters to be read
 	 * @return the {@code length} characters read or null, if the file ended
 	 * @throws UncheckedException if the file cannot be read
@@ -103,7 +106,7 @@ public class BufferedFileReader implements Closeable {
 	private char[] getChars(final int length) throws IOException {
 		final var chars = new char[length];
 		final var read = IOUtils.read(getReader(), chars);
-		if (read == -1) {
+		if (read == IOUtils.EOF) {
 			return null;
 		}
 		offset += read;
@@ -117,8 +120,9 @@ public class BufferedFileReader implements Closeable {
 	// non private for tests
 	Reader createReader() {
 		try {
+			final var reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
 			offset = 0;
-			return new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+			return reader;
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}
@@ -135,7 +139,7 @@ public class BufferedFileReader implements Closeable {
 	 * @return file length
 	 */
 	public long getLength() {
-		return Utils.countChars(file, StandardCharsets.UTF_8);
+		return Utils.countChars(file, Config.DEFAULT_CHARSET);
 	}
 
 	@Override
