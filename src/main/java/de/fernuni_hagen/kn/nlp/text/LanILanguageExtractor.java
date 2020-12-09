@@ -37,7 +37,7 @@ public class LanILanguageExtractor implements LanguageExtractor {
 		return (int) Math.max(Math.sqrt(textFile.length()), 30);
 	}
 
-	Locale extract(final Reader reader, final int inputLength) throws IOException {
+	Locale extract(final Reader reader, final int inputLength) {
 		final var testString = getTestString(reader, inputLength);
 		final var response = evaluate(testString);
 		return getLocale(response);
