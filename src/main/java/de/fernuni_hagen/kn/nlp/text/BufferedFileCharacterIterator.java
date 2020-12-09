@@ -6,6 +6,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.CharacterIterator;
 
+/**
+ * Adapts a BufferedFileReader to the CharacterIterator interface.
+ *
+ * @author Nils Wende
+ */
 public class BufferedFileCharacterIterator implements CharacterIterator, Closeable {
 
 	private final BufferedFileReader reader;
@@ -17,12 +22,15 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 	 * Constructor.
 	 *
 	 * @param reader reads characters from a file
-	 * @param end    position one past the last character to be read, must be within the reader's range
 	 */
-	public BufferedFileCharacterIterator(final BufferedFileReader reader, final int end) {
+	public BufferedFileCharacterIterator(final BufferedFileReader reader) {
 		this.reader = reader;
 		start = 0;
-		this.end = end;
+		final var length = reader.getLength();
+		if (length > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(String.format("File in reader %s is too big for interface CharacterIterator", reader));
+		}
+		this.end = (int) length;
 		pos = 0;
 	}
 

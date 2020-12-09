@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -126,6 +127,23 @@ public class BufferedFileReader implements Closeable {
 	@Override
 	public void close() throws IOException {
 		reader.close();
+	}
+
+	/**
+	 * Returns the length (number of chars) of the backing file.
+	 *
+	 * @return file length
+	 */
+	public long getLength() {
+		return Utils.countChars(file, StandardCharsets.UTF_8);
+	}
+
+	@Override
+	public String toString() {
+		return "BufferedFileReader{" +
+				"file=" + file +
+				", offset=" + offset +
+				'}';
 	}
 
 }

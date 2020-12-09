@@ -17,7 +17,7 @@ class BufferedFileCharacterIteratorTest {
 	void traverseForward() throws IOException {
 		final var s = "abc";
 		try (final var reader = new TestReader(s);
-			 final var iter = new BufferedFileCharacterIterator(reader, s.length())) {
+			 final var iter = new BufferedFileCharacterIterator(reader)) {
 			final var sb = new StringBuilder();
 			for (char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
 				sb.append(c);
@@ -30,7 +30,7 @@ class BufferedFileCharacterIteratorTest {
 	void traverseBackward() throws IOException {
 		final var s = "abc";
 		try (final var reader = new TestReader(s);
-			 final var iter = new BufferedFileCharacterIterator(reader, s.length())) {
+			 final var iter = new BufferedFileCharacterIterator(reader)) {
 			final var sb = new StringBuilder();
 			for (char c = iter.last(); c != CharacterIterator.DONE; c = iter.previous()) {
 				sb.append(c);
@@ -43,7 +43,7 @@ class BufferedFileCharacterIteratorTest {
 	void traverseOut() throws IOException {
 		final var s = "abcde";
 		try (final var reader = new TestReader(s);
-			 final var iter = new BufferedFileCharacterIterator(reader, s.length())) {
+			 final var iter = new BufferedFileCharacterIterator(reader)) {
 			final var sb = new StringBuilder();
 			for (char c = iter.setIndex(2); c != CharacterIterator.DONE; c = iter.previous()) {
 				sb.append(c);
@@ -52,17 +52,6 @@ class BufferedFileCharacterIteratorTest {
 				sb.append(c);
 			}
 			assertEquals("cbacde", sb.toString());
-		}
-	}
-
-	@Test
-	void endTooLong() throws IOException {
-		final var s = "abc";
-		try (final var reader = new TestReader(s);
-			 final var iterator = new BufferedFileCharacterIterator(reader, s.length() + 5)) {
-			iterator.last();
-			final var previous = iterator.previous();
-			assertEquals('\uffff', previous);
 		}
 	}
 

@@ -95,6 +95,11 @@ class BufferedFileReaderTest {
 		Reader createReader() {
 			return new StringReader(s);
 		}
+
+		@Override
+		public long getLength() {
+			return s.length();
+		}
 	}
 
 }
