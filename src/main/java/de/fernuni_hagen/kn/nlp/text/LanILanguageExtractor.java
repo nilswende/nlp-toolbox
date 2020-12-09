@@ -43,10 +43,14 @@ public class LanILanguageExtractor implements LanguageExtractor {
 		return getLocale(response);
 	}
 
-	private String getTestString(final Reader reader, final int inputLength) throws IOException {
-		final var chars = new char[inputLength];
-		final var read = IOUtils.read(reader, chars);
-		return String.valueOf(chars, 0, read);
+	private String getTestString(final Reader reader, final int inputLength) {
+		try {
+			final var chars = new char[inputLength];
+			final var read = IOUtils.read(reader, chars);
+			return String.valueOf(chars, 0, read);
+		} catch (final IOException e) {
+			throw new UncheckedException(e);
+		}
 	}
 
 	private Response evaluate(final String testString) {
