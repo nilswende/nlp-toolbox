@@ -12,4 +12,7 @@ public class UncheckedException extends RuntimeException {
 		super(cause);
 	}
 
+	public UncheckedException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
