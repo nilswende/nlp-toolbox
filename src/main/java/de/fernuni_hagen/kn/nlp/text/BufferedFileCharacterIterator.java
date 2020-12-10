@@ -50,11 +50,10 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 	@Override
 	public char current() {
 		if (start <= pos && pos < end) {
-			if (currentPos == pos) {
-				return current;
+			if (currentPos != pos) {
+				current = (char) reader.read(pos);
+				currentPos = pos;
 			}
-			current = (char) reader.read(pos);
-			currentPos = pos;
 			return current;
 		} else {
 			return DONE;
