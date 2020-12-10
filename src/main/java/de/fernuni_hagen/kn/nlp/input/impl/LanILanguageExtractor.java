@@ -13,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.AbstractMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -69,7 +68,7 @@ public class LanILanguageExtractor implements LanguageExtractor {
 		final var result = (Map<String, Double>) response.getResult();
 		final var language = result.entrySet().stream()
 				.max(Map.Entry.comparingByValue())
-				.orElseGet(() -> new AbstractMap.SimpleEntry<>("en", 0.0))
+				.orElseGet(() -> Map.entry("en", 0.0))
 				.getKey();
 		return new Locale(language);
 	}

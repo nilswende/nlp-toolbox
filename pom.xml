@@ -50,18 +50,8 @@
     <!-- Neo4j -->
     <dependency>
       <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-graphdb-api</artifactId>
-      <version>${neo4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-kernel</artifactId>
-      <version>${neo4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-graph-algo</artifactId>
-      <version>${neo4j.version}</version>
+      <artifactId>neo4j</artifactId>
+      <version>4.2.1</version>
     </dependency>
 
     <!-- Deeplearning4j -->

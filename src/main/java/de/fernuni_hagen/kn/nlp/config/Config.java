@@ -30,6 +30,7 @@ public class Config {
 
 	private String baseDir;
 	private String inputDir;
+	private String dbDir;
 	private int sentenceFileSizeLimitBytes;
 
 	public String getBaseDir() {
@@ -38,6 +39,10 @@ public class Config {
 
 	public Path getInputDir() {
 		return Path.of(getBaseDir(), defaultIfNull(inputDir, "input"));
+	}
+
+	public Path getDbDir() {
+		return Path.of(getBaseDir(), defaultIfNull(dbDir, "db"));
 	}
 
 	public int getSentenceFileSizeLimitBytes() {
