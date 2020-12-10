@@ -14,9 +14,9 @@ import java.text.CharacterIterator;
 public class BufferedFileCharacterIterator implements CharacterIterator, Closeable {
 
 	private final BufferedFileReader reader;
-	private final int start;
+	private final int start = 0;
 	private final int end;
-	private int pos;
+	private int pos = 0;
 	// cache current
 	private int currentPos = -1;
 	private char current;
@@ -28,13 +28,11 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 	 */
 	public BufferedFileCharacterIterator(final BufferedFileReader reader) {
 		this.reader = reader;
-		start = 0;
 		final var length = reader.getLength();
 		if (length > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(String.format("File in reader %s is too big for the CharacterIterator interface", reader));
 		}
 		this.end = (int) length;
-		pos = 0;
 	}
 
 	@Override
