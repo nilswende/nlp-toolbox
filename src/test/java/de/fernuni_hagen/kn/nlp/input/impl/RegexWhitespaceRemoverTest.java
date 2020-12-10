@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.text;
+package de.fernuni_hagen.kn.nlp.input.impl;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

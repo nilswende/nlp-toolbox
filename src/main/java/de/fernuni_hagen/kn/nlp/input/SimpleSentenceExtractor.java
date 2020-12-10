@@ -2,8 +2,8 @@ package de.fernuni_hagen.kn.nlp.input;
 
 import de.fernuni_hagen.kn.nlp.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.config.Config;
-import de.fernuni_hagen.kn.nlp.text.BufferedFileCharacterIterator;
-import de.fernuni_hagen.kn.nlp.text.BufferedFileReader;
+import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileCharacterIterator;
+import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileReader;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.File;

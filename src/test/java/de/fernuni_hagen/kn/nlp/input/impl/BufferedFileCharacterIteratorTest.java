@@ -1,6 +1,6 @@
-package de.fernuni_hagen.kn.nlp.text;
+package de.fernuni_hagen.kn.nlp.input.impl;
 
-import de.fernuni_hagen.kn.nlp.text.BufferedFileReaderTest.TestReader;
+import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileReaderTest.TestReader;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

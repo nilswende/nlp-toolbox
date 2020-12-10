@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.text;
+package de.fernuni_hagen.kn.nlp.input.impl;
 
 import org.apache.commons.lang3.NotImplementedException;
 
