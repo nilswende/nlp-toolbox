@@ -5,7 +5,7 @@ import de.fernuni_hagen.kn.nlp.input.WhitespaceRemover;
 import java.util.regex.Pattern;
 
 /**
- * Removes excess whitespace from a CharSequence using a regex.
+ * Removes excess whitespace from a CharSequence using a regular expression.
  *
  * @author Nils Wende
  */
