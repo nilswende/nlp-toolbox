@@ -13,7 +13,6 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -23,16 +22,14 @@ import java.util.stream.Stream;
  */
 public class SimpleSentenceExtractor implements SentenceExtractor {
 
-	private static final Pattern VERTICAL_WHITESPACE = Pattern.compile("\\v");
-	private static final Pattern HORIZONTAL_WHITESPACE = Pattern.compile("\\h{2,}");
-	private static final String SPACE = " ";
-
 	private final Config config;
 	private final LanguageExtractor languageExtractor;
+	private final WhitespaceRemover whitespaceRemover;
 
-	public SimpleSentenceExtractor(final Config config, final LanguageExtractor languageExtractor) {
+	public SimpleSentenceExtractor(final Config config, final LanguageExtractor languageExtractor, final WhitespaceRemover whitespaceRemover) {
 		this.config = config;
 		this.languageExtractor = languageExtractor;
+		this.whitespaceRemover = whitespaceRemover;
 	}
 
 	@Override
@@ -62,7 +59,7 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 	private BreakIterator getBreakIterator(final File textFile) {
 		final var availableLocales = Arrays.asList(BreakIterator.getAvailableLocales());
 		final var language = languageExtractor.extract(textFile);
-		if (!availableLocales.contains(language)) {
+		if (!availableLocales.contains(language)) { //TODO Locale Matching
 			throw new IllegalArgumentException("BreakIterator does not support language " + language);
 		}
 		return BreakIterator.getSentenceInstance(language);
@@ -70,13 +67,7 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 
 	private String extractSentence(final BufferedFileReader fileReader, final int start, final int end) {
 		final var chars = fileReader.read(start, end - start);
-		return stripWhitespace(CharBuffer.wrap(chars));
-	}
-
-	private String stripWhitespace(final CharSequence chars) {
-		final var vStripped = VERTICAL_WHITESPACE.matcher(chars).replaceAll(SPACE);
-		final var hStripped = HORIZONTAL_WHITESPACE.matcher(vStripped).replaceAll(SPACE);
-		return hStripped.stripTrailing();
+		return whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars));
 	}
 
 }
