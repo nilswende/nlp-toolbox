@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.db;
+package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DB;
 import de.fernuni_hagen.kn.nlp.config.Config;

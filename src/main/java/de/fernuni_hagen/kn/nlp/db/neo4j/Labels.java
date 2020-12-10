@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.db;
+package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import org.neo4j.graphdb.Label;
 

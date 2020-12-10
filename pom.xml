@@ -13,7 +13,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <neo4j.version>3.2.2</neo4j.version>
+    <neo4j.version>4.2.1</neo4j.version>
+    <dl4j.version>1.0.0-beta7</dl4j.version>
   </properties>
 
   <build>
@@ -51,19 +52,19 @@
     <dependency>
       <groupId>org.neo4j</groupId>
       <artifactId>neo4j</artifactId>
-      <version>4.2.1</version>
+      <version>${neo4j.version}</version>
     </dependency>
 
     <!-- Deeplearning4j -->
     <dependency>
       <groupId>org.deeplearning4j</groupId>
       <artifactId>deeplearning4j-core</artifactId>
-      <version>1.0.0-beta7</version>
+      <version>${dl4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nd4j</groupId>
       <artifactId>nd4j-native-platform</artifactId>
-      <version>1.0.0-beta7</version>
+      <version>${dl4j.version}</version>
     </dependency>
 
     <dependency>
