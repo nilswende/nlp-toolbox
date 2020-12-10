@@ -17,6 +17,9 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 	private final int start;
 	private final int end;
 	private int pos;
+	// cache current
+	private int currentPos = -1;
+	private char current;
 
 	/**
 	 * Constructor.
@@ -47,8 +50,12 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 	@Override
 	public char current() {
 		if (start <= pos && pos < end) {
-			final var read = reader.read(pos);
-			return (char) read;
+			if (currentPos == pos) {
+				return current;
+			}
+			current = (char) reader.read(pos);
+			currentPos = pos;
+			return current;
 		} else {
 			return DONE;
 		}

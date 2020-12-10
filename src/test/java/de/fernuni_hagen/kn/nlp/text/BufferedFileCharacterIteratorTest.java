@@ -55,4 +55,19 @@ class BufferedFileCharacterIteratorTest {
 		}
 	}
 
+	@Test
+	void repeatCurrent() throws IOException {
+		final var s = "abc";
+		try (final var reader = new TestReader(s);
+			 final var iter = new BufferedFileCharacterIterator(reader)) {
+			final var sb = new StringBuilder();
+			for (char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
+				for (int i = 0; i < 3; i++) {
+					sb.append(iter.current());
+				}
+			}
+			assertEquals("aaabbbccc", sb.toString());
+		}
+	}
+
 }
