@@ -13,24 +13,21 @@ import java.text.CharacterIterator;
  */
 public class BufferedFileCharacterIterator implements CharacterIterator, Closeable {
 
-	private final BufferedFileReader reader;
+	private final CurrentCache currentCache;
 	private final int start = 0;
 	private final int end;
 	private int pos = 0;
-	// cache current
-	private int currentPos = -1;
-	private char current;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param reader reads characters from a file
+	 * @param fileReader reads characters from a file
 	 */
-	public BufferedFileCharacterIterator(final BufferedFileReader reader) {
-		this.reader = reader;
-		final var length = reader.getLength();
+	public BufferedFileCharacterIterator(final BufferedFileReader fileReader) {
+		this.currentCache = new CurrentCache(fileReader);
+		final var length = fileReader.getLength();
 		if (length > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException(String.format("File in reader %s is too big for the CharacterIterator interface", reader));
+			throw new IllegalArgumentException(String.format("File in reader %s is too big for the CharacterIterator interface", fileReader));
 		}
 		this.end = (int) length;
 	}
@@ -48,11 +45,7 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 	@Override
 	public char current() {
 		if (start <= pos && pos < end) {
-			if (currentPos != pos) {
-				current = (char) reader.read(pos);
-				currentPos = pos;
-			}
-			return current;
+			return currentCache.get(pos);
 		} else {
 			return DONE;
 		}
@@ -109,7 +102,35 @@ public class BufferedFileCharacterIterator implements CharacterIterator, Closeab
 
 	@Override
 	public void close() throws IOException {
-		reader.close();
+		currentCache.close();
+	}
+
+	/**
+	 * Caches the current value for repeated calls.
+	 */
+	private static class CurrentCache implements Closeable {
+
+		private final BufferedFileReader fileReader;
+		private int currentPos = -1;
+		private char current;
+
+		CurrentCache(final BufferedFileReader fileReader) {
+			this.fileReader = fileReader;
+		}
+
+		public char get(final int pos) {
+			if (currentPos != pos) {
+				current = (char) fileReader.read(pos);
+				currentPos = pos;
+			}
+			return current;
+		}
+
+		@Override
+		public void close() throws IOException {
+			fileReader.close();
+		}
+
 	}
 
 }
