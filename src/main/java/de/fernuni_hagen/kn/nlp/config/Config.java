@@ -40,12 +40,12 @@ public class Config {
 		return Path.of(getBaseDir(), defaultIfNull(inputDir, "input"));
 	}
 
-	public static Path getDefaultConfigFilePath() {
-		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
-	}
-
 	public int getSentenceFileSizeLimitBytes() {
 		return sentenceFileSizeLimitBytes <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimitBytes;
+	}
+
+	public static Path getDefaultConfigFilePath() {
+		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
 	}
 
 	/**

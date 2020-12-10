@@ -42,12 +42,23 @@ public class TikaDocumentConverter implements DocumentConverter {
 	}
 
 	private void parseInput(final File file, final OutputStreamWriter writer) throws IOException {
-		final var parser = new AutoDetectParser();
-		final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
-		final var metadata = new Metadata();
 		try (final var inputStream = new FileInputStream(file)) {
+			final var parser = new AutoDetectParser();
+			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
+			final var metadata = new Metadata();
 			parser.parse(inputStream, contentHandler, metadata);
-		} catch (final TikaException | SAXException e) {
+		} catch (final TikaException e) {
+			throw new UncheckedException(e);
+		} catch (final SAXException e) {
+			handleSAXException(e);
+		}
+	}
+
+	private void handleSAXException(final SAXException e) {
+		// WriteLimitReachedException is private
+		if ("WriteLimitReachedException".equals(e.getClass().getSimpleName())) {
+			System.out.println(e.getMessage());
+		} else {
 			throw new UncheckedException(e);
 		}
 	}
