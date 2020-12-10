@@ -32,6 +32,7 @@ public class Config {
 	private String inputDir;
 	private String configDir;
 	private String configFile;
+	private int sentenceFileSizeLimit;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -47,6 +48,10 @@ public class Config {
 
 	public static Path getDefaultConfigFilePath() {
 		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
+	}
+
+	public int getSentenceFileSizeLimit() {
+		return sentenceFileSizeLimit <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimit;
 	}
 
 	/**

@@ -8,6 +8,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.apache.tika.sax.WriteOutContentHandler;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -42,7 +43,7 @@ public class TikaDocumentConverter implements DocumentConverter {
 
 	private void parseInput(final File file, final OutputStreamWriter writer) throws IOException {
 		final var parser = new AutoDetectParser();
-		final var contentHandler = new BodyContentHandler(writer);
+		final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimit()));
 		final var metadata = new Metadata();
 		try (final var inputStream = new FileInputStream(file)) {
 			parser.parse(inputStream, contentHandler, metadata);
