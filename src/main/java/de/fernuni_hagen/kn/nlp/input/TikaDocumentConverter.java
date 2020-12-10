@@ -43,7 +43,7 @@ public class TikaDocumentConverter implements DocumentConverter {
 
 	private void parseInput(final File file, final OutputStreamWriter writer) throws IOException {
 		final var parser = new AutoDetectParser();
-		final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimit()));
+		final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
 		final var metadata = new Metadata();
 		try (final var inputStream = new FileInputStream(file)) {
 			parser.parse(inputStream, contentHandler, metadata);

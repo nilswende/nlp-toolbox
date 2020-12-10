@@ -30,9 +30,7 @@ public class Config {
 
 	private String baseDir;
 	private String inputDir;
-	private String configDir;
-	private String configFile;
-	private int sentenceFileSizeLimit;
+	private int sentenceFileSizeLimitBytes;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -42,16 +40,12 @@ public class Config {
 		return Path.of(getBaseDir(), defaultIfNull(inputDir, "input"));
 	}
 
-	public Path getConfigDir() {
-		return Path.of(defaultIfNull(inputDir, DEFAULT_CONFIG_DIR));
-	}
-
 	public static Path getDefaultConfigFilePath() {
 		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
 	}
 
-	public int getSentenceFileSizeLimit() {
-		return sentenceFileSizeLimit <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimit;
+	public int getSentenceFileSizeLimitBytes() {
+		return sentenceFileSizeLimitBytes <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimitBytes;
 	}
 
 	/**
