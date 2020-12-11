@@ -8,5 +8,5 @@ import org.neo4j.graphdb.RelationshipType;
  * @author Nils Wende
  */
 enum RelationshipTypes implements RelationshipType {
-	CONNECTED
+	COOCCURS, CONTAINS
 }
