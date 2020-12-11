@@ -42,12 +42,9 @@ public class Neo4J implements DB {
 	// also creates a single-property index on the constrained property
 	private void createUniqueConstraints() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var stmt = "CREATE CONSTRAINT uniqueTermNames IF NOT EXISTS\n" +
+			var stmt = "CREATE CONSTRAINT uniqueTermNames IF NOT EXISTS\n" +
 					"ON (t:" + Labels.TERM + ") ASSERT t.name IS UNIQUE\n";
 			tx.execute(stmt);
-//			stmt = "CREATE CONSTRAINT uniqueSentenceIds IF NOT EXISTS\n" +
-//					"ON (s:" + Labels.SENTENCE + ") ASSERT s.id IS UNIQUE\n";
-//			tx.execute(stmt);
 			tx.commit();
 		}
 	}
@@ -64,20 +61,21 @@ public class Neo4J implements DB {
 	@Override
 	public void addSentence(final List<String> terms) {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var termNodes = addTerms(terms, tx);
+			final var termNodes = addTermNodes(terms, tx);
 			addTermRelationships(terms, tx);
-			addSentence(termNodes, tx);
+			addSentenceNode(termNodes, tx);
 			tx.commit();
 		}
 	}
 
-	private List<Node> addTerms(final List<String> terms, final Transaction tx) {
+	private List<Node> addTermNodes(final List<String> terms, final Transaction tx) {
 		final var stmt = "MERGE (t:" + Labels.TERM + " {name: $name})\n" +
 				"ON CREATE SET t.name = $name, t.count = 1\n" +
 				"ON  MATCH SET t.count = t.count + 1\n" +
 				"RETURN t\n";
 		return terms.stream()
-				.flatMap(term -> addTerm(term, stmt, tx)).collect(Collectors.toList());
+				.flatMap(term -> addTerm(term, stmt, tx))
+				.collect(Collectors.toList());
 	}
 
 	private Stream<Node> addTerm(final String term, final String stmt, final Transaction tx) {
@@ -105,7 +103,7 @@ public class Neo4J implements DB {
 		}
 	}
 
-	private void addSentence(final List<Node> termNodes, final Transaction tx) {
+	private void addSentenceNode(final List<Node> termNodes, final Transaction tx) {
 		final var s = tx.createNode(Labels.SENTENCE);
 		termNodes.forEach(term -> s.createRelationshipTo(term, RelationshipTypes.CONTAINS));
 	}
