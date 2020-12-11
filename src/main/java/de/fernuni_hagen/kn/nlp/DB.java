@@ -16,4 +16,9 @@ public interface DB {
 	 */
 	void addSentence(List<String> words);
 
+	/**
+	 * Updates the Dice ratio and costs for all relationships present in the DB.
+	 */
+	void updateDiceAndCosts();
+
 }
