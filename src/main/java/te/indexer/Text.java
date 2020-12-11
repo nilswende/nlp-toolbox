@@ -124,7 +124,7 @@ public class Text {
 		Set st = ed.getStopWordMap();
 		int j = 0;
 		index = new HashMap();
-		String lastFour[] = new String[4];
+		String lastFour[] = new String[4]; // use org.apache.commons.collections4.queue.CircularFifoQueue
 		if (tagged != null) {
 			while (tagged.hasNext()) {
 				Word curWord = (Word) tagged.next();
@@ -133,7 +133,7 @@ public class Text {
 				lastFour[1] = lastFour[2];
 				lastFour[2] = lastFour[3];
 				lastFour[3] = curString;
-				String lFour = (new StringBuilder(String.valueOf(lastFour[0]))).append(lastFour[1]).append(lastFour[2]).append(lastFour[3]).toString();
+				String lFour = lastFour[0] + lastFour[1] + lastFour[2] + lastFour[3];
 				if (lFour.equalsIgnoreCase("u.s.")) {
 					Word us = new Word(lFour.toLowerCase(), "NN");
 					l.add(us);
@@ -160,18 +160,16 @@ public class Text {
 						}
 					}
 				}
-				List curLemmas = TermString.crackInWords(lemma);   //   .getTerms(lemma);
-				for (Iterator i = curLemmas.iterator(); i.hasNext(); ) {
-					String curLemma = (String) i.next();
+				List<String> curLemmas = TermString.crackInWords(lemma);   //   .getTerms(lemma);
+				for (String curLemma : curLemmas) {
 					Set curPositions;
 					if (index.containsKey(curLemma)) {
-						curPositions = (Set) (Set) index.get(curLemma);
+						curPositions = (Set) index.get(curLemma);
 					} else {
 						curPositions = new HashSet();
 					}
-					curPositions.add(new Integer(j));
+					curPositions.add(j++);
 					index.put(curLemma, curPositions);
-					j++;
 					if (curLemma != null) {
 						length++;
 						if (!st.contains(curLemma.toLowerCase())) {
@@ -194,13 +192,13 @@ public class Text {
 			String curPOS = curWord.getPos();
 			String curLemma = curWord.getWordStr();
 			if (!counts.containsKey(curLemma)) {
-				counts.put(curLemma, new Integer(1));
+				counts.put(curLemma, 1);
 				List allPOS = new Vector();
 				allPOS.add(curPOS);
 				pos.put(curLemma, allPOS);
 			} else {
 				Integer curValue = (Integer) counts.get(curLemma);
-				Integer newValue = new Integer(1 + curValue.intValue());
+				Integer newValue = 1 + curValue.intValue();
 				counts.put(curLemma, newValue);
 				List allPOS = (List) (List) pos.get(curLemma);
 				allPOS.add(curPOS);
@@ -305,26 +303,26 @@ public class Text {
 		for (Iterator i = terms.iterator(); i.hasNext(); ) {
 			Word curWord = (Word) i.next();
 			double curSig = curWord.getSig();
-			Integer curFreq = new Integer(curWord.getFreq());
+			Integer curFreq = curWord.getFreq();
 			if (curSig > 0.0D) {
 				if (sigForFreq.containsKey(curFreq)) {
-					double oldSig = ((Double) sigForFreq.get(curFreq)).doubleValue();
+					double oldSig = (Double) sigForFreq.get(curFreq);
 					if (curSig > oldSig) {
-						sigForFreq.put(curFreq, new Double(curSig));
+						sigForFreq.put(curFreq, curSig);
 					}
 				} else {
-					sigForFreq.put(curFreq, new Double(curSig));
+					sigForFreq.put(curFreq, curSig);
 				}
 				freqs.add(curFreq);
 			} else {
 				double sig = 0.0D;
 				if (freqs.contains(curFreq)) {
-					sig = ((Double) sigForFreq.get(curFreq)).doubleValue();
+					sig = (Double) sigForFreq.get(curFreq);
 				} else {
-					Set tail = (Set) freqs.tailSet(curFreq);
+					Set tail = freqs.tailSet(curFreq);
 					Iterator j = tail.iterator();
 					Iterator k = freqs.iterator();
-					Integer freq = new Integer(0);
+					Integer freq = 0;
 					if (k.hasNext()) {
 						freq = (Integer) k.next();
 					}
@@ -332,7 +330,7 @@ public class Text {
 						freq = (Integer) j.next();
 					}
 					if (sigForFreq.containsKey(freq)) {
-						sig = ((Double) sigForFreq.get(freq)).doubleValue();
+						sig = (Double) sigForFreq.get(freq);
 					}
 				}
 				curWord.setSig(sig);
@@ -365,17 +363,17 @@ public class Text {
 					String curPart = ((String) j.next()).toLowerCase();
 					if (!morphemes.containsKey(curPart)) {
 						if (typesOrTokens == 0) {
-							morphemes.put(curPart, new Integer(1));
+							morphemes.put(curPart, 1);
 						} else {
-							morphemes.put(curPart, new Integer(curFreq));
+							morphemes.put(curPart, curFreq);
 						}
 					} else {
 						Integer curValue = (Integer) morphemes.get(curPart);
 						Integer newValue;
 						if (typesOrTokens == 0) {
-							newValue = new Integer(1 + curValue.intValue());
+							newValue = 1 + curValue;
 						} else {
-							newValue = new Integer(curFreq + curValue.intValue());
+							newValue = curFreq + curValue;
 						}
 						morphemes.put(curPart, newValue);
 					}
@@ -393,7 +391,7 @@ public class Text {
 		Set stopMorphemes = ed.getStopMorphemes();
 		for (Iterator k = morphemes.keySet().iterator(); k.hasNext(); ) {
 			String morpheme = (String) k.next();
-			int freq = ((Integer) morphemes.get(morpheme)).intValue();
+			int freq = (Integer) morphemes.get(morpheme);
 			if (freq >= parameters.getMinFreqMorphemes() && !stopMorphemes.contains(morpheme)) {
 				Word w = new Word(morpheme, freq);
 				w.setSig(freq);

@@ -6,18 +6,19 @@ import JLanI.kernel.Response;
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
 import de.uni_leipzig.asv.toolbox.viterbitagger.Tagger;
 import de.uni_leipzig.asv.utils.Pretree;
+import org.neo4j.dbms.api.DatabaseManagementService;
+import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
+import java.nio.file.Path;
 import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import te.indexer.Indexer;
 import te.indexer.Word;
 import te.utils.ExternalData;
@@ -50,10 +51,10 @@ public class Cooccs {
 
 	// this map contains a mapping term->Map::String->Double, i.e. each term has a number of co-occurring items
 	// associated with it each of which is in turn associated with a co-occurrence frequency.
-	private Map cooccs;
+	private Map<String, Map<String, Float>> cooccs;
 
 	// maps words to their frequency:
-	private Map frequencies;
+	private Map<String, Integer> frequencies;
 
 	// number of sentences in the corpus:
 	private int n;
@@ -98,16 +99,16 @@ public class Cooccs {
 
 	//for Evolving Centroids
 
-	Vector distilledText = new Vector(); //contains the text to be parsed (only nouns probably)
+	Vector<String> distilledText = new Vector<>(); //contains the text to be parsed (only nouns probably)
 
 	Vector currentEvolvingCentroid = new Vector(); //could be put into a separat class, too
 	// 0. element: start node
 	// 1. element: end node
 	// 2. centroid's distance (offset) from start node
 
-	Vector currentPath = new Vector();    //holds the current path of the currentEvolvingCentroid to the next word w_i+1
+	Vector currentPath = new Vector<>();    //holds the current path of the currentEvolvingCentroid to the next word w_i+1
 
-	Vector centroidTrail = new Vector(); //stores the sequence of all currentEvolvingCentroid(s)
+	Vector centroidTrail = new Vector<>(); //stores the sequence of all currentEvolvingCentroid(s)
 
 
 	public Cooccs() {
@@ -133,20 +134,68 @@ public class Cooccs {
 		frequencies = new HashMap();
 
 
-		Pretree pretree = new Pretree();
-
-		if (language == 0) {
-			pretree.load(redbase_de);
-		} else {
-			pretree.load(redbase_en);
-		}
-
-		Zerleger2 zer = new Zerleger2();
-		zer.init(forw, back, red);
+//		Pretree pretree = new Pretree();
+//
+//		if (language == 0) {
+//			pretree.load(redbase_de);
+//		} else {
+//			pretree.load(redbase_en);
+//		}
 
 		// File outputDir = new File ("output/");
 		// cleanDir(outputDir);
 
+
+		// read satzFile sentence-wise:
+		try {
+			String alltext2 = processText(satzFile, ind);
+			System.out.println("CooccExtraction");
+			processSentences(usedb, ind, alltext2);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		//calcSigsLL();
+		//calcSigsDICE();
+
+		if (!usedb)
+			calcAssociations();
+
+
+		if (usedb)
+			updateDiceandCosts();
+
+
+	}
+
+	private String processText(File satzFile, Indexer ind) throws IOException {
+		FileInputStream fin2 = new FileInputStream(satzFile);
+
+		String alltext = readAllText(fin2);
+
+
+		List phrases = findPhrases(ind, alltext);
+		phrases = new Vector();  //comment out if phrases should appear in coocc graph
+
+
+		//Term pairs that are phrases are bound together
+		return replacePhrases(satzFile, phrases);
+	}
+
+	private void processSentences(boolean usedb, Indexer ind, String alltext2) throws IOException {
+
+		//FileInputStream fin =  new FileInputStream(satzFile);
+		//BufferedReader myInput = new BufferedReader(new InputStreamReader(fin));
+		BufferedReader myInput = new BufferedReader(new StringReader(alltext2));
+		String lineorig;
+		while ((lineorig = myInput.readLine()) != null) {
+			processLine(ind, lineorig, usedb);
+		} // for all lines
+	}
+
+	private Tagger getTagger() {
 		Properties props = new Properties();
 
 		String tmDir = new File(tmFile).getParent();
@@ -177,350 +226,205 @@ public class Cooccs {
 		tagger.setReplaceNumbers(false /*props.getProperty("ReplaceNumbers").equals("false")*/);
 
 		tagger.setUseInternalTok(true);
+		return tagger;
+	}
 
+	private List findPhrases(Indexer ind, String alltext) {
+		boolean helpstem = ind.getParameters().getStemming();
+		ind.getParameters().setStemming(false);
 
-		// read satzFile sentence-wise:
-		String lineorig = null;
-		try {
+		ind.prepare(alltext);
 
+		List phrases = ind.getPhrases();
 
-			FileInputStream fin2 = new FileInputStream(satzFile);
+		for (int i = 0; i < phrases.size(); i++) {
+			String phrase = phrases.get(i).toString();
+			System.out.println("phrase: " + phrase);
 
-			String alltext = "";
-
-			BufferedReader myInput2 = new BufferedReader(new InputStreamReader(fin2));
-
-			while ((lineorig = myInput2.readLine()) != null) {
-
-				//System.out.println(tagger.tagSentence(lineorig));
-				alltext = alltext + lineorig;
-
+			if (phrase.endsWith("A N")) {
+				String help = phrase;
+				help = Character.toLowerCase(help.charAt(0)) + help.substring(1);
+				phrases.set(i, help.substring(0, help.indexOf(",")));
+			} else {
+				phrases.set(i, phrase.substring(0, phrase.indexOf(",")));
 			}
 
+			System.out.println("phrase 2: " + phrases.get(i));
+		}
 
-			boolean helpstem = ind.getParameters().getStemming();
-			if (helpstem) ind.getParameters().setStemming(false);
+		ind.getParameters().setStemming(helpstem);
+		return phrases;
+	}
 
-			ind.prepare(alltext);
+	private String replacePhrases(File satzFile, List phrases) throws IOException {
+		FileInputStream fin2;
+		String alltext2 = "";
+		fin2 = new FileInputStream(satzFile);
 
-			List phrases = ind.getPhrases();
+		BufferedReader myInput2 = new BufferedReader(new InputStreamReader(fin2));
 
-			for (int i = 0; i < phrases.size(); i++) {
-				System.out.println("phrase: " + phrases.get(i));
+		String lineorig;
+		while ((lineorig = myInput2.readLine()) != null) {
 
-				boolean lower = false;
+			StringBuilder strbuf = new StringBuilder(lineorig);
 
-				if (phrases.get(i).toString().endsWith("A N")) lower = true;
+			for (Object o : phrases) {
+				String phrase = (String) o;
+				while (strbuf.toString()/*.toLowerCase()*/.indexOf(phrase/*.toLowerCase()*/) != -1) {
 
-				if (lower) {
-
-					String help = phrases.get(i).toString();
-
-					help = Character.toLowerCase(help.charAt(0)) + help.substring(1);
-
-					phrases.set(i, help.substring(0, help.indexOf(",")));
-
-
-				} else {
-					phrases.set(i, phrases.get(i).toString().substring(0, phrases.get(i).toString().indexOf(",")));
-
+					int phrasePos = strbuf.toString()/*.toLowerCase()*/.indexOf(phrase/*.toLowerCase()*/);
+					String replacement = phrase/*.toLowerCase()*/.replaceAll(" ", "##phrase");
+					strbuf.replace(phrasePos, phrasePos + phrase.length(), replacement);
+					// wird unten wieder zurück-replaced. Alternative?
 				}
-
-				System.out.println("phrase 2: " + phrases.get(i));
 			}
 
-			ind.getParameters().setStemming(helpstem);
+			alltext2 = alltext2 + "\n" + strbuf;
+			// System.out.println(alltext2);
+		}
+		return alltext2;
+	}
 
-			phrases = new Vector();  //comment out if phrases should appear in coocc graph
+	private String readAllText(FileInputStream fin2) throws IOException {
+		String lineorig;
+		String alltext = "";
 
+		BufferedReader myInput2 = new BufferedReader(new InputStreamReader(fin2));
 
-			//Term pairs that are phrases are bound together
-			String alltext2 = "";
-			fin2 = new FileInputStream(satzFile);
+		while ((lineorig = myInput2.readLine()) != null) {
 
-			myInput2 = new BufferedReader(new InputStreamReader(fin2));
+			//System.out.println(tagger.tagSentence(lineorig));
+			alltext = alltext + lineorig;
 
-			while ((lineorig = myInput2.readLine()) != null) {
+		}
+		return alltext;
+	}
 
-				StringBuffer strbuf = new StringBuffer(lineorig);
+	private void processLine(Indexer ind, String lineorig, boolean usedb) {
+		Zerleger2 zer = new Zerleger2();
+		zer.init(forw, back, red);
+		Tagger tagger = getTagger();
+		Vector cleanwordlist = new Vector();
 
-				for (int i = 0; i < phrases.size(); i++) {
-					while (strbuf.toString()/*.toLowerCase()*/.indexOf(((String) phrases.get(i))/*.toLowerCase()*/) != -1) {
 
-						int k = strbuf.toString()/*.toLowerCase()*/.indexOf(((String) phrases.get(i))/*.toLowerCase()*/);
+		List allwords = new Vector();
 
-						String replacement = ((String) phrases.get(i))/*.toLowerCase()*/.replaceAll(" ", "##phrase");
 
-						strbuf.replace(k, k + ((String) phrases.get(i))/*.toLowerCase()*/.length(), replacement);
+		lineorig = lineorig.replaceAll("\\[[0-9]+\\]", "");
+		lineorig = lineorig.replaceAll("[^a-zA-Z 0-9 ä ö ü Ä Ö Ü ß | \\- ## ]", ""); //- /*{1,2}*/
 
+		//System.out.println(lineorig);
 
-					}
+		if (!lineorig.isEmpty()) {
 
+			String taggedsentence = tagger.tagSentence(lineorig);
 
-				}
+			//System.out.println(taggedsentence);
 
-				alltext2 = alltext2 + "\n" + strbuf;
-				// System.out.println(alltext2);
-			}
+			String[] splittedsentence = taggedsentence.split(" ");
 
+			for (String term : splittedsentence) {
 
-			System.out.println("CooccExtraction");
 
-			//FileInputStream fin =  new FileInputStream(satzFile);
-			//BufferedReader myInput = new BufferedReader(new InputStreamReader(fin));
-			BufferedReader myInput = new BufferedReader(new StringReader(alltext2));
+				if ((term.contains("##phrase"))) {
 
+					//System.out.println(splittedsentence[i]);
 
-			Vector cleanwordlist = new Vector();
-			Vector words = new Vector();
+					String removefiller = ((String) term).replaceAll("##phrase", " ");
+					//System.out.println(removefiller);
 
-			while ((lineorig = myInput.readLine()) != null) {
+					int pos = removefiller.indexOf("|");  //start of wrong tag for the phrase
 
-				cleanwordlist = new Vector();
+					if (pos > 0)
+						if (removefiller.substring(0, pos)/*.toLowerCase()*/.length() > 1)
+							allwords.add(removefiller.substring(0, pos) + "|Phrase"/*.toLowerCase()*/);
 
+				} else {  //no phrase
 
-				List allwords = new Vector();
 
+					if ((term.indexOf("|NN") != -1) || (term.indexOf("|NE") != -1) || (term.indexOf("|NP") != -1)) {
 
-				lineorig = lineorig.replaceAll("\\[[0-9]+\\]", "");
-				lineorig = lineorig.replaceAll("[^a-zA-Z 0-9 ä ö ü Ä Ö Ü ß | \\- ## ]", ""); //- /*{1,2}*/
 
-				//System.out.println(lineorig);
+						int pos = term.indexOf("|");
 
-				if (!lineorig.equals("")) {
+						if (pos > 0)
+							if (term.substring(0, pos)/*.toLowerCase()*/.length() > 0)
+								if (!term.substring(0, pos).toLowerCase().equals("%n%")) {
 
-					String taggedsentence = tagger.tagSentence(lineorig);
 
-					//System.out.println(taggedsentence);
+									if (term.indexOf("|NP") != -1) {
 
-					String[] splittedsentence = taggedsentence.split(" ");
 
-					for (int i = 0; i < splittedsentence.length; i++) {
+										if (!isStopWord(term.substring(0, pos))) {
 
+											allwords.add(term.substring(0, pos) + "|NP"/*.toLowerCase()*/);
+										} else {
+											//	System.out.println("Stopword removed: "+splittedsentence[i]);
+										}
 
-						if ((splittedsentence[i].indexOf("##phrase") != -1)) {
+									} else if (term.indexOf("|NE") != -1) {
+										if (!isStopWord(term.substring(0, pos))) {
 
-							//System.out.println(splittedsentence[i]);
+											allwords.add(term.substring(0, pos) + "|NE"/*.toLowerCase()*/);
+										} else {
+											//System.out.println("Stopword removed: "+splittedsentence[i]);
+										}
 
-							String removefiller = ((String) splittedsentence[i]).replaceAll("##phrase", " ");
-							//System.out.println(removefiller);
+									} else if (term.indexOf("|NN") != -1) {
 
-							int pos = removefiller.indexOf("|");  //start of wrong tag for the phrase
+										if (!isStopWord(term.substring(0, pos))) {
 
-							if (pos > 0)
-								if (removefiller.substring(0, pos)/*.toLowerCase()*/.length() > 1)
-									allwords.add(removefiller.substring(0, pos) + "|Phrase"/*.toLowerCase()*/);
-
-						} else {  //no phrase
-
-
-							if ((splittedsentence[i].indexOf("|NN") != -1) || (splittedsentence[i].indexOf("|NE") != -1) || (splittedsentence[i].indexOf("|NP") != -1)) {
-
-
-								int pos = splittedsentence[i].indexOf("|");
-
-								if (pos > 0)
-									if (splittedsentence[i].substring(0, pos)/*.toLowerCase()*/.length() > 0)
-										if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
-
-
-											if (splittedsentence[i].indexOf("|NP") != -1) {
-
-
-												if (!isStopWord(splittedsentence[i].substring(0, pos))) {
-
-													allwords.add(splittedsentence[i].substring(0, pos) + "|NP"/*.toLowerCase()*/);
-												} else {
-													//	System.out.println("Stopword removed: "+splittedsentence[i]);
-												}
-
-											} else if (splittedsentence[i].indexOf("|NE") != -1) {
-												if (!isStopWord(splittedsentence[i].substring(0, pos))) {
-
-													allwords.add(splittedsentence[i].substring(0, pos) + "|NE"/*.toLowerCase()*/);
-												} else {
-													//System.out.println("Stopword removed: "+splittedsentence[i]);
-												}
-
-											} else if (splittedsentence[i].indexOf("|NN") != -1) {
-
-												if (!isStopWord(splittedsentence[i].substring(0, pos))) {
-
-													allwords.add(splittedsentence[i].substring(0, pos) + "|NN"/*.toLowerCase()*/);
-												} else {
-													//	System.out.println("Stopword removed: "+splittedsentence[i]);
-												}
-
-
-              						/*
-              						String element = splittedsentence[i].substring(0, pos);
-
-
-
-              						if (language == 1) {
-
-              							element = element.toLowerCase();
-
-              							if (ind.getParameters().getStemming()) {
-
-
-              									 Porter port = new Porter();
-
-
-              								     element = port.stem(element);
-
-              							}
-
-              							if (!isStopWord(element)) {
-
-              							allwords.add(element+"|NN");
-              							} else {
-                          					System.out.println("Stopword removed: "+element);
-                          				}
-
-              						} else {
-
-
-              							if (ind.getParameters().getStemming()) {
-
-              								element = zer.grundFormReduktion(element);
-
-              							}
-
-
-              							if (!isStopWord(element)) {
-
-              							allwords.add(element+"|NN");
-              							} else {
-                          					System.out.println("Stopword removed: "+element);
-                          				}
-
-
-              						}*/
-
-											}
-
-
+											allwords.add(term.substring(0, pos) + "|NN"/*.toLowerCase()*/);
+										} else {
+											//	System.out.println("Stopword removed: "+splittedsentence[i]);
 										}
 
 
-							} //nouns
-							/*  else*/ //find adjectives
-              	/*
-                  	  if ((splittedsentence[i].indexOf("|ADJ")!=-1) || (splittedsentence[i].indexOf("|AJ")!=-1)) {
-
-                  		  int pos = splittedsentence[i].indexOf("|");
-
-                  		  if (pos>0)
-                  		   if (splittedsentence[i].substring(0, pos).length()>1)
-                  			 if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
-
-                  				if (!isStopWord(splittedsentence[i].substring(0, pos))) {
+							  /*
+							  String element = splittedsentence[i].substring(0, pos);
 
 
-                  					allwords.add(splittedsentence[i].substring(0, pos).toLowerCase()+"|ADJ");
-                  				} else {
-                  				//	System.out.println("Stopword removed: "+splittedsentence[i]);
-                  				}
-                  			 }
-                  	  }*//*else *///find adverbs
-              		/*
-                  	  if ((splittedsentence[i].indexOf("|ADV")!=-1) || (splittedsentence[i].indexOf("|AV")!=-1)) {
 
-                  		  int pos = splittedsentence[i].indexOf("|");
+							  if (language == 1) {
 
-                  		  if (pos>0)
-                  		   if (splittedsentence[i].substring(0, pos).length()>1)
-                  			 if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
+								  element = element.toLowerCase();
 
-                  				if (!isStopWord(splittedsentence[i].substring(0, pos))) {
-
-                  				 allwords.add(splittedsentence[i].substring(0, pos).toLowerCase()+"|ADV");
-
-                  				} else {
-                  					//System.out.println("Stopword removed: "+splittedsentence[i]);
-                  				}
-
-                  			 }
-                  	  }*/
-
-							/*else*/   //find verbs
-              	  	/*
-                  	  if ( (splittedsentence[i].indexOf("|VV")!=-1) || (splittedsentence[i].indexOf("|VA")!=-1) || (splittedsentence[i].indexOf("|VM")!=-1)   ){
-
-                  		  int pos = splittedsentence[i].indexOf("|");
-
-                  		  if (pos>0)
-                  			  if (splittedsentence[i].substring(0, pos).length()>1)
-                  				 if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
-
-                  					if (!isStopWord(splittedsentence[i].substring(0, pos))) {
-
-                  						allwords.add(splittedsentence[i].substring(0, pos).toLowerCase()+"|V");
-                  					} else {
-                      				//	System.out.println("Stopword removed: "+splittedsentence[i]);
-                      				}
-
-                  				 }
-
-                  	  }*/
-
-						}
+								  if (ind.getParameters().getStemming()) {
 
 
-					} //for all terms in sentence
+										   Porter port = new Porter();
 
 
-					for (int i = 0; i < allwords.size(); i++) {
+										   element = port.stem(element);
+
+								  }
+
+								  if (!isStopWord(element)) {
+
+								  allwords.add(element+"|NN");
+								  } else {
+									  System.out.println("Stopword removed: "+element);
+								  }
+
+							  } else {
 
 
-						String entry = (String) allwords.get(i); //curWord.getWordStr();
-						int pos = entry.indexOf("|");
-						int pos2 = entry.indexOf("|Phrase");
-						String entry2 = entry.substring(0, pos);
-						String tag = entry.substring(pos, entry.length());
+								  if (ind.getParameters().getStemming()) {
 
-						if ((entry2.length() > 0) && (!entry2.equals(";")))
+									  element = zer.grundFormReduktion(element);
 
-							if (pos2 == -1) {  //no phrase
-
-								if (language == 1) {
-
-									if (!tag.equals("|NP") && !tag.equals("|NE"))
-										entry2 = entry2.toLowerCase();
-
-									if (ind.getParameters().getStemming()) {
+								  }
 
 
-										Porter port = new Porter();
+								  if (!isStopWord(element)) {
 
-										if (!tag.equals("|NP") && !tag.equals("|NE"))
-											entry2 = port.stem(entry2);
-
-									}
-
-									if (!isStopWord(entry2)) {
-
-										if ((entry2.length() > 0) && (!entry2.equals(";")))
-											cleanwordlist.add(entry2 + "" + tag);
-
-									}
-
-								} else {
+								  allwords.add(element+"|NN");
+								  } else {
+									  System.out.println("Stopword removed: "+element);
+								  }
 
 
-									if (ind.getParameters().getStemming()) {
-
-										if (!tag.equals("|NP") && !tag.equals("|NE"))
-											entry2 = zer.grundFormReduktion(entry2);
-
-									}
-
-
-									if (!isStopWord(entry2)) {
-
-										if ((entry2.length() > 0) && (!entry2.equals(";")))
-											cleanwordlist.add(entry2 + "" + tag);
+							  }*/
 
 									}
 
@@ -528,67 +432,171 @@ public class Cooccs {
 								}
 
 
-							} else
-								cleanwordlist.add(entry);
+					} //nouns
+					/*  else*/ //find adjectives
+/*
+if ((splittedsentence[i].indexOf("|ADJ")!=-1) || (splittedsentence[i].indexOf("|AJ")!=-1)) {
 
-					}
+					int pos = splittedsentence[i].indexOf("|");
 
+					if (pos>0)
+					 if (splittedsentence[i].substring(0, pos).length()>1)
+					   if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
 
-					//	words = adapttoStopwords(cleanwordlist);
-
-					//	words = removeStopwords(words);
-
-					if (cleanwordlist.size() > 1) {      //word
-
-						for (int i = 0; i < cleanwordlist.size(); i++) {
-
-							String entry = (String) cleanwordlist.get(i); //curWord.getWordStr();
-
-							//System.out.println("Term: " +entry);
+						  if (!isStopWord(splittedsentence[i].substring(0, pos))) {
 
 
-							int pos = entry.indexOf("|");
-							//int pos2= entry.indexOf("|Phrase");
+							  allwords.add(splittedsentence[i].substring(0, pos).toLowerCase()+"|ADJ");
+						  } else {
+						  //	System.out.println("Stopword removed: "+splittedsentence[i]);
+						  }
+					   }
+}*//*else *///find adverbs
+			  /*
+if ((splittedsentence[i].indexOf("|ADV")!=-1) || (splittedsentence[i].indexOf("|AV")!=-1)) {
 
-							if (pos != -1)
-								entry = entry.substring(0, pos);
+					int pos = splittedsentence[i].indexOf("|");
 
-							cleanwordlist.set(i, entry);
+					if (pos>0)
+					 if (splittedsentence[i].substring(0, pos).length()>1)
+					   if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
+
+						  if (!isStopWord(splittedsentence[i].substring(0, pos))) {
+
+						   allwords.add(splittedsentence[i].substring(0, pos).toLowerCase()+"|ADV");
+
+						  } else {
+							  //System.out.println("Stopword removed: "+splittedsentence[i]);
+						  }
+
+					   }
+}*/
+
+					/*else*/   //find verbs
+				/*
+if ( (splittedsentence[i].indexOf("|VV")!=-1) || (splittedsentence[i].indexOf("|VA")!=-1) || (splittedsentence[i].indexOf("|VM")!=-1)   ){
+
+					int pos = splittedsentence[i].indexOf("|");
+
+					if (pos>0)
+						if (splittedsentence[i].substring(0, pos).length()>1)
+						   if (!splittedsentence[i].substring(0, pos).toLowerCase().equals("%n%")) {
+
+							  if (!isStopWord(splittedsentence[i].substring(0, pos))) {
+
+								  allwords.add(splittedsentence[i].substring(0, pos).toLowerCase()+"|V");
+							  } else {
+							  //	System.out.println("Stopword removed: "+splittedsentence[i]);
+							  }
+
+						   }
+
+}*/
+
+				}
+
+
+			} //for all terms in sentence
+
+
+			for (int i = 0; i < allwords.size(); i++) {
+
+
+				String entry = (String) allwords.get(i); //curWord.getWordStr();
+				int pos = entry.indexOf("|");
+				int pos2 = entry.indexOf("|Phrase");
+				String entry2 = entry.substring(0, pos);
+				String tag = entry.substring(pos, entry.length());
+
+				if ((entry2.length() > 0) && (!entry2.equals(";")))
+
+					if (pos2 == -1) {  //no phrase
+
+						if (language == 1) {
+
+							if (!tag.equals("|NP") && !tag.equals("|NE"))
+								entry2 = entry2.toLowerCase();
+
+							if (ind.getParameters().getStemming()) {
+
+
+								Porter port = new Porter();
+
+								if (!tag.equals("|NP") && !tag.equals("|NE"))
+									entry2 = port.stem(entry2);
+
+							}
+
+							if (!isStopWord(entry2)) {
+
+								if ((entry2.length() > 0) && (!entry2.equals(";")))
+									cleanwordlist.add(entry2 + "" + tag);
+
+							}
+
+						} else {
+
+
+							if (ind.getParameters().getStemming()) {
+
+								if (!tag.equals("|NP") && !tag.equals("|NE"))
+									entry2 = zer.grundFormReduktion(entry2);
+
+							}
+
+
+							if (!isStopWord(entry2)) {
+
+								if ((entry2.length() > 0) && (!entry2.equals(";")))
+									cleanwordlist.add(entry2 + "" + tag);
+
+							}
+
 
 						}
 
 
-						extractCooccs(cleanwordlist);    //words
+					} else
+						cleanwordlist.add(entry);
 
-						if (usedb == true)
-							addSentenceToCooccsDB(cleanwordlist);
+			}
 
 
-						n++;
-					}
+			//	words = adapttoStopwords(cleanwordlist);
 
+			//	words = removeStopwords(words);
+
+			if (cleanwordlist.size() > 1) {      //word
+
+				for (int i = 0; i < cleanwordlist.size(); i++) {
+
+					String entry = (String) cleanwordlist.get(i); //curWord.getWordStr();
+
+					//System.out.println("Term: " +entry);
+
+
+					int pos = entry.indexOf("|");
+					//int pos2= entry.indexOf("|Phrase");
+
+					if (pos != -1)
+						entry = entry.substring(0, pos);
+
+					cleanwordlist.set(i, entry);
 
 				}
 
-			} // for all lines
+
+				extractCooccs(cleanwordlist);    //words
+
+				if (usedb)
+					addSentenceToCooccsDB(cleanwordlist);
 
 
-		} catch (Exception e) {
-			e.printStackTrace();
+				n++;
+			}
+
+
 		}
-
-
-		//calcSigsLL();
-		//calcSigsDICE();
-
-		if (!usedb)
-			calcAssociations();
-
-
-		if (usedb == true)
-			updateDiceandCosts();
-
-
 	}
 
 
@@ -598,29 +606,27 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		int count, f_flag = 0;
+		int count;
 
 		//creating a database
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+		GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened/created");
 		try (Transaction tx = graphDB.beginTx()) {
 			System.out.println("in transaction of database");
 
 
-			List<String> tempS = new ArrayList<>();
+			for (Object o : words) {
 
-			for (Iterator i = words.iterator(); i.hasNext(); ) {
-
-				String word = (String) i.next();
-				tempS.add(word);
-				f_flag = 0;
+				String word = (String) o;
+				boolean nodeFound = false;
 
 				//checking if the node is already present
-				ResourceIterator<Node> nodelist = graphDB.findNodes(Labels.SINGLE_NODE);
+				ResourceIterator<Node> nodelist = tx.findNodes(Labels.SINGLE_NODE);
 				while (nodelist.hasNext()) {
 					Node wordnode = nodelist.next();
-					if (wordnode.getProperty("name").equals(word)) {
-						f_flag = 1;
+					if (wordnode.getProperty("name").equals(word)) { // da muss es eine ordentliche Cypher-Query geben
+						nodeFound = true;
 						count = (int) wordnode.getProperty("occur");
 						count = count + 1;
 						wordnode.setProperty("occur", count);
@@ -629,8 +635,8 @@ public class Cooccs {
 
 				}
 
-				if (f_flag != 1) {
-					Node wordnode = graphDB.createNode(Labels.SINGLE_NODE);
+				if (!nodeFound) {
+					Node wordnode = tx.createNode(Labels.SINGLE_NODE);
 					wordnode.setProperty("name", word);
 					wordnode.setProperty("occur", 1);        //no of occurrences in database
 					System.out.println(word + " node added.");
@@ -644,14 +650,14 @@ public class Cooccs {
 			boolean rel_found;
 			//CONNECTING NODES_CREATING RELATIONSHIPS
 
-			for (int p = 0; p < tempS.size(); p++) {
-				for (int q = p + 1; q < tempS.size(); q++) {
+			for (int p = 0; p < ((List<String>) words).size(); p++) {
+				for (int q = p + 1; q < ((List<String>) words).size(); q++) {
 
-					if (!((String) tempS.get(p)).equals((String) tempS.get(q))) {
+					if (!((List<String>) words).get(p).equals(((List<String>) words).get(q))) {
 
 						rel_found = false;
-						Node n1 = graphDB.findNode(Labels.SINGLE_NODE, "name", tempS.get(p));
-						Node n2 = graphDB.findNode(Labels.SINGLE_NODE, "name", tempS.get(q));
+						Node n1 = tx.findNode(Labels.SINGLE_NODE, "name", ((List<String>) words).get(p));
+						Node n2 = tx.findNode(Labels.SINGLE_NODE, "name", ((List<String>) words).get(q));
 
 						//checking if relationship already exists
 						Iterable<Relationship> allRelationships = n1.getRelationships();
@@ -660,7 +666,7 @@ public class Cooccs {
 								count = (int) relationship.getProperty("count");
 								count = count + 1;
 								relationship.setProperty("count", count);
-								System.out.println("Relation already existed between nodes " + tempS.get(p) + " and " + tempS.get(q) + ". Count updated.");
+								System.out.println("Relation already existed between nodes " + ((List<String>) words).get(p) + " and " + ((List<String>) words).get(q) + ". Count updated.");
 								rel_found = true;
 								break;
 							}
@@ -674,7 +680,7 @@ public class Cooccs {
 							relationship.setProperty("count", 1);
 							relationship.setProperty("dice", 0);  //for calculating Dice ration
 							relationship.setProperty("cost", 0);   //for Dijkstra
-							System.out.println("Relation inserted with nodes " + tempS.get(p) + " and " + tempS.get(q));
+							System.out.println("Relation inserted with nodes " + ((List<String>) words).get(p) + " and " + ((List<String>) words).get(q));
 						}
 
 
@@ -684,11 +690,11 @@ public class Cooccs {
 			}
 
 
-			tx.success();
+			tx.commit();
 		}
 
 
-		graphDB.shutdown();
+		managementService.shutdown();
 
 	}
 
@@ -703,36 +709,22 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
-		try (Transaction tx5 = graphDB.beginTx()) {
-			ResourceIterator<Node> nodelist = graphDB.findNodes(Labels.SINGLE_NODE);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+		GraphDatabaseService graphDB = managementService.database("database");
+		try (Transaction tx = graphDB.beginTx()) {
+			ResourceIterator<Node> nodelist = tx.findNodes(Labels.SINGLE_NODE);
 			while (nodelist.hasNext()) {
 				Node wordnode = nodelist.next();
 				//al.add((String)user.getProperty("name"));
 				String node1 = (String) wordnode.getProperty("name");
 				countA = (int) wordnode.getProperty("occur");
-				Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", node1);
+				Node temp = tx.findNode(Labels.SINGLE_NODE, "name", node1);
 				Iterable<Relationship> allRelationships = temp.getRelationships();
 				for (Relationship relationship : allRelationships) {
-					Node n2 = relationship.getOtherNode(temp);
-					countB = (int) n2.getProperty("occur");
+					countB = (int) relationship.getOtherNode(temp).getProperty("occur");
 					countAB = (int) relationship.getProperty("count");
 
-
-					/***********  ********/
-
-					int helpk = 0;
-
-					if (countB <= countA) {
-						helpk = countB;
-					} else
-						helpk = countA;
-
-					if (countAB >= helpk)
-						countAB = helpk;
-
-					/***************************************/
-
+					countAB = Math.min(countAB, Math.min(countB, countA));
 
 					dice = (double) (2 * countAB) / (countA + countB);
 
@@ -744,9 +736,9 @@ public class Cooccs {
 				}
 			}
 			System.out.println("Update of Dice finished.");
-			tx5.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 	}
 
 
@@ -762,24 +754,25 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+		GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
 
 
 		LinkedHashMap<String, Integer> lhm = new LinkedHashMap<String, Integer>();
-		try (Transaction tx2 = graphDB.beginTx()) {
-			ResourceIterator<Node> terms = graphDB.findNodes(Labels.SINGLE_NODE);
+		try (Transaction tx = graphDB.beginTx()) {
+			ResourceIterator<Node> terms = tx.findNodes(Labels.SINGLE_NODE);
 			while (terms.hasNext()) {
 				Node term = terms.next();
 				lhm.put((String) term.getProperty("name"), (int) term.getProperty("occur"));
 				result.add(term.getProperty("name").toString());
 			}
-			tx2.success();
+			tx.commit();
 		}
 		//System.out.println(lhm);
 
 
-		graphDB.shutdown();
+		managementService.shutdown();
 
 		return result;
 	}
@@ -795,15 +788,16 @@ public class Cooccs {
 
 			if (query.size() > 1) {
 
-				GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+				final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 				System.out.println("database opened for querying");
-				try (Transaction tx2 = graphDB.beginTx()) {
+				try (Transaction tx = graphDB.beginTx()) {
 
 					//Check which terms are in the graph database
 					Vector helpquery = new Vector();
 
 					for (int i = 0; i < query.size(); i++) {
-						Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
+						Node temp = tx.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
 
 						if (temp != null) {
 							helpquery.add(query.get(i).toString());
@@ -834,7 +828,7 @@ public class Cooccs {
 
 							String queryterm = iteratorq1.next().toString();
 
-							Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", queryterm);
+							Node temp = tx.findNode(Labels.SINGLE_NODE, "name", queryterm);
 
 
 							Iterator iteratorq2 = helpqueryset.iterator();
@@ -843,11 +837,11 @@ public class Cooccs {
 								String queryterm2 = iteratorq2.next().toString();
 
 								if (!queryterm.equals(queryterm2)) {
-									Node temp2 = graphDB.findNode(Labels.SINGLE_NODE, "name", queryterm2);
+									Node temp2 = tx.findNode(Labels.SINGLE_NODE, "name", queryterm2);
 
-									PathFinder<Path> finder = GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), 100, 1);
+									PathFinder<org.neo4j.graphdb.Path> finder = GraphAlgoFactory.shortestPath(null /*faked by wn!*/,PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), 100, 1);
 
-									Path p = finder.findSinglePath(temp, temp2);
+									org.neo4j.graphdb.Path p = finder.findSinglePath(temp, temp2);
 
 									if (p != null) {
 
@@ -913,8 +907,8 @@ public class Cooccs {
 
 									for (int j = i + 1; j < query.size(); j++) {
 
-										Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
-										Node temp2 = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(j).toString());
+										Node temp = tx.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
+										Node temp2 = tx.findNode(Labels.SINGLE_NODE, "name", query.get(j).toString());
 
 
 										PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), "cost", 1);
@@ -951,9 +945,9 @@ public class Cooccs {
 					}
 
 
-					tx2.success();
+					tx.commit();
 				}
-				graphDB.shutdown();
+				managementService.shutdown();
 			}
 		}
 
@@ -985,15 +979,16 @@ public class Cooccs {
 
 			if (query.size() == 1) {
 
-				GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+				final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 				System.out.println("database opened for querying");
-				try (Transaction tx2 = graphDB.beginTx()) {
+				try (Transaction tx = graphDB.beginTx()) {
 
 					//Check which terms are in the graph database
 					Vector helpquery = new Vector();
 
 					for (int i = 0; i < query.size(); i++) {
-						Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
+						Node temp = tx.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
 
 						if (temp != null) {
 							helpquery.add(query.get(i).toString());
@@ -1046,7 +1041,7 @@ public class Cooccs {
 							visited.add(curQueryTerm);
 							queue.add(curQueryTerm);
 
-							Node firstsourcenode = graphDB.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
+							Node firstsourcenode = tx.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
 							//System.out.println("firstsourcenode: "+ curQueryTerm);
 
 							int steps = 0;
@@ -1070,7 +1065,7 @@ public class Cooccs {
 								if (step < maxactivationsteps) {
 									//System.out.println("Activating: "+ sourcenodename);
 
-									Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", sourcenodename);
+									Node temp = tx.findNode(Labels.SINGLE_NODE, "name", sourcenodename);
 									Iterable<Relationship> allRelationships = temp.getRelationships();
 									for (Relationship relationship : allRelationships) {
 										Node destinationnode = relationship.getOtherNode(temp);
@@ -1150,9 +1145,9 @@ public class Cooccs {
 
 					} // if querysize==
 
-					tx2.success();
+					tx.commit();
 				}
-				graphDB.shutdown();
+				managementService.shutdown();
 
 
 			}
@@ -1202,9 +1197,10 @@ public class Cooccs {
 
 			if (query.size() == 1) {
 
-				GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+				final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 				System.out.println("database opened for querying");
-				try (Transaction tx2 = graphDB.beginTx()) {
+				try (Transaction tx = graphDB.beginTx()) {
 
 
 					//query cleaning !!!!
@@ -1214,7 +1210,7 @@ public class Cooccs {
 					Vector helpquery = new Vector();
 
 					for (int i = 0; i < query.size(); i++) {
-						Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
+						Node temp = tx.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
 
 						if (temp != null) {
 							helpquery.add(query.get(i).toString());
@@ -1269,7 +1265,7 @@ public class Cooccs {
 							visitedinrange.add(curQueryTerm);
 							queue.add(curQueryTerm);
 
-							Node firstsourcenode = graphDB.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
+							Node firstsourcenode = tx.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
 							//System.out.println("firstsourcenode: "+ curQueryTerm);
 
 							int steps = 0;
@@ -1281,7 +1277,7 @@ public class Cooccs {
 								String sourcenodename = queue.poll();
 								//System.out.println("Activating: "+ sourcenodename);
 
-								Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", sourcenodename);
+								Node temp = tx.findNode(Labels.SINGLE_NODE, "name", sourcenodename);
 								Iterable<Relationship> allRelationships = temp.getRelationships();
 								for (Relationship relationship : allRelationships) {
 									Node destinationnode = relationship.getOtherNode(temp);
@@ -1359,9 +1355,9 @@ public class Cooccs {
 
 					} // if querysize==
 
-					tx2.success();
+					tx.commit();
 				}
-				graphDB.shutdown();
+				managementService.shutdown();
 
 
 			}
@@ -1417,22 +1413,23 @@ public class Cooccs {
 		int existingwords = 0;
 
 		for (int i = 1; i < distilledText.size(); i++) {
+			String word = distilledText.get(i);
 
-			System.out.println("\n\nReading next word: " + distilledText.get(i).toString());
+			System.out.println("\n\nReading next word: " + word);
 
 			if (existingwords < 25)
-				if (mostfrequentterms.contains(distilledText.get(i).toString())) {
+				if (mostfrequentterms.contains(word)) {
 					System.out.println("This is a frequent word.");
 
 
-					if (checkNodeExists(distilledText.get(i).toString())) {
+					if (checkNodeExists(word)) {
 						existingwords++;
 						System.out.println("Existing words read: " + existingwords);
 
 						if (existingwords == 1) { //first real word read is first centroid
-							currentEvolvingCentroid.add(distilledText.get(i).toString());
-							currentEvolvingCentroid.add(distilledText.get(i).toString());
-							currentEvolvingCentroid.add(new Double(0.0).doubleValue());
+							currentEvolvingCentroid.add(word);
+							currentEvolvingCentroid.add(word);
+							currentEvolvingCentroid.add(0.0);
 
 							centroidTrail.add(currentEvolvingCentroid);
 
@@ -1444,9 +1441,9 @@ public class Cooccs {
 							if ((i) < distilledText.size()) {
 
 								Vector nextWord = new Vector();
-								nextWord.add(distilledText.get(i).toString());
-								nextWord.add(distilledText.get(i).toString());
-								nextWord.add(new Double(0.0).doubleValue());
+								nextWord.add(word);
+								nextWord.add(word);
+								nextWord.add(0.0);
 
 								System.out.println("Calculate shortest path: " + currentEvolvingCentroid.toString() + " " + nextWord.toString());
 								;
@@ -1771,15 +1768,16 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
 		try (Transaction tx = graphDB.beginTx()) {
 
-			Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", term1);
+			Node temp = tx.findNode(Labels.SINGLE_NODE, "name", term1);
 
 			if (temp != null) {
 
-				Node temp2 = graphDB.findNode(Labels.SINGLE_NODE, "name", term2);
+				Node temp2 = tx.findNode(Labels.SINGLE_NODE, "name", term2);
 
 				if (temp2 != null) {
 					PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), "cost", 1);
@@ -1816,9 +1814,9 @@ public class Cooccs {
 			}
 
 
-			tx.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 
 
 		return distance;
@@ -2008,15 +2006,16 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
 		try (Transaction tx = graphDB.beginTx()) {
 
-			Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", term1);
+			Node temp = tx.findNode(Labels.SINGLE_NODE, "name", term1);
 
 			if (temp != null) {
 
-				Node temp2 = graphDB.findNode(Labels.SINGLE_NODE, "name", term2);
+				Node temp2 = tx.findNode(Labels.SINGLE_NODE, "name", term2);
 
 				if (temp2 != null) {
 					PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), "cost", 1);
@@ -2053,9 +2052,9 @@ public class Cooccs {
 			}
 
 
-			tx.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 
 
 		return distance;
@@ -2233,9 +2232,10 @@ public class Cooccs {
 
 			if (query.size() > 1) {
 
-				GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+				final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 				System.out.println("database opened for querying");
-				try (Transaction tx2 = graphDB.beginTx()) {
+				try (Transaction tx = graphDB.beginTx()) {
 
 
 					//query cleaning !!!!
@@ -2245,7 +2245,7 @@ public class Cooccs {
 					Vector helpquery = new Vector();
 
 					for (int i = 0; i < query.size(); i++) {
-						Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
+						Node temp = tx.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
 
 						if (temp != null) {
 							helpquery.add(query.get(i).toString());
@@ -2284,7 +2284,7 @@ public class Cooccs {
 
 						String queryterm = iteratorq1.next().toString();
 
-						Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", queryterm);
+						Node temp = tx.findNode(Labels.SINGLE_NODE, "name", queryterm);
 
 
 						Iterator iteratorq2 = helpqueryset.iterator();
@@ -2293,11 +2293,12 @@ public class Cooccs {
 							String queryterm2 = iteratorq2.next().toString();
 
 							if (!queryterm.equals(queryterm2)) {
-								Node temp2 = graphDB.findNode(Labels.SINGLE_NODE, "name", queryterm2);
+								Node temp2 = tx.findNode(Labels.SINGLE_NODE, "name", queryterm2);
 
-								PathFinder<Path> finder = GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), 100, 1);
+								PathFinder<org.neo4j.graphdb.Path> finder = GraphAlgoFactory.shortestPath(null/*faked by wn*/,
+										PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), 100, 1);
 
-								Path p = finder.findSinglePath(temp, temp2);
+								org.neo4j.graphdb.Path p = finder.findSinglePath(temp, temp2);
 
 								if (p != null) {
 
@@ -2368,7 +2369,7 @@ public class Cooccs {
 
 							   String queryterm = iterator.next().toString();
 
-							   Node temp = graphDB.findNode(Labels.SINGLE_NODE,"name", queryterm);
+							   Node temp = tx.findNode(Labels.SINGLE_NODE,"name", queryterm);
 
 
 							   Iterator iterator2 = helpqueryset.iterator();
@@ -2377,7 +2378,7 @@ public class Cooccs {
 									   String queryterm2 = iterator2.next().toString();
 
 									   if (!queryterm.equals(queryterm2)) {
-										   Node temp2 = graphDB.findNode(Labels.SINGLE_NODE,"name", queryterm2);
+										   Node temp2 = tx.findNode(Labels.SINGLE_NODE,"name", queryterm2);
 
 										   PathFinder<Path> finder = GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection( RelationshipTypes.IS_CONNECTED, Direction.BOTH ), 100, 1 );
 
@@ -2430,8 +2431,8 @@ public class Cooccs {
 
 							for (int j = i + 1; j < query.size(); j++) {
 
-								Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
-								Node temp2 = graphDB.findNode(Labels.SINGLE_NODE, "name", query.get(j).toString());
+								Node temp = tx.findNode(Labels.SINGLE_NODE, "name", query.get(i).toString());
+								Node temp2 = tx.findNode(Labels.SINGLE_NODE, "name", query.get(j).toString());
 
 
 								PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(PathExpanders.forTypeAndDirection(RelationshipTypes.IS_CONNECTED, Direction.BOTH), "cost", 1);
@@ -2502,7 +2503,7 @@ public class Cooccs {
 								visited.add(curQueryTerm);
 								queue.add(curQueryTerm);
 
-								Node firstsourcenode = graphDB.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
+								Node firstsourcenode = tx.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
 
 								int steps = 0;
 
@@ -2513,7 +2514,7 @@ public class Cooccs {
 									String sourcenodename = queue.poll();
 									//	System.out.println("Activating: "+ sourcenodename);
 
-									Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", sourcenodename);
+									Node temp = tx.findNode(Labels.SINGLE_NODE, "name", sourcenodename);
 									Iterable<Relationship> allRelationships = temp.getRelationships();
 									for (Relationship relationship : allRelationships) {
 										Node destinationnode = relationship.getOtherNode(temp);
@@ -2637,13 +2638,13 @@ public class Cooccs {
 							String candidate = centroidcandidates.get(i).toString();
 							averagepathlength = 0;
 
-							Node n1 = graphDB.findNode(Labels.SINGLE_NODE, "name", candidate);
+							Node n1 = tx.findNode(Labels.SINGLE_NODE, "name", candidate);
 
 							for (int j = 0; j < query.size(); j++) {
 
 								String curQueryTerm = query.get(j).toString();
 
-								Node n2 = graphDB.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
+								Node n2 = tx.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
 
 								if ((n1 != null) && (n2 != null)) {
 
@@ -2675,9 +2676,9 @@ public class Cooccs {
 
 					} // if querysize==
 
-					tx2.success();
+					tx.commit();
 				}
-				graphDB.shutdown();
+				managementService.shutdown();
 
 
 			}
@@ -2713,18 +2714,19 @@ public class Cooccs {
 				String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 				File database = new File(db_path);
 
-				GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+				final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 				System.out.println("database opened for querying");
 
 				double minavpathweight = Double.MAX_VALUE;
 				maximumaddedpaths = 0;
 
-				try (Transaction tx2 = graphDB.beginTx()) {
+				try (Transaction tx = graphDB.beginTx()) {
 
 					long start = System.currentTimeMillis();
 
 					int nodenumber = 0;
-					ResourceIterator<Node> term1iterator = graphDB.findNodes(Labels.SINGLE_NODE);
+					ResourceIterator<Node> term1iterator = tx.findNodes(Labels.SINGLE_NODE);
 					while (term1iterator.hasNext()) {
 						nodenumber++;
 						//System.out.println("Current node " +nodenumber);
@@ -2753,8 +2755,8 @@ public class Cooccs {
 
 									//if (curQueryTerm.equals("Wasser")) term1str="Testterm";
 
-									Node n1 = graphDB.findNode(Labels.SINGLE_NODE, "name", term1str);
-									Node n2 = graphDB.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
+									Node n1 = tx.findNode(Labels.SINGLE_NODE, "name", term1str);
+									Node n2 = tx.findNode(Labels.SINGLE_NODE, "name", curQueryTerm);
 
 									//System.out.println("curQueryTerm  " +curQueryTerm);
 
@@ -2830,7 +2832,7 @@ public class Cooccs {
 					}
 					System.out.println("Node number " + nodenumber + " Centroid: " + centroid);
 
-					tx2.success();
+					tx.commit();
 
 
 //hierher3
@@ -2841,7 +2843,7 @@ public class Cooccs {
 				}
 
 
-				graphDB.shutdown();
+				managementService.shutdown();
 			} else {
 
 				centroid = query.get(0).toString();
@@ -2863,12 +2865,13 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
 
-		try (Transaction tx2 = graphDB.beginTx()) {
+		try (Transaction tx = graphDB.beginTx()) {
 			//rel_found=false;
-			Node n1 = graphDB.findNode(Labels.SINGLE_NODE, "name", node);
+			Node n1 = tx.findNode(Labels.SINGLE_NODE, "name", node);
 
 			if ((n1 != null)) {
 
@@ -2876,9 +2879,9 @@ public class Cooccs {
 
 			}
 
-			tx2.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 		return nodeexists;
 	}
 
@@ -2892,10 +2895,11 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
-		try (Transaction tx2 = graphDB.beginTx()) {
-			ResourceIterator<Node> nodelist = graphDB.findNodes(Labels.SINGLE_NODE);
+		try (Transaction tx = graphDB.beginTx()) {
+			ResourceIterator<Node> nodelist = tx.findNodes(Labels.SINGLE_NODE);
 			while (nodelist.hasNext()) {
 				Node wordnode = nodelist.next();
 				if (wordnode.getProperty("name").equals(n1)) {
@@ -2910,7 +2914,7 @@ public class Cooccs {
 				System.out.println("Node with name " + n1 + " does not exist.");
 			} else {
 				System.out.println("It is connected to all these nodes: ");
-				Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", n1);
+				Node temp = tx.findNode(Labels.SINGLE_NODE, "name", n1);
 				Iterable<Relationship> allRelationships = temp.getRelationships();
 				System.out.println("NAME" + "\t" + "COUNT" + "\t" + "DICE RATIO" + "\t" + "COST OF EDGE (DISTANCE)");
 				for (Relationship relationship : allRelationships) {
@@ -2925,9 +2929,9 @@ public class Cooccs {
 				}
 			}
 
-			tx2.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 	}
 
 
@@ -2941,10 +2945,11 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
-		try (Transaction tx2 = graphDB.beginTx()) {
-			ResourceIterator<Node> nodelist = graphDB.findNodes(Labels.SINGLE_NODE);
+		try (Transaction tx = graphDB.beginTx()) {
+			ResourceIterator<Node> nodelist = tx.findNodes(Labels.SINGLE_NODE);
 			while (nodelist.hasNext()) {
 				Node wordnode = nodelist.next();
 				if (wordnode.getProperty("name").equals(n1)) {
@@ -2959,7 +2964,7 @@ public class Cooccs {
 				System.out.println("Node with name " + n1 + " does not exist.");
 			} else {
 				System.out.println("It is connected to all of these nodes: ");
-				Node temp = graphDB.findNode(Labels.SINGLE_NODE, "name", n1);
+				Node temp = tx.findNode(Labels.SINGLE_NODE, "name", n1);
 				Iterable<Relationship> allRelationships = temp.getRelationships();
 				System.out.println("NAME" + "\t" + "COUNT" + "\t" + "DICE RATIO" + "\t" + "COST OF EDGE (DISTANCE)");
 				for (Relationship relationship : allRelationships) {
@@ -2998,9 +3003,9 @@ public class Cooccs {
 				}
 			}
 
-			tx2.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 
 		return result;
 	}
@@ -3016,13 +3021,14 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
 
-		try (Transaction tx2 = graphDB.beginTx()) {
+		try (Transaction tx = graphDB.beginTx()) {
 			//rel_found=false;
-			Node n1 = graphDB.findNode(Labels.SINGLE_NODE, "name", node1);
-			Node n2 = graphDB.findNode(Labels.SINGLE_NODE, "name", node2);
+			Node n1 = tx.findNode(Labels.SINGLE_NODE, "name", node1);
+			Node n2 = tx.findNode(Labels.SINGLE_NODE, "name", node2);
 
 			System.out.println("N1 " + n1);
 			System.out.println("N2 " + n2);
@@ -3061,9 +3067,9 @@ public class Cooccs {
 
 			}
 
-			tx2.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 		return pathweight;
 	}
 
@@ -3079,13 +3085,14 @@ public class Cooccs {
 		String db_path = System.getProperty("user.dir") + "/cooccsdatabase";
 		File database = new File(db_path);
 
-		GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase(database);
+		final DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(Path.of(db_path)).build();
+				GraphDatabaseService graphDB = managementService.database("database");
 		System.out.println("database opened for querying");
 
-		try (Transaction tx2 = graphDB.beginTx()) {
+		try (Transaction tx = graphDB.beginTx()) {
 			//rel_found=false;
-			Node n1 = graphDB.findNode(Labels.SINGLE_NODE, "name", node1);
-			Node n2 = graphDB.findNode(Labels.SINGLE_NODE, "name", node2);
+			Node n1 = tx.findNode(Labels.SINGLE_NODE, "name", node1);
+			Node n2 = tx.findNode(Labels.SINGLE_NODE, "name", node2);
 
 			System.out.println("N1 " + n1);
 			System.out.println("N2 " + n2);
@@ -3127,9 +3134,9 @@ public class Cooccs {
 
 			}
 
-			tx2.success();
+			tx.commit();
 		}
-		graphDB.shutdown();
+		managementService.shutdown();
 		return path;
 	}
 
@@ -3379,7 +3386,7 @@ public class Cooccs {
 	private boolean isStopWord(String word) {
 		boolean isstopword = false;
 
-		Parameters p = new Parameters(true); //Parameters.getInstance();
+		//Parameters p = new Parameters(true); //Parameters.getInstance();
 		ExternalData ed = ExternalData.getInstance(language); //p.getLanguage());
 		Set stopWords = ed.getStopWordMap();
 
@@ -3502,36 +3509,18 @@ public class Cooccs {
 
 			String curStr = (String) i.next();
 
-			// first update frequency:
-			if (!frequencies.containsKey(curStr)) {
-				frequencies.put(curStr, new Integer(1));
-			} else {
-				int oldFreq = ((Integer) frequencies.get(curStr)).intValue();
-				frequencies.put(curStr, new Integer(oldFreq + 1));
-			}
+			frequencies.merge(curStr, 1, Integer::sum);
 
 			// now update co-occurrence info:
-			// first, we have to see whether this word has already occurred
-			Map curCooccs;
-			if (cooccs.containsKey(curStr)) {
-				curCooccs = (Map) cooccs.get(curStr);
-			} else {
-				curCooccs = new HashMap();
-			}
+			Map<String ,Float> curCooccs = cooccs.computeIfAbsent(curStr, k->new HashMap<>());
 
 			// now, we have a Map that contains other words and their
 			// frequency of co-occurrence with curStr
 			// we will try to update this map with all the other words occurring in the current sentence:
 			for (Iterator j = words.iterator(); j.hasNext(); ) {
 				String curCoocc = (String) j.next();
-
 				if (!curCoocc.equals(curStr)) {
-					if (!curCooccs.containsKey(curCoocc)) {
-						curCooccs.put(curCoocc, new Float(1.0));
-					} else {
-						float oldFreq = ((Float) curCooccs.get(curCoocc)).floatValue();
-						curCooccs.put(curCoocc, new Float(oldFreq + 1));
-					}
+					curCooccs.merge(curCoocc, 1.0f, Float::sum);
 				}
 
 			}
@@ -3575,22 +3564,20 @@ public class Cooccs {
 
 			// for term i, get frequency and then all co-occurring terms:
 			String curTerm = (String) i.next();
-			int na = ((Integer) frequencies.get(curTerm)).intValue();
+			int na = frequencies.get(curTerm);
 
-			Map curCooccs = (Map) cooccs.get(curTerm);
+			Map curCooccs = cooccs.get(curTerm);
 			Set curTerms = curCooccs.keySet();
 			Map newCurCooccs = new HashMap();
 
 			for (Iterator j = curTerms.iterator(); j.hasNext(); ) {
 				String curCoocc = (String) j.next();
-				int nb = ((Integer) frequencies.get(curCoocc)).intValue();
-				float k = ((Float) curCooccs.get(curCoocc)).floatValue();
+				int nb = frequencies.get(curCoocc);
+				float k = (Float) curCooccs.get(curCoocc);
 
-				float sig = 0;
+				float sig = sig(k, na, nb);
 
-				sig = sig(k, na, nb);
-
-				newCurCooccs.put(curCoocc, new Float(sig));
+				newCurCooccs.put(curCoocc, sig);
 
 			}
 
@@ -3670,7 +3657,7 @@ public class Cooccs {
 
 			// for term i, get frequency and then all co-occurring terms:
 			String curTerm = (String) i.next();
-			int na = ((Integer) frequencies.get(curTerm)).intValue();
+			int na = frequencies.get(curTerm);
 
 			sum += na;
 
@@ -3688,32 +3675,27 @@ public class Cooccs {
 
 			// for term i, get frequency and then all co-occurring terms:
 			String curTerm = (String) i.next();
-			int na = ((Integer) frequencies.get(curTerm)).intValue();
+			int na = frequencies.get(curTerm);
 
-			Map curCooccs = (Map) cooccs.get(curTerm);
+			Map curCooccs = cooccs.get(curTerm);
 			Set curTerms = curCooccs.keySet();
 			Map newCurCooccs = new HashMap();
 
 			for (Iterator j = curTerms.iterator(); j.hasNext(); ) {
 				String curCoocc = (String) j.next();
-				int nb = ((Integer) frequencies.get(curCoocc)).intValue();
-				float k = ((Float) curCooccs.get(curCoocc)).floatValue();
+				int nb = frequencies.get(curCoocc);
+				float k = (Float) curCooccs.get(curCoocc);
 
-				float helpk = 0;
-				if (nb <= na) {
-					helpk = nb;
-				} else
-					helpk = na;
+				int helpk = Math.min(na, nb);
+				k = Math.min(k, helpk);
 
-				if (k >= helpk)
-					k = helpk;
-
+				// Diss. Formel 3.5
 				float sig = 0;
 
-				float helpfrequa = ((float) na / (float) maxtermfrequency);
+				float helpfrequa = ((float) na / maxtermfrequency);
 				float siga = ((float) k / (float) na);
 
-				float helpfrequb = ((float) nb / (float) maxtermfrequency);
+				float helpfrequb = ((float) nb / maxtermfrequency);
 				float sigb = ((float) k / (float) nb);
 
 				if ((na > 1) || (nb > 1))
@@ -3721,7 +3703,7 @@ public class Cooccs {
 						sig = ((float) k / (float) na) * helpfrequa;
 
 
-				newCurCooccs.put(curCoocc, new Float(sig));
+				newCurCooccs.put(curCoocc, sig);
 
 			}
 
@@ -3729,7 +3711,11 @@ public class Cooccs {
 		}
 	}
 
+	// Log-Likelihood
 	// calculates the actual significance of the co-occurrences...
+	// na, nb = Anzahl Sätze, in denen beide Wortformen A und B jeweils auftreten
+	// k = Anzahl Sätze, in denen beide Wortformen zusammen auftreten
+	// n = Anzahl Sätze im Textkorpus
 	private float sig(float k, int na, int nb) {
 		float sig;
 

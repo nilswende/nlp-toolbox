@@ -125,7 +125,6 @@ public class Parameters {
 	/**
 	 * Constructor that reads parameters from a config file
 	 *
-	 * @param options
 	 * @throws Exception
 	 */
 	public Parameters(boolean readConfig) {

@@ -2,6 +2,7 @@ package te.utils;
 
 import te.indexer.Word;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 public class PhraseExtractor {
 
@@ -29,7 +31,7 @@ public class PhraseExtractor {
 	 * @param patterns a list of POS patterns to extract from the list of lemmata.
 	 */
 	public static PhraseExtractor getInstance(Map i, List lemmata, List patterns, Parameters parameters) {
-		//TODO does it really has to be a singleton?
+		//TODO does it really has to be a singleton? NO!
 		if (instance == null) instance = new PhraseExtractor(i, lemmata, patterns, parameters);
 		return instance;
 	}
@@ -64,13 +66,13 @@ public class PhraseExtractor {
 			if (parts.size() == 1) return pos1.size();
 
 			// determine frequency by chekcing whether the other parts occur at subsequent positions:
-			for (Iterator i = pos1.iterator(); i.hasNext(); ) {
-				int curPos = ((Integer) i.next()).intValue();
+			for (Object o : pos1) {
+				int curPos = (Integer) o;
 
 				// check whether subsequent positions are OK:
 				boolean allThere = true;
 				for (int j = 1; j < parts.size(); j++) {
-					Integer check = new Integer(curPos + j);
+					Integer check = curPos + j;
 
 					// get the set of positions the j-th part of the candidate occurs at
 					Set posJ = (Set) index.get(parts.elementAt(j));
@@ -185,8 +187,6 @@ public class PhraseExtractor {
 	 * @return a Set of phrases, in the form of Word objects
 	 */
 	private Set getCandidates(List lemmata, String pattern, Parameters parameters) throws IllegalArgumentException {
-		HashSet ret = new HashSet();
-
 		// initialise the POS converter machine...
 		POSTagConverter converter = null;
 		try {
@@ -196,35 +196,30 @@ public class PhraseExtractor {
 			e.printStackTrace();
 		}
 
-		StringTokenizer st = new StringTokenizer(pattern, " ");
-
 		// put parts of the pattern into an array:
-		Vector parts = new Vector();
-		pattern = "";
-		while (st.hasMoreTokens()) {
-			String curTag = converter.getConversion(st.nextToken());
-			//String curTag = mapTag(st.nextToken());
-			parts.add(curTag);
-			pattern += curTag + " ";
-		}
-		pattern = pattern.trim();
+		List<String> parts = Arrays.stream(pattern.split(" ")).map(converter::getConversion).collect(Collectors.toList());
+		pattern = String.join(" ", parts);
 
+		// now we have to build an automata for our pattern:
+		return collectPhraseCandidates(lemmata, pattern, parts);
+	}
 
-		// now we have to build an automata for our pattern: 
+	private Set collectPhraseCandidates(List lemmata, String pattern, List<String> parts) {
 		int state = 0;
 		int pos = 0;
 		String curCandidate = "";
+		HashSet ret = new HashSet();
 
-		for (Iterator i = lemmata.iterator(); i.hasNext(); ) {
+		for (Object lemma : lemmata) {
 
-			Word curWord = (Word) i.next();
+			Word curWord = (Word) lemma;
 			String curPOS = curWord.getPos();
 
 			// state 1: we have found the first part of the pattern:
 			if (state == 1) {
 
 				// if we find next parts of the phrase:
-				if (curPOS.startsWith((String) parts.elementAt(pos))) {
+				if (curPOS.startsWith((String) parts.get(pos))) {
 
 					// collect all the information for this phrase:
 					curCandidate += " " + curWord.getWordStr();
@@ -244,7 +239,7 @@ public class PhraseExtractor {
 						ret.add(phrase);
 
 						// finally determine which state to jump to:
-						if (curPOS.startsWith((String) parts.elementAt(0))) {
+						if (curPOS.startsWith((String) parts.get(0))) {
 							state = 1;
 							curCandidate = curWord.getWordStr();
 							pos = 1;
@@ -257,7 +252,7 @@ public class PhraseExtractor {
 						pos++;
 					}
 				} else {
-					if (curPOS.startsWith((String) parts.elementAt(0))) {
+					if (curPOS.startsWith((String) parts.get(0))) {
 						state = 1;
 						curCandidate = curWord.getWordStr();
 						pos = 1;
@@ -271,7 +266,7 @@ public class PhraseExtractor {
 
 			// state 0: we have not found anything so far (starting state):
 			if (state == 0) {
-				if (curPOS.startsWith((String) parts.elementAt(0))) {
+				if (curPOS.startsWith(parts.get(0))) {
 					state = 1;
 					curCandidate = curWord.getWordStr();
 					pos = 1;
@@ -291,7 +286,6 @@ public class PhraseExtractor {
 
 
 		return ret;
-
 	}
 
 //	private String mapTag(String tag){

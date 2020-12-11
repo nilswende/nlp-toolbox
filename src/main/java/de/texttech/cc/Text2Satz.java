@@ -18,11 +18,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.text.BreakIterator;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+/**
+ * Input-Files bereits durch TextProcessing in txt umgewandelt, dependency auf de.texttech.cc.converter unnötig.
+ * Parameter per Konstruktor/Setter übergebbar, keine main-Methode nötig als Library.
+ * CharacterIteratorStream (buffered) neu implementieren, da er das Interface verletzt (U+ffff statt -1 am Ende) und so die dependency entfernt werden kann.
+ * -> keine externen dependencies und de.texttech.cc komplett entfernbar
+ * Ziel: Textdatei in 1 Satz je Zeile umwandeln. Sollte keine 100 Zeilen benötigen.
+ * Sind die Schnörkel in #processText nötig?
+ * Wird ASCII (Byte=Char) oder Unicode ('\u00ab check') genutzt?
+ *
+ */
 public class Text2Satz {
 
 	private HashSet abbreviations;
@@ -124,11 +135,13 @@ public class Text2Satz {
 		rawMode = flag;
 	}
 
-	public void readAbbrevs(String s) {
+	public void readAbbrevs(String filepath) {
+		// abbreviations = Files.lines().filter(s -> !s.isEmpty()).collect(Collectors.toSet());
+		// oder Scanner, wenn Leerzeichen beachtet werden sollen
 		abbreviations = new HashSet();
 		try {
 			StringBuffer stringbuffer = new StringBuffer("");
-			FileInputStream fileinputstream = new FileInputStream(s);
+			FileInputStream fileinputstream = new FileInputStream(filepath);
 			char c;
 			while ((c = (char) fileinputstream.read()) != '\uFFFF') {
 				if (c == '\n' || c == ' ') {
@@ -148,7 +161,7 @@ public class Text2Satz {
 			throws IOException {
 		int j = 0;
 		int i;
-		for (i = bufferedinputstream.read(); i != 10 && i != 13 && i != -1; i = bufferedinputstream.read()) {
+		for (i = bufferedinputstream.read(); i != '\n' && i != '\r' && i != -1; i = bufferedinputstream.read()) {
 			j++;
 			dataoutputstream.write((char) i);
 		}
@@ -185,8 +198,7 @@ public class Text2Satz {
 			System.err.println("Problems while opening file:" + ioexception.getMessage());
 			return 0;
 		}
-		boolean flag = false;
-		boolean flag1 = false;
+		boolean directWrite = false;
 		int j = 0;
 		StringBuffer stringbuffer = new StringBuffer();
 		try {
@@ -196,19 +208,19 @@ public class Text2Satz {
 				if ((i = bufferedinputstream.read()) <= 0) {
 					break;
 				}
-				if (flag1) {
+				if (directWrite) {
 					dataoutputstream.write(i);
-					if (i == 10) {
-						flag1 = false;
+					if (i == '\n') {
+						directWrite = false;
 						j = 0;
 						stringbuffer = new StringBuffer();
 					}
 				} else if (i == 9) {
-					flag1 = true;
-				} else if (i == 10) {
+					directWrite = true;
+				} else if (i == '\n') {
 					dataoutputstream.writeBytes(stringbuffer.toString());
 					dataoutputstream.write(i);
-					flag1 = false;
+					directWrite = false;
 					j = 0;
 					stringbuffer = new StringBuffer();
 				} else if (++j < 0x10000) {
@@ -236,289 +248,260 @@ public class Text2Satz {
 		if (c == '.' || c == '!' || c == '?') {
 			return true;
 		}
-		return c == '"' || c == '\'' || c == '\253' || c == '\273';
+		return c == '"' || c == '\''
+				|| c == '\u00ab' // LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
+				|| c == '\u00bb'; // RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
 	}
 
-	public int processText(String s) {
+	public int processText(String sourceFilepath) {
 		if (verbose) {
-			System.err.println("[Text2Satz] Processing file: " + s);
+			System.err.println("[Text2Satz] Processing file: " + sourceFilepath);
 		}
-		boolean flag = false;
 		int j = 0;
-		boolean flag1 = false;
 		StringBuffer stringbuffer = null;
-		String s1 = "";
-		Object obj = null;
-		String s2 = "text2satz.tmp";
-		String s3 = null;
+		String sourceFiletype = "";
+		String tmpFilepath = "text2satz.tmp";
+		String workingFilepath = null;
+		if (workingDir != null) {
+			tmpFilepath = workingDir + File.separator + tmpFilepath;
+		}
+		sourceFiletype = sourceFilepath.substring(sourceFilepath.lastIndexOf('.') + 1);
+		if (sourceFiletype.length() > 5) {
+			System.err.println("Warning: Ignoring file " + sourceFilepath);
+			return 0;
+		}
+		if (sourceFiletype.compareToIgnoreCase("txt") == 0) {
+			workingFilepath = new String(sourceFilepath);
+		} else if (sourceFiletype.toLowerCase().indexOf("htm") != -1) {
+			if (htmlConverter != null && !htmlConverter.equals("internal")) {
+				workingFilepath = convertHtmlExternally(sourceFilepath, tmpFilepath);
+			} else {
+				workingFilepath = convertHtmlInternally(sourceFilepath, tmpFilepath);
+			}
+			if (workingFilepath == null) {
+				return 0;
+			}
+		} else if (sourceFiletype.compareToIgnoreCase("lit") == 0 || sourceFiletype.compareToIgnoreCase("cyr") == 0 || sourceFiletype.compareToIgnoreCase("cas") == 0) {
+			if ((workingFilepath = convertLatin2(sourceFilepath, tmpFilepath)) == null) {
+				return 0;
+			}
+		} else if (sourceFiletype.compareToIgnoreCase("doc") == 0) {
+			if ((workingFilepath = convertDoc(sourceFilepath, tmpFilepath)) == null) {
+				return 0;
+			}
+		} else if (sourceFiletype.compareToIgnoreCase("pdf") == 0) {
+			if ((workingFilepath = convertPdf(sourceFilepath, tmpFilepath)) == null) {
+				return 0;
+			}
+		} else if (sourceFiletype.compareToIgnoreCase("ceml") == 0) {
+			if ((workingFilepath = convertCeml(sourceFilepath, tmpFilepath)) == null) {
+				return 0;
+			}
+		} else if (sourceFiletype.toLowerCase().indexOf("xml") != -1) {
+			if ((workingFilepath = convertHtmlInternally(sourceFilepath, tmpFilepath)) == null) {
+				return 0;
+			}
+		} else {
+			System.err.println("Warning: Can't handle file type of file " + sourceFilepath);
+			return 0;
+		}
+		File workingFile = new File(workingFilepath);
+		if (!workingFile.canRead()) {
+			System.err.println("Can't open file: " + sourceFilepath);
+			return 0;
+		}
+		String satzFilepath = null;
+		if (workingDir != null) {
+			satzFilepath = workingDir + File.separator + database + ".s";
+		} else {
+			satzFilepath = database + ".s";
+		}
+		if (rawMode) {
+			return printInRawMode(sourceFilepath, workingFile, satzFilepath);
+		}
+
 		BufferedInputStream bufferedinputstream = null;
 		BufferedInputStream bufferedinputstream1 = null;
 		BufferedInputStream bufferedinputstream2 = null;
 		DataOutputStream dataoutputstream = null;
-		BreakIterator breakiterator = BreakIterator.getSentenceInstance(language);
-		BreakIterator breakiterator1 = BreakIterator.getWordInstance(language);
-		if (workingDir != null) {
-			s2 = workingDir + File.separator + s2;
-		}
-		s1 = new String(s.substring(s.lastIndexOf('.') + 1));
-		if (s1.length() > 5) {
-			System.err.println("Warning: Ignoring file " + s);
-			return 0;
-		}
-		if (s1.compareToIgnoreCase("txt") == 0) {
-			s3 = new String(s);
-		} else if (s1.toLowerCase().indexOf("htm") != -1) {
-			if (htmlConverter != null && !htmlConverter.equals("internal")) {
-				s3 = convertHtmlExternally(s, s2);
-			} else {
-				s3 = convertHtmlInternally(s, s2);
-			}
-			if (s3 == null) {
-				return 0;
-			}
-		} else if (s1.compareToIgnoreCase("lit") == 0 || s1.compareToIgnoreCase("cyr") == 0 || s1.compareToIgnoreCase("cas") == 0) {
-			if ((s3 = convertLatin2(s, s2)) == null) {
-				return 0;
-			}
-		} else if (s1.compareToIgnoreCase("doc") == 0) {
-			if ((s3 = convertDoc(s, s2)) == null) {
-				return 0;
-			}
-		} else if (s1.compareToIgnoreCase("pdf") == 0) {
-			if ((s3 = convertPdf(s, s2)) == null) {
-				return 0;
-			}
-		} else if (s1.compareToIgnoreCase("ceml") == 0) {
-			if ((s3 = convertCeml(s, s2)) == null) {
-				return 0;
-			}
-		} else if (s1.toLowerCase().indexOf("xml") != -1) {
-			if ((s3 = convertHtmlInternally(s, s2)) == null) {
-				return 0;
-			}
-		} else {
-			System.err.println("Warning: Can't handle file type of file " + s);
-			return 0;
-		}
-		File file = new File(s3);
-		if (!file.canRead()) {
-			System.err.println("Can't open file: " + s);
-			return 0;
-		}
-		String s4 = null;
-		if (workingDir != null) {
-			s4 = workingDir + File.separator + database + ".s";
-		} else {
-			s4 = database + ".s";
-		}
-		if (rawMode) {
-			return printInRawMode(s, file, s4);
-		}
-		CharacterIteratorStream characteriteratorstream = new CharacterIteratorStream(s3);
-		CharacterIteratorStream characteriteratorstream1 = new CharacterIteratorStream(s3);
-		breakiterator.setText(characteriteratorstream);
-		breakiterator1.setText(characteriteratorstream1);
-		int l = breakiterator.first();
+		BreakIterator sentenceBoundary = BreakIterator.getSentenceInstance(language);
+		BreakIterator wordBoundary = BreakIterator.getWordInstance(language);
+		CharacterIteratorStream characteriteratorstream = new CharacterIteratorStream(workingFilepath);
+		CharacterIteratorStream characteriteratorstream1 = new CharacterIteratorStream(workingFilepath);
+		sentenceBoundary.setText(characteriteratorstream);
+		wordBoundary.setText(characteriteratorstream1);
+		int start = sentenceBoundary.first();
+
 		try {
-			bufferedinputstream = new BufferedInputStream(new FileInputStream(file));
-			bufferedinputstream1 = new BufferedInputStream(new FileInputStream(file));
-			bufferedinputstream2 = new BufferedInputStream(new FileInputStream(file));
-			dataoutputstream = getOutStream(s4);
-		} catch (IOException ioexception) {
-			System.err.println("Problems while creating streams:" + ioexception.getMessage());
-		}
-		int i1 = 0;
-		int j1 = 0;
-		int k1 = 0;
-		boolean flag2 = false;
-		stringbuffer = new StringBuffer();
-		boolean flag3 = false;
-		boolean flag4 = true;
-		boolean flag5 = true;
-		try {
-			dataoutputstream.writeBytes(/*"\n" +*/ taggedHeader(s));
-			long l1 = l;
-			long l6;
-			do {
-				l6 = bufferedinputstream.skip(l1);
-			} while (l6 > 0L && (l1 -= l6) > 0L);
-			i1 += l;
-			for (int i2 = breakiterator.next(); i2 != -1; i2 = breakiterator.next()) {
+			bufferedinputstream = new BufferedInputStream(new FileInputStream(workingFile));
+			bufferedinputstream1 = new BufferedInputStream(new FileInputStream(workingFile));
+			bufferedinputstream2 = new BufferedInputStream(new FileInputStream(workingFile));
+			dataoutputstream = getOutStream(satzFilepath);
+
+			int bytesReadFromIn = 0;
+			int bytesReadFromIn1 = 0;
+			int bytesReadFromIn2 = 0;
+			stringbuffer = new StringBuffer();
+			boolean seenWhitespace = false;
+			boolean seenNoCR = true;
+			boolean skipLinebreaks = true;
+
+			dataoutputstream.writeBytes(/*"\n" +*/ taggedHeader(sourceFilepath));
+			skipToPosition(bufferedinputstream, start); // incorrectly assumes that bytes adequately represent characters
+			bytesReadFromIn += start;
+			for (int end = sentenceBoundary.next(); end != BreakIterator.DONE; start = end, end = sentenceBoundary.next()) {
 				int j2 = 0;
-				for (int k2 = i2 - l; k2 > 0; k2--) {
-					int i = (char) bufferedinputstream.read();
-					i1++;
-					if (i == 10 || i == 13 || k1 == 0) {
-						if (k1 <= i1) {
-							long l2;
-							if (k1 == 0) {
-								l2 = i1 - 1;
-								k1 = i1;
-							} else {
-								l2 = i1 - k1;
-								k1 = i1 + 1;
-							}
-							long l7;
-							do {
-								l7 = bufferedinputstream2.skip(l2);
-							} while (l7 > 0L && (l2 -= l7) > 0L);
+				for (int length = end - start; length > 0; length--) {
+					int charFromSentence = (char) bufferedinputstream.read();
+					bytesReadFromIn++;
+					if (charFromSentence == '\n' || charFromSentence == '\r' || bytesReadFromIn2 == 0) {
+						if (bytesReadFromIn2 <= bytesReadFromIn) {
+							bytesReadFromIn2 = skipToInPosition(bufferedinputstream2, bytesReadFromIn, bytesReadFromIn2);
 							stringbuffer.delete(0, stringbuffer.length());
 							j = (char) bufferedinputstream2.read();
 						}
-						while (j == 10 || j == 13) {
+						while (j == '\n' || j == '\r') { // skip linebreaks
 							j = (char) bufferedinputstream2.read();
-							k1++;
+							bytesReadFromIn2++;
 						}
-						if (j == 32) {
+						if (j == ' ') {
 							stringbuffer.append((char) j);
 							j = (char) bufferedinputstream2.read();
-							k1++;
+							bytesReadFromIn2++;
 							stringbuffer.append((char) j);
 						}
 						if (stringbuffer.toString().compareTo(" <") == 0) {
 							stringbuffer.delete(0, stringbuffer.length());
 							int j3 = 0;
-							do {
-								if ((j = bufferedinputstream2.read()) == 62 || j <= 0) {
+							do { // read up to 24 chars from in2 until '>', '\n' or EOF
+								if ((j = bufferedinputstream2.read()) == '>' || j <= 0) {
 									break;
 								}
-								k1++;
+								bytesReadFromIn2++;
 								stringbuffer.append((char) j);
-							} while (++j3 <= 25 && j != 10);
-							k1++;
+							} while (++j3 <= 25 && j != '\n');
+							bytesReadFromIn2++;
 							if (stringbuffer.toString().compareTo("quelle") == 0) {
 								dataoutputstream.writeBytes("\n <" + stringbuffer + ">");
 								stringbuffer.delete(0, stringbuffer.length());
-								while ((i = bufferedinputstream2.read()) != 10 && i > 0) {
-									k1++;
-									stringbuffer.append((char) i);
+								while ((charFromSentence = bufferedinputstream2.read()) != '\n' && charFromSentence > 0) {
+									bytesReadFromIn2++;
+									stringbuffer.append((char) charFromSentence);
 								}
-								k1++;
+								bytesReadFromIn2++;
 								stringbuffer.delete(0, stringbuffer.toString().indexOf("<name_lang>") + 11);
 								stringbuffer.delete(stringbuffer.toString().indexOf("</name_lang>"), stringbuffer.length());
 								if (stringbuffer.length() == 0) {
-									stringbuffer.append(s);
+									stringbuffer.append(sourceFilepath);
 								}
 								success++;
-								dataoutputstream.writeBytes("<name>" + database + Integer.toString(success + 1) + "</name><name_lang>" + stringbuffer + "</name_lang></quelle>\n");
-							} else if (j == 62) {
+								dataoutputstream.writeBytes("<name>" + database + (success + 1) + "</name><name_lang>" + stringbuffer + "</name_lang></quelle>\n");
+							} else if (j == '>') {
 								dataoutputstream.writeBytes("\n <" + stringbuffer + ">");
-								k1 += writeRestOfLine(dataoutputstream, bufferedinputstream2) + 1;
+								bytesReadFromIn2 += writeRestOfLine(dataoutputstream, bufferedinputstream2) + 1;
 							} else {
 								dataoutputstream.writeBytes("\n <" + stringbuffer);
-								k1 += writeRestOfLine(dataoutputstream, bufferedinputstream2);
+								bytesReadFromIn2 += writeRestOfLine(dataoutputstream, bufferedinputstream2);
 							}
-							long l3 = k1 - i1 - 1;
-							long l8;
-							do {
-								l8 = bufferedinputstream.skip(l3);
-							} while (l8 > 0L && (l3 -= l8) > 0L);
-							k2 -= k1 - i1 - 1;
-							for (i1 = k1 - 1; i1 > breakiterator.current(); ) {
-								l = i2;
-								i2 = breakiterator.next();
-								k2 += i2 - l;
+							skipToPosition(bufferedinputstream, bytesReadFromIn2 - bytesReadFromIn - 1);
+							length -= bytesReadFromIn2 - bytesReadFromIn - 1;
+							for (bytesReadFromIn = bytesReadFromIn2 - 1; bytesReadFromIn > sentenceBoundary.current(); ) {
+								start = end;
+								end = sentenceBoundary.next();
+								length += end - start;
 							}
 
-						} else if (i1 == l + 1) {
-							dataoutputstream.write(i);
+						} else if (bytesReadFromIn == start + 1) {
+							dataoutputstream.write(charFromSentence);
 						}
-						if (flag5) {
+						if (skipLinebreaks) {
 							continue;
 						}
-						if (keep_newline || flag4 && !flag5) {
-							dataoutputstream.write(10);
-							flag5 = true;
-							flag3 = false;
+						if (keep_newline || seenNoCR && !skipLinebreaks) {
+							dataoutputstream.write('\n');
+							skipLinebreaks = true;
+							seenWhitespace = false;
 						} else {
-							flag3 = true;
+							seenWhitespace = true;
 						}
-						if (i != 13) {
-							flag4 = true;
+						if (charFromSentence != '\r') {
+							seenNoCR = true;
 						}
 						continue;
 					}
-					if (Character.isWhitespace((char) i)) {
-						if (flag5) {
+					if (Character.isWhitespace((char) charFromSentence)) {
+						if (skipLinebreaks) {
 							continue;
 						}
-						flag3 = true;
-						if (wrapLongLines && i2 - l - k2 - j2 > 220) {
-							j2 = i2 - l - k2;
-							dataoutputstream.write(10);
-							flag5 = true;
-							flag3 = false;
+						seenWhitespace = true;
+						if (wrapLongLines && end - start - length - j2 > 220) {
+							j2 = end - start - length;
+							dataoutputstream.write('\n');
+							skipLinebreaks = true;
+							seenWhitespace = false;
 						}
 						continue;
 					}
-					if (i == 45) {
-						long l4 = i1 - k1;
-						long l9;
-						do {
-							l9 = bufferedinputstream2.skip(l4);
-						} while (l9 > 0L && (l4 -= l9) > 0L);
-						k1 = i1 + 1;
+					if (charFromSentence == '-') {
+						skipToPosition(bufferedinputstream2, bytesReadFromIn - bytesReadFromIn2);
+						bytesReadFromIn2 = bytesReadFromIn + 1;
 						j = bufferedinputstream2.read();
-						if (j == 10 || j == 13) {
+						if (j == '\n' || j == '\r') {
 							int k3 = bufferedinputstream2.read();
-							k1++;
-							if ((k3 == 10 || k3 == 13) && j != k3) {
+							bytesReadFromIn2++;
+							if ((k3 == '\n' || k3 == '\r') && j != k3) {
 								k3 = bufferedinputstream2.read();
-								k1++;
+								bytesReadFromIn2++;
 							}
 							j = k3;
 							if (!Character.isLowerCase((char) j)) {
-								if (flag3) {
-									dataoutputstream.write(32);
+								if (seenWhitespace) {
+									dataoutputstream.write(' ');
 								}
-								dataoutputstream.write(i);
+								dataoutputstream.write(charFromSentence);
 							}
-							flag3 = flag4 = false;
-							flag5 = true;
+							seenWhitespace = seenNoCR = false;
+							skipLinebreaks = true;
 							continue;
 						}
-						if (flag3) {
-							dataoutputstream.write(32);
+						if (seenWhitespace) {
+							dataoutputstream.write(' ');
 						}
-						dataoutputstream.write(i);
-						flag3 = flag4 = flag5 = false;
+						dataoutputstream.write(charFromSentence);
+						seenWhitespace = seenNoCR = skipLinebreaks = false;
 						continue;
 					}
-					if (flag3) {
-						dataoutputstream.write(32);
+					if (seenWhitespace) {
+						dataoutputstream.write(' ');
 					}
-					dataoutputstream.write(i);
-					flag3 = flag4 = flag5 = false;
+					dataoutputstream.write(charFromSentence);
+					seenWhitespace = seenNoCR = skipLinebreaks = false;
 				}
 
-				if (breakiterator.current() > 2) {
-					int k = breakiterator1.preceding(breakiterator.current() - 2);
-					long l5 = k - j1;
+				if (sentenceBoundary.current() > 2) {
+					int boundaryPrecedingCurrentSentenceEnd = wordBoundary.preceding(sentenceBoundary.current() - 2);
+					long l5 = boundaryPrecedingCurrentSentenceEnd - bytesReadFromIn1;
 					if (l5 >= 0L) {
 						stringbuffer.delete(0, stringbuffer.length());
-						long l10;
-						do {
-							l10 = bufferedinputstream1.skip(l5);
-						} while (l10 > 0L && (l5 -= l10) > 0L);
-						for (int i3 = breakiterator1.next() - k; i3 > 0; i3--) {
+						skipToPosition(bufferedinputstream1, l5);
+						for (int charsInCurrentWord = wordBoundary.next() - boundaryPrecedingCurrentSentenceEnd; charsInCurrentWord > 0; charsInCurrentWord--) {
 							stringbuffer.append((char) bufferedinputstream1.read());
 						}
 
-						j1 = breakiterator1.current();
-						if (!abbreviations.contains(stringbuffer.toString()) && !flag5) {
+						bytesReadFromIn1 = wordBoundary.current();
+						if (!abbreviations.contains(stringbuffer.toString()) && !skipLinebreaks) {
 							do {
 								j = (char) bufferedinputstream1.read();
-								j1++;
+								bytesReadFromIn1++;
 							} while (sentenceEndChar((char) j));
-							if (j != 44) {
-								dataoutputstream.write(10);
-								flag5 = true;
-								flag3 = false;
+							if (j != ',') {
+								dataoutputstream.write('\n');
+								skipLinebreaks = true;
+								seenWhitespace = false;
 							}
 						}
 					}
 				}
-				l = i2;
 			}
 
 		} catch (Exception exception) {
@@ -537,6 +520,27 @@ public class Text2Satz {
 		}
 		success++;
 		return 1;
+	}
+
+	private void skipToPosition(BufferedInputStream bufferedinputstream, long start) throws IOException {
+		long l1 = start;
+		long l6;
+		do {
+			l6 = bufferedinputstream.skip(l1);
+		} while (l6 > 0L && (l1 -= l6) > 0L);
+	}
+
+	private int skipToInPosition(BufferedInputStream bufferedinputstream2, int bytesReadFromIn, int bytesReadFromIn2) throws IOException {
+		long l2;
+		if (bytesReadFromIn2 == 0) {
+			l2 = bytesReadFromIn - 1;
+			bytesReadFromIn2 = bytesReadFromIn;
+		} else {
+			l2 = bytesReadFromIn - bytesReadFromIn2;
+			bytesReadFromIn2 = bytesReadFromIn + 1;
+		}
+		skipToPosition(bufferedinputstream2, l2);
+		return bytesReadFromIn2;
 	}
 
 	private String convertHtmlExternally(String s, String s1) {

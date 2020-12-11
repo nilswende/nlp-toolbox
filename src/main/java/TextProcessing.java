@@ -346,7 +346,7 @@ public class TextProcessing {
 	}
 
 
-	int findEntry(List termlist, String query) {
+	int findWordIndex(List termlist, String query) {
 
 		//int index = Collections.binarySearch(termlist, query);
 
@@ -419,52 +419,12 @@ public class TextProcessing {
 						for (Iterator j = keys.iterator(); j.hasNext(); ) {
 							String curStr = (String) j.next();
 
-							int keyindex = findEntry(termlist, curStr);
+							int keyindex = findWordIndex(termlist, curStr);
 
 
 							Map termCooccs = (Map) cooccsmap.get(curStr);
-
-							Set cooccvalues = termCooccs.keySet();
-
-
-							for (Iterator k = cooccvalues.iterator(); k.hasNext(); ) {
-
-								String curStr2 = (String) k.next();
-								float curSig = ((Float) termCooccs.get(curStr2)).floatValue();
-
-								int keyindex2 = findEntry(termlist, curStr2);
-
-
-								if ((keyindex != -1) && (keyindex2 != -1) /*&& (keyindex!=keyindex2)*/) {
-
-									if (keyindex == keyindex2) {
-										curSig = 1;
-
-										cooccmatrix[keyindex][keyindex2] = curSig;
-
-
-									} else {
-
-
-										if (curSig > 0) {
-
-											cooccmatrix[keyindex][keyindex2] = curSig;
-											//cooccmatrix[keyindex2][keyindex] = curSig;
-
-
-										} else {
-
-											cooccmatrix[keyindex][keyindex2] = (float) 0.01;
-											//Man könnte hier auch statt 0 einen kleinen Wert wie 1 verwenden.
-
-
-										}
-
-									}
-
-								}
-							}
-
+							termCooccs.forEach(
+									(term,count) -> setCooccsMatrixCell(termlist, cooccmatrix, keyindex,(String) term,(Float)count));
 
 						} //cooccmatrix füllen
 
@@ -623,7 +583,7 @@ public class TextProcessing {
 
 						}
 
-						if (topicfound == false) topindex.add(topic);
+						if (!topicfound) topindex.add(topic);
 
 
 						Vector previoustermvector = new Vector();
@@ -1826,7 +1786,6 @@ public class TextProcessing {
 					Cooccs mycooccs = new Cooccs(curFile, false);
 
 
-					float[][] cooccmatrix;
 					List termlist = new Vector();
 
 
@@ -1834,11 +1793,11 @@ public class TextProcessing {
 					Map cooccsmap = mycooccs.getCooccMap();
 
 					//Liste aller Terme füllen (dient als Lookup von Pos zu String)
-					Set keys = cooccsmap.keySet();
-					for (Iterator j = keys.iterator(); j.hasNext(); ) {
-						String curStr = (String) j.next();
+					Set words = cooccsmap.keySet();
+					for (Iterator j = words.iterator(); j.hasNext(); ) {
+						String word = (String) j.next();
 
-						termlist.add(curStr);
+						termlist.add(word);
 
 
 					}
@@ -1846,7 +1805,7 @@ public class TextProcessing {
 					System.out.println("Number of all terms (types): " + termlist.size());
 
 
-					cooccmatrix = new float[termlist.size()][termlist.size()];
+					float[][] cooccmatrix = new float[termlist.size()][termlist.size()];
 
 					//fill co-occurrence matrix
 
@@ -1854,59 +1813,16 @@ public class TextProcessing {
 						System.out.println("Filling co-occurrence matrix...");
 
 
-						Set coocckeys = cooccsmap.keySet();
-						for (Iterator j = keys.iterator(); j.hasNext(); ) {
-							String curStr = (String) j.next();
 
-							int keyindex = findEntry(termlist, curStr);
+						for (Iterator j = words.iterator(); j.hasNext(); ) {
+							String word = (String) j.next();
 
+							int wordIndex = findWordIndex(termlist, word);
 
-							Map termCooccs = (Map) cooccsmap.get(curStr);
+							Map termCooccs = (Map) cooccsmap.get(word);
 
-							Set cooccvalues = termCooccs.keySet();
-
-
-							for (Iterator k = cooccvalues.iterator(); k.hasNext(); ) {
-
-								String curStr2 = (String) k.next();
-								float curSig = ((Float) termCooccs.get(curStr2)).floatValue();
-
-								int keyindex2 = findEntry(termlist, curStr2);
-
-
-								if ((keyindex != -1) && (keyindex2 != -1) /*&& (keyindex!=keyindex2)*/) {
-
-									if (keyindex == keyindex2) {
-										curSig = 1;
-
-										cooccmatrix[keyindex][keyindex2] = curSig;
-
-										//Scaling *100 when using DICE coefficient; if LL: not necessary
-
-									} else {
-
-
-										if (curSig > 0) {
-
-											cooccmatrix[keyindex][keyindex2] = curSig;
-											//cooccmatrix[keyindex2][keyindex] = curSig;
-
-											//Scaling *100 when using DICE coefficient; if LL: not necessary
-
-
-										} else {
-
-											cooccmatrix[keyindex][keyindex2] = (float) 0.01;
-
-
-										}
-
-									}
-
-								}
-							}
-
-
+							termCooccs.forEach(
+									(term,count) -> setCooccsMatrixCell(termlist, cooccmatrix, wordIndex,(String) term,(Float)count));
 						} //cooccmatrix füllen
 
 
@@ -2021,6 +1937,42 @@ public class TextProcessing {
 
 		}
 
+	}
+
+	private void setCooccsMatrixCell(List termlist, float[][] cooccmatrix, int wordIndex, String cooccTerm, float cooccCount) {
+
+		int cooccIndex = findWordIndex(termlist, cooccTerm);
+
+		if ((wordIndex != -1) && (cooccIndex != -1) /*&& (wordIndex!=cooccIndex)*/) {
+
+			if (wordIndex == cooccIndex) {
+				cooccCount = 1;
+
+				cooccmatrix[wordIndex][cooccIndex] = cooccCount;
+
+				//Scaling *100 when using DICE coefficient; if LL: not necessary
+
+			} else {
+
+
+				if (cooccCount > 0) {
+
+					cooccmatrix[wordIndex][cooccIndex] = cooccCount;
+					//cooccmatrix[cooccIndex][wordIndex] = cooccCount;
+
+					//Scaling *100 when using DICE coefficient; if LL: not necessary
+
+
+				} else {
+
+					cooccmatrix[wordIndex][cooccIndex] = (float) 0.01;
+
+
+				}
+
+			}
+
+		}
 	}
 
 
