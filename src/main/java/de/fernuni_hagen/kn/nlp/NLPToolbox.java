@@ -40,6 +40,7 @@ public class NLPToolbox {
 			// file level
 			paths.map(Path::toFile)
 					.filter(File::isFile)
+					.peek(db::addDocument)
 					.map(documentConverter::convert)
 					.flatMap(sentenceExtractor::extract)
 					// sentence level

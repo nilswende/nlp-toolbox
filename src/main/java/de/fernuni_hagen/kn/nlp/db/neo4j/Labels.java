@@ -8,5 +8,5 @@ import org.neo4j.graphdb.Label;
  * @author Nils Wende
  */
 enum Labels implements Label {
-	TERM, SENTENCE
+	TERM, SENTENCE, DOCUMENT
 }

@@ -9,6 +9,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class Neo4J implements DB {
 	private static final String DEFAULT_DATABASE_NAME = "neo4j";
 	private static Neo4J INSTANCE;
 	private final GraphDatabaseService graphDb;
+	private Node currentDocument;
 
 	public Neo4J(final Config config) {
 		final var managementService = new DatabaseManagementServiceBuilder(config.getDbDir()).build();
@@ -42,7 +44,7 @@ public class Neo4J implements DB {
 	// also creates a single-property index on the constrained property
 	private void createUniqueConstraints() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			var stmt = "CREATE CONSTRAINT uniqueTermNames IF NOT EXISTS\n" +
+			final var stmt = "CREATE CONSTRAINT uniqueTermNames IF NOT EXISTS\n" +
 					"ON (t:" + Labels.TERM + ") ASSERT t.name IS UNIQUE\n";
 			tx.execute(stmt);
 			tx.commit();
@@ -54,6 +56,15 @@ public class Neo4J implements DB {
 			final var stmt = "MATCH (n)\n" +
 					"DETACH DELETE n\n";
 			tx.execute(stmt);
+			tx.commit();
+		}
+	}
+
+	@Override
+	public void addDocument(final File file) {
+		try (final Transaction tx = graphDb.beginTx()) {
+			currentDocument = tx.createNode(Labels.DOCUMENT);
+			currentDocument.setProperty("name", file.getName());
 			tx.commit();
 		}
 	}
@@ -106,6 +117,7 @@ public class Neo4J implements DB {
 	private void addSentenceNode(final List<Node> termNodes, final Transaction tx) {
 		final var s = tx.createNode(Labels.SENTENCE);
 		termNodes.forEach(term -> s.createRelationshipTo(term, RelationshipTypes.CONTAINS));
+		currentDocument.createRelationshipTo(s, RelationshipTypes.CONTAINS);
 	}
 
 	@Override

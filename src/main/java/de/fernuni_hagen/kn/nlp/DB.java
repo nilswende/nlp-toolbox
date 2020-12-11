@@ -1,13 +1,21 @@
 package de.fernuni_hagen.kn.nlp;
 
+import java.io.File;
 import java.util.List;
 
 /**
- * The graph database.
+ * The database.
  *
  * @author Nils Wende
  */
 public interface DB {
+
+	/**
+	 * Adds a document to the DB.
+	 *
+	 * @param file the file containing the document
+	 */
+	void addDocument(File file);
 
 	/**
 	 * Adds a sentence in the form of words to the DB.
