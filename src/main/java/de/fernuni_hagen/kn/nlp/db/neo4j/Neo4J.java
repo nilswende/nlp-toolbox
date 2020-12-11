@@ -38,17 +38,11 @@ public class Neo4J implements DB {
 
 	private void createUniqueConstraints() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var schema = tx.schema();
-			final var name = "words";
-			try { // check if constraint exists
-				schema.getConstraintByName(name);
-			} catch (final IllegalArgumentException e) {
-				schema // if not, create it
-						.constraintFor(Labels.WORD)
-						.assertPropertyIsUnique("name")
-						.withName(name)
-						.create();
-			}
+			var stmt = "DROP CONSTRAINT words\n";
+			tx.execute(stmt);
+			stmt = "CREATE CONSTRAINT uniqueTermNames IF NOT EXISTS\n" +
+					"ON (term:" + Labels.TERM + ") ASSERT term.name IS UNIQUE\n";
+			tx.execute(stmt);
 			tx.commit();
 		}
 	}
@@ -63,34 +57,34 @@ public class Neo4J implements DB {
 	}
 
 	@Override
-	public void addSentence(final List<String> words) {
+	public void addSentence(final List<String> terms) {
 		try (final Transaction tx = graphDb.beginTx()) {
-			addNodes(words, tx);
-			addRelationships(words, tx);
+			addNodes(terms, tx);
+			addRelationships(terms, tx);
 			tx.commit();
 		}
 	}
 
-	private void addNodes(final List<String> words, final Transaction tx) {
-		final var stmt = "MERGE (word:" + Labels.WORD + " {name: $name})\n" +
-				"ON CREATE SET word.name = $name, word.count = 1\n" +
-				"ON MATCH SET word.count = word.count + 1\n";
-		for (final String word : words) {
-			tx.execute(stmt, Map.of("name", word));
+	private void addNodes(final List<String> terms, final Transaction tx) {
+		final var stmt = "MERGE (term:" + Labels.TERM + " {name: $name})\n" +
+				"ON CREATE SET term.name = $name, term.count = 1\n" +
+				"ON MATCH SET term.count = term.count + 1\n";
+		for (final String term : terms) {
+			tx.execute(stmt, Map.of("name", term));
 		}
 	}
 
-	private void addRelationships(final List<String> words, final Transaction tx) {
-		final var stmt = "MATCH (word1:" + Labels.WORD + " {name: $name1}),(word2:" + Labels.WORD + " {name: $name2})\n" +
-				"MERGE (word1)-[r:" + RelationshipTypes.CONNECTED + "]-(word2)\n" +
+	private void addRelationships(final List<String> terms, final Transaction tx) {
+		final var stmt = "MATCH (term1:" + Labels.TERM + " {name: $name1}),(term2:" + Labels.TERM + " {name: $name2})\n" +
+				"MERGE (term1)-[r:" + RelationshipTypes.CONNECTED + "]-(term2)\n" +
 				"ON CREATE SET r.count = 1, r.dice = 0, r.cost = 0\n" +
 				"ON MATCH SET r.count = r.count + 1\n";
-		for (int i = 0; i < words.size(); i++) {
-			final var word1 = words.get(i);
-			for (int j = i + 1; j < words.size(); j++) {
-				final var word2 = words.get(j);
-				if (!word1.equals(word2)) {
-					tx.execute(stmt, Map.of("name1", word1, "name2", word2));
+		for (int i = 0; i < terms.size(); i++) {
+			final var term1 = terms.get(i);
+			for (int j = i + 1; j < terms.size(); j++) {
+				final var term2 = terms.get(j);
+				if (!term1.equals(term2)) {
+					tx.execute(stmt, Map.of("name1", term1, "name2", term2));
 				}
 			}
 		}
@@ -98,8 +92,8 @@ public class Neo4J implements DB {
 
 	@Override
 	public void updateDiceAndCosts() {
-		final var stmt = "MATCH (word1:" + Labels.WORD + ")-[r:" + RelationshipTypes.CONNECTED + "]-(word2:" + Labels.WORD + ")\n" +
-				"RETURN word1.count, word2.count, r.count, r";
+		final var stmt = "MATCH (term1:" + Labels.TERM + ")-[r:" + RelationshipTypes.CONNECTED + "]-(term2:" + Labels.TERM + ")\n" +
+				"RETURN term1.count, term2.count, r.count, r";
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			while (result.hasNext()) {
@@ -114,8 +108,8 @@ public class Neo4J implements DB {
 	}
 
 	private double calculateDice(final Map<String, Object> row) {
-		final var a = toLong(row.get("word1.count"));
-		final var b = toLong(row.get("word2.count"));
+		final var a = toLong(row.get("term1.count"));
+		final var b = toLong(row.get("term2.count"));
 		var ab = toLong(row.get("r.count"));
 		ab = Math.min(ab, Math.min(a, b));
 		return Math.min(1, (2 * ab) / (double) (a + b));
