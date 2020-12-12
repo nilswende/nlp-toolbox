@@ -35,7 +35,7 @@ public class NLPToolbox {
 		final var db = Neo4J.init(config);
 		db.deleteAll();
 		final var documentConverter = new TikaDocumentConverter(config);
-		final var sentenceExtractor = new SimpleSentenceExtractor(config, new LanILanguageExtractor(), new RegexWhitespaceRemover());
+		final var sentenceExtractor = new SimpleSentenceExtractor(new LanILanguageExtractor(), new RegexWhitespaceRemover());
 		try (final var paths = Files.walk(config.getInputDir(), 1)) {
 			// file level
 			paths.map(Path::toFile)

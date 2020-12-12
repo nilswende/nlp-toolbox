@@ -20,12 +20,10 @@ import java.util.stream.Stream;
  */
 public class SimpleSentenceExtractor implements SentenceExtractor {
 
-	private final Config config;
 	private final LanguageExtractor languageExtractor;
 	private final WhitespaceRemover whitespaceRemover;
 
-	public SimpleSentenceExtractor(final Config config, final LanguageExtractor languageExtractor, final WhitespaceRemover whitespaceRemover) {
-		this.config = config;
+	public SimpleSentenceExtractor(final LanguageExtractor languageExtractor, final WhitespaceRemover whitespaceRemover) {
 		this.languageExtractor = languageExtractor;
 		this.whitespaceRemover = whitespaceRemover;
 	}
