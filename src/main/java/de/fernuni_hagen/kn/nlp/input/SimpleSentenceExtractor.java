@@ -7,10 +7,10 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import java.io.File;
 import java.io.IOException;
 import java.text.BreakIterator;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -32,15 +32,11 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 
 	@Override
 	public Stream<String> extract(final File textFile) {
-		try (final var sentenceSupplier = new LazySentenceSupplier(textFile, getLocale(textFile), whitespaceRemover)) {
-			final var sentences = new ArrayList<String>();
-			for (String s; (s = sentenceSupplier.get()) != null; ) {
-				sentences.add(s);
-			}
-			return sentences.stream();
-		} catch (final IOException e) {
-			throw new UncheckedException(e);
-		}
+		final var sentenceSupplier = new LazySentenceSupplier(textFile, getLocale(textFile), whitespaceRemover);
+		return Stream.iterate(sentenceSupplier.get(),
+				Objects::nonNull,
+				s -> sentenceSupplier.get())
+				.onClose(() -> closeSupplier(sentenceSupplier));
 	}
 
 	private Locale getLocale(final File textFile) {
@@ -52,6 +48,14 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 			throw new IllegalArgumentException("BreakIterator does not support language " + language);
 		}
 		return bestMatch;
+	}
+
+	private void closeSupplier(final LazySentenceSupplier supplier) {
+		try {
+			supplier.close();
+		} catch (final IOException e) {
+			throw new UncheckedException(e);
+		}
 	}
 
 }
