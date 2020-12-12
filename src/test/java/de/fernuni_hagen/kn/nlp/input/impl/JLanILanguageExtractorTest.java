@@ -14,14 +14,14 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class LanILanguageExtractorTest {
+class JLanILanguageExtractorTest {
 
 	@ParameterizedTest
 	@MethodSource
 	void test(final String sentence, final int inputLength, final Locale locale) {
 		final int length = inputLength == -1 ? sentence.length() : inputLength;
 		try (final var reader = new StringReader(sentence)) {
-			final var language = new LanILanguageExtractor().extract(reader, length);
+			final var language = new JLanILanguageExtractor().extract(reader, length);
 			assertEquals(locale, language);
 		}
 	}

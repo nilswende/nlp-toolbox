@@ -5,7 +5,7 @@ import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
-import de.fernuni_hagen.kn.nlp.input.impl.LanILanguageExtractor;
+import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.cli.DefaultParser;
@@ -35,7 +35,7 @@ public class NLPToolbox {
 		final var db = Neo4J.init(config);
 		db.deleteAll();
 		final var documentConverter = new TikaDocumentConverter(config);
-		final var sentenceExtractor = new SimpleSentenceExtractor(new LanILanguageExtractor(), new RegexWhitespaceRemover());
+		final var sentenceExtractor = new SimpleSentenceExtractor(new JLanILanguageExtractor(), new RegexWhitespaceRemover());
 		try (final var paths = Files.walk(config.getInputDir(), 1)) {
 			// file level
 			paths.map(Path::toFile)

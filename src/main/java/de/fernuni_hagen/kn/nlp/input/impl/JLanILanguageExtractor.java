@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author Nils Wende
  */
-public class LanILanguageExtractor implements LanguageExtractor {
+public class JLanILanguageExtractor implements LanguageExtractor {
 
 	@Override
 	public Locale extract(final File textFile) {

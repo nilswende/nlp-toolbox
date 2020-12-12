@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.input;
 
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.input.impl.LanILanguageExtractor;
+import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.FileUtils;
@@ -42,7 +42,7 @@ class SimpleSentenceExtractorTest {
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}
-		final var extractor = new SimpleSentenceExtractor(new LanILanguageExtractor(), new RegexWhitespaceRemover());
+		final var extractor = new SimpleSentenceExtractor(new JLanILanguageExtractor(), new RegexWhitespaceRemover());
 		final var strings = extractor.extract(tempFile).collect(Collectors.toList());
 		assertEquals(sentences, strings);
 	}
