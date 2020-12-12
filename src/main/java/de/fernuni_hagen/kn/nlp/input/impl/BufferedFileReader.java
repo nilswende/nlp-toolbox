@@ -130,7 +130,9 @@ public class BufferedFileReader implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		reader.close();
+		if (reader != null) {
+			reader.close();
+		}
 	}
 
 	/**

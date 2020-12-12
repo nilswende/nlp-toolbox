@@ -30,6 +30,7 @@ class BufferedFileReaderTest {
 
 	static Stream<Arguments> readCharOnce() {
 		return Stream.of(//
+				arguments("", 0, -1),
 				arguments("abc", 0, 'a'),
 				arguments("abc", 1, 'b'),
 				arguments("abc", 2, 'c'),

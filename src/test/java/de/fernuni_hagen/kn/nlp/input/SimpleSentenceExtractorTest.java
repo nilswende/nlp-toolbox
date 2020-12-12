@@ -49,6 +49,7 @@ class SimpleSentenceExtractorTest {
 
 	static Stream<Arguments> extract() {
 		return Stream.of(
+				arguments(List.of()),
 				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.")),
 				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
 						"The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin.")),
