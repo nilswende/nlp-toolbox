@@ -1,14 +1,12 @@
 package de.fernuni_hagen.kn.nlp.input;
 
 import de.fernuni_hagen.kn.nlp.SentenceExtractor;
-import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.BreakIterator;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -34,21 +32,21 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 		return Stream.iterate(sentenceSupplier.get(),
 				Objects::nonNull,
 				s -> sentenceSupplier.get())
-				.onClose(() -> closeSupplier(sentenceSupplier));
+				.onClose(() -> close(sentenceSupplier));
 	}
 
 	private Locale getLocale(final File textFile) {
-		final var availableLocales = Arrays.asList(BreakIterator.getAvailableLocales());
-		final var language = languageExtractor.extract(textFile);
-		final var priorityList = Collections.singletonList(new Locale.LanguageRange(language.toLanguageTag()));
+		final var availableLocales = List.of(BreakIterator.getAvailableLocales());
+		final var locale = languageExtractor.extract(textFile);
+		final var priorityList = List.of(new Locale.LanguageRange(locale.toLanguageTag()));
 		final var bestMatch = Locale.lookup(priorityList, availableLocales);
 		if (bestMatch == null) {
-			throw new IllegalArgumentException("BreakIterator does not support language " + language);
+			throw new IllegalArgumentException("BreakIterator does not support locale " + locale);
 		}
 		return bestMatch;
 	}
 
-	private void closeSupplier(final LazySentenceSupplier supplier) {
+	private void close(final LazySentenceSupplier supplier) {
 		try {
 			supplier.close();
 		} catch (final IOException e) {
