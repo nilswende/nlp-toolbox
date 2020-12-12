@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
+
 /**
  * Neo4j graph database.<br>
  * <a href="https://neo4j.com/docs/java-reference/current/java-embedded/">Neo4J docs</a>
@@ -28,11 +30,13 @@ public class Neo4J implements DB {
 	private static final String DEFAULT_DATABASE_NAME = "neo4j";
 	private static Neo4J INSTANCE;
 	private final GraphDatabaseService graphDb;
-	private Node currentDocument;
+	private final Sequences sequences;
+	private long currentDocId;
 
 	public Neo4J(final Config config) {
 		final var managementService = new DatabaseManagementServiceBuilder(config.getDbDir()).build();
 		graphDb = managementService.database(DEFAULT_DATABASE_NAME);
+		sequences = new Sequences(graphDb);
 		stopDbOnShutdown(managementService);
 		createUniqueConstraints();
 	}
@@ -44,8 +48,21 @@ public class Neo4J implements DB {
 	// also creates a single-property index on the constrained property
 	private void createUniqueConstraints() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var stmt = "CREATE CONSTRAINT uniqueTermNames IF NOT EXISTS\n" +
-					"ON (t:" + Labels.TERM + ") ASSERT t.name IS UNIQUE\n";
+			createUniqueNameConstraint(Labels.TERM, tx);
+			createUniqueNameConstraint(Labels.SEQUENCE, tx);
+			tx.commit();
+		}
+	}
+
+	private void createUniqueNameConstraint(final Labels label, final Transaction tx) {
+		final var stmt = "CREATE CONSTRAINT unique" + label + "Names IF NOT EXISTS\n" +
+				"ON (l:" + label + ") ASSERT l.name IS UNIQUE\n";
+		tx.execute(stmt);
+	}
+
+	private void dropConstraint(final String name) {
+		try (final Transaction tx = graphDb.beginTx()) {
+			final var stmt = "DROP CONSTRAINT " + name;
 			tx.execute(stmt);
 			tx.commit();
 		}
@@ -62,9 +79,11 @@ public class Neo4J implements DB {
 
 	@Override
 	public void addDocument(final File file) {
+		currentDocId = sequences.nextValueFor(Labels.DOCUMENT);
 		try (final Transaction tx = graphDb.beginTx()) {
-			currentDocument = tx.createNode(Labels.DOCUMENT);
-			currentDocument.setProperty("name", file.getName());
+			final Node doc = tx.createNode(Labels.DOCUMENT);
+			doc.setProperty("name", file.getName());
+			doc.setProperty("id", currentDocId);
 			tx.commit();
 		}
 	}
@@ -117,7 +136,8 @@ public class Neo4J implements DB {
 	private void addSentenceNode(final List<Node> termNodes, final Transaction tx) {
 		final var s = tx.createNode(Labels.SENTENCE);
 		termNodes.forEach(term -> s.createRelationshipTo(term, RelationshipTypes.CONTAINS));
-		currentDocument.createRelationshipTo(s, RelationshipTypes.CONTAINS);
+		final var doc = tx.findNode(Labels.DOCUMENT, "id", currentDocId);
+		doc.createRelationshipTo(s, RelationshipTypes.CONTAINS);
 	}
 
 	@Override
@@ -143,10 +163,6 @@ public class Neo4J implements DB {
 		var ab = toLong(row.get("r.count"));
 		ab = Math.min(ab, Math.min(a, b));
 		return Math.min(1, (2 * ab) / (double) (a + b));
-	}
-
-	private long toLong(final Object o) {
-		return ((Number) o).longValue();
 	}
 
 	public List<String> getAllNodes() {
