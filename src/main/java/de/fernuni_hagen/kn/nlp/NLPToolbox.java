@@ -52,8 +52,9 @@ public class NLPToolbox {
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		} finally {
-			// if config.deleteTempFiles
-			FileHelper.deleteTempFiles();
+			if (!config.keepTempFiles()) {
+				FileHelper.deleteTempFiles();
+			}
 		}
 	}
 

@@ -32,6 +32,7 @@ public class Config {
 	private String inputDir;
 	private String dbDir;
 	private int sentenceFileSizeLimitBytes;
+	private boolean keepTempFiles;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -47,6 +48,10 @@ public class Config {
 
 	public int getSentenceFileSizeLimitBytes() {
 		return sentenceFileSizeLimitBytes <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimitBytes;
+	}
+
+	public boolean keepTempFiles() {
+		return keepTempFiles;
 	}
 
 	public static Path getDefaultConfigFilePath() {
