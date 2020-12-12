@@ -18,7 +18,9 @@ import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
 
 /**
  * Neo4j graph database.<br>
- * <a href="https://neo4j.com/docs/java-reference/current/java-embedded/">Neo4J docs</a>
+ * <a href="https://neo4j.com/docs/java-reference/4.2/javadocs/">Neo4J Javadocs</a><br>
+ * <a href="https://neo4j.com/docs/java-reference/current/java-embedded/">Using Neo4j embedded in Java applications</a><br>
+ * <a href="https://neo4j.com/docs/cypher-manual/4.2/">The Neo4j Cypher Manual v4.2</a><br>
  *
  * @author Nils Wende
  */

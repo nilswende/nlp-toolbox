@@ -10,15 +10,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SentenceAdder {
+/**
+ * Adds a sentence to the DB.
+ *
+ * @author Nils Wende
+ */
+class SentenceAdder {
 
 	private final GraphDatabaseService graphDb;
 
-	public SentenceAdder(final GraphDatabaseService graphDb) {
+	SentenceAdder(final GraphDatabaseService graphDb) {
 		this.graphDb = graphDb;
 	}
 
-	public void addSentence(final List<String> terms, final long currentDocId) {
+	/**
+	 * Delegate for {@link Neo4J#addSentence(List)}.
+	 *
+	 * @param terms        terms of a sentence
+	 * @param currentDocId current document ID
+	 */
+	void addSentence(final List<String> terms, final long currentDocId) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var termNodes = addTermNodes(terms, tx);
 			addTermRelationships(terms, tx);

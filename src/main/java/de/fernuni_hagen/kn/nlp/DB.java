@@ -18,11 +18,11 @@ public interface DB {
 	void addDocument(File file);
 
 	/**
-	 * Adds a sentence in the form of words to the DB.
+	 * Adds a sentence in the form of terms to the DB.
 	 *
-	 * @param words words of a sentence
+	 * @param terms terms of a sentence
 	 */
-	void addSentence(List<String> words);
+	void addSentence(List<String> terms);
 
 	/**
 	 * Updates the Dice ratio and costs for all relationships present in the DB.
