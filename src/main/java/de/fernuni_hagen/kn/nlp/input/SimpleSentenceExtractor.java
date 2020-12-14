@@ -5,6 +5,7 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.text.BreakIterator;
 import java.util.List;
 import java.util.Locale;
@@ -28,10 +29,10 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 
 	@Override
 	public Stream<String> extract(final File textFile) {
-		final var sentenceSupplier = new LazySentenceSupplier(textFile, getLocale(textFile), whitespaceRemover);
-		return Stream.iterate(sentenceSupplier.get(),
+		final var sentenceSupplier = new LazySentenceSupplier(textFile, getLocale(textFile));
+		return Stream.iterate(extractOneSentence(sentenceSupplier),
 				Objects::nonNull,
-				s -> sentenceSupplier.get())
+				s -> extractOneSentence(sentenceSupplier))
 				.onClose(() -> close(sentenceSupplier));
 	}
 
@@ -44,6 +45,11 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 			throw new IllegalArgumentException("BreakIterator does not support locale " + locale);
 		}
 		return bestMatch;
+	}
+
+	private String extractOneSentence(final LazySentenceSupplier sentenceSupplier) {
+		final var chars = sentenceSupplier.get();
+		return whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars));
 	}
 
 	private void close(final LazySentenceSupplier supplier) {

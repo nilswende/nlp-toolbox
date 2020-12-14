@@ -7,7 +7,6 @@ import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.CharBuffer;
 import java.text.BreakIterator;
 import java.util.Locale;
 
@@ -16,27 +15,24 @@ import java.util.Locale;
  *
  * @author Nils Wende
  */
-public class LazySentenceSupplier implements Closeable {
+class LazySentenceSupplier implements Closeable {
 
-	private final WhitespaceRemover whitespaceRemover;
+	private final BufferedFileReader fileReader;
 	private final BufferedFileCharacterIterator iter;
 	private final BreakIterator boundary;
-	private final BufferedFileReader fileReader;
 	private int start, end;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param textFile          the text file to be read
-	 * @param locale            the file's language
-	 * @param whitespaceRemover WhitespaceRemover
+	 * @param textFile the text file to be read
+	 * @param locale   the file's language
 	 */
-	public LazySentenceSupplier(final File textFile, final Locale locale, final WhitespaceRemover whitespaceRemover) {
-		this.whitespaceRemover = whitespaceRemover;
+	public LazySentenceSupplier(final File textFile, final Locale locale) {
+		fileReader = new BufferedFileReader(textFile, Config.DEFAULT_CHARSET);
 		iter = new BufferedFileCharacterIterator(new BufferedFileReader(textFile, Config.DEFAULT_CHARSET));
 		boundary = BreakIterator.getSentenceInstance(locale);
 		boundary.setText(iter);
-		fileReader = new BufferedFileReader(textFile, Config.DEFAULT_CHARSET);
 		start = boundary.first();
 		end = boundary.next();
 	}
@@ -46,14 +42,14 @@ public class LazySentenceSupplier implements Closeable {
 	 *
 	 * @return the next sentence or null, if the end of file was reached
 	 */
-	public String get() {
+	public char[] get() {
 		if (end == BreakIterator.DONE) {
 			return null;
 		}
 		final var chars = fileReader.read(start, end - start);
 		start = end;
 		end = boundary.next();
-		return whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars));
+		return chars;
 	}
 
 	@Override
