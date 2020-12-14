@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.input;
 
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -36,13 +35,13 @@ class LazySentenceSupplierTest {
 	@ParameterizedTest
 	@MethodSource
 	void get(final List<String> sentences) {
-		final String input = String.join(" \n", sentences);
+		final String input = String.join("", sentences);
 		try {
 			FileUtils.write(tempFile, input, Config.DEFAULT_CHARSET);
 			final var strings = new ArrayList<String>();
-			try (final var sentenceSupplier = new LazySentenceSupplier(tempFile, Locale.ENGLISH, new RegexWhitespaceRemover())) {
-				for (String s; (s = sentenceSupplier.get()) != null; ) {
-					strings.add(s);
+			try (final var sentenceSupplier = new LazySentenceSupplier(tempFile, Locale.ENGLISH)) {
+				for (char[] s; (s = sentenceSupplier.get()) != null; ) {
+					strings.add(String.valueOf(s));
 				}
 			}
 			assertEquals(sentences, strings);
@@ -54,12 +53,12 @@ class LazySentenceSupplierTest {
 	static Stream<Arguments> get() {
 		return Stream.of(
 				arguments(List.of()),
-				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.")),
-				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
-						"The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin.")),
-				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
-						"The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin.",
-						"Medals were awarded for works of art inspired by sport, divided into five categories: architecture, literature, music, painting, and sculpture."))
+				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948. ")),
+				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948. ",
+						"The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin. ")),
+				arguments(List.of("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948. ",
+						"The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin. ",
+						"Medals were awarded for works of art inspired by sport, divided into five categories: architecture, literature, music, painting, and sculpture. "))
 		);
 	}
 
