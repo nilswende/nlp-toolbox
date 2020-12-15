@@ -23,7 +23,7 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	@Override
 	public List<Pair<String, List<String>>> extractPhrases(final Locale locale, final List<String> sentences) {
 		final Indexer indexer = createIndexer(locale);
-		final var text = String.join(" ", sentences);
+		final var text = String.join(StringUtils.SPACE, sentences);
 		indexer.prepare(text);
 		final List<String> phrases = getPhrases(indexer);
 		return getPairs(sentences, phrases);

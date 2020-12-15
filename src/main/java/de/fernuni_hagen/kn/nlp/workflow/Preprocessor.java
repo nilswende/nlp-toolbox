@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Führt die linguistische Vorverarbeitung des Dokuments durch.
+ * Executes the linguistic preprocessing of a document.
  *
  * @author Nils Wende
  */
@@ -34,7 +34,7 @@ public class Preprocessor {
 		final var sentenceExtractor = new SimpleSentenceExtractor(locale, new RegexWhitespaceRemover());
 		// file level
 		final var sentences = sentenceExtractor.extract(document).collect(Collectors.toList());
-		final var pairs = phraseExtractor.extractPhrases(locale, sentences);
+		final var pairs = phraseExtractor.extractPhrases(locale, sentences); //TODO fast track no phrase extraction?
 
 		final Iterator<Pair<String, List<String>>> iterator = pairs.iterator();
 		return pairs.stream().map(Pair::getLeft)
