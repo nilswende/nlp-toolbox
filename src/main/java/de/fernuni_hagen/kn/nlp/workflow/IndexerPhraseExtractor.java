@@ -14,18 +14,26 @@ import java.util.stream.Collectors;
 import static de.fernuni_hagen.kn.nlp.workflow.Utils.cast;
 
 /**
- * Extracts phrases from sentences using the ASV Indexer class.
+ * Extracts phrases from a text using the ASV Indexer class.
  *
  * @author Nils Wende
  */
 public class IndexerPhraseExtractor implements PhraseExtractor {
 
-	private final Indexer indexer;
+	@Override
+	public List<Pair<String, List<String>>> extractPhrases(final Locale locale, final List<String> sentences) {
+		final Indexer indexer = createIndexer(locale);
+		final var text = String.join(" ", sentences);
+		indexer.prepare(text);
+		final List<String> phrases = getPhrases(indexer);
+		return getPairs(sentences, phrases);
+	}
 
-	IndexerPhraseExtractor(final Locale locale) {
-		indexer = new Indexer();
+	private Indexer createIndexer(final Locale locale) {
+		final Indexer indexer = new Indexer();
 		indexer.setLanguage(mapLanguage(locale));
 		indexer.getParameters().setStemming(false);
+		return indexer;
 	}
 
 	private int mapLanguage(final Locale locale) {
@@ -39,15 +47,7 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 		}
 	}
 
-	@Override
-	public List<Pair<String, List<String>>> extractPhrases(final List<String> sentences) {
-		final var text = String.join(" ", sentences);
-		indexer.prepare(text);
-		final List<String> phrases = getPhrases();
-		return getPairs(sentences, phrases);
-	}
-
-	private List<String> getPhrases() {
+	private List<String> getPhrases(final Indexer indexer) {
 		final List<Word> phrases = cast(indexer.getPhrases());
 		return phrases.stream()
 				.map(p -> p.getPos().endsWith("A N") ? StringUtils.uncapitalize(p.getWordStr()) : p.getWordStr())

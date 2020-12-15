@@ -5,7 +5,7 @@ import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import de.fernuni_hagen.kn.nlp.workflow.Preprocessing;
+import de.fernuni_hagen.kn.nlp.workflow.Preprocessor;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -37,7 +37,7 @@ public class NLPToolbox {
 					.filter(File::isFile)
 					.peek(db::addDocument)
 					.map(documentConverter::convert)
-					.flatMap(f -> new Preprocessing().preprocess(f))
+					.flatMap(f -> Preprocessor.from(config).preprocess(f))
 					.forEach(db::addSentence);
 			db.updateDiceAndCosts();
 			db.getAllNodes().forEach(System.out::println);

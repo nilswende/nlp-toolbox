@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
-import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,14 +34,11 @@ class SimpleSentenceExtractorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void extract(final List<String> sentences) {
+	void extract(final List<String> sentences) throws IOException {
 		final String input = String.join(" ", sentences);
-		try {
-			FileUtils.write(tempFile, input, Config.DEFAULT_CHARSET);
-		} catch (final IOException e) {
-			throw new UncheckedException(e);
-		}
-		final var extractor = new SimpleSentenceExtractor(new JLanILanguageExtractor(), new RegexWhitespaceRemover());
+		FileUtils.write(tempFile, input, Config.DEFAULT_CHARSET);
+		final var languageExtractor = new JLanILanguageExtractor();
+		final var extractor = new SimpleSentenceExtractor(languageExtractor.extract(tempFile), new RegexWhitespaceRemover());
 		final var strings = extractor.extract(tempFile).collect(Collectors.toList());
 		assertEquals(sentences, strings);
 	}

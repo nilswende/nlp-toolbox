@@ -48,7 +48,7 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 
 	private String extractOneSentence(final LazySentenceSupplier sentenceSupplier) {
 		final var chars = sentenceSupplier.get();
-		return whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars));
+		return chars == null ? null : whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars));
 	}
 
 	private void close(final LazySentenceSupplier supplier) {

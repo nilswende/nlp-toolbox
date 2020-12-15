@@ -1,5 +1,7 @@
 package de.fernuni_hagen.kn.nlp.workflow;
 
+import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.input.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
@@ -17,14 +19,22 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public class Preprocessing {
+public class Preprocessor {
+
+	private final LanguageExtractor languageExtractor;
+	private final PhraseExtractor phraseExtractor;
+
+	public Preprocessor(final PhraseExtractor phraseExtractor) {
+		languageExtractor = new JLanILanguageExtractor();
+		this.phraseExtractor = phraseExtractor;
+	}
 
 	public Stream<List<String>> preprocess(final File document) {
-		final var locale = new JLanILanguageExtractor().extract(document);
+		final var locale = languageExtractor.extract(document);
 		final var sentenceExtractor = new SimpleSentenceExtractor(locale, new RegexWhitespaceRemover());
 		// file level
 		final var sentences = sentenceExtractor.extract(document).collect(Collectors.toList());
-		final var pairs = new IndexerPhraseExtractor(locale).extractPhrases(sentences);
+		final var pairs = phraseExtractor.extractPhrases(locale, sentences);
 
 		final Iterator<Pair<String, List<String>>> iterator = pairs.iterator();
 		return pairs.stream().map(Pair::getLeft)
@@ -32,6 +42,10 @@ public class Preprocessing {
 				.map(s -> Arrays.asList(s.split(" ")))
 				// re-add the extracted phrases
 				.map(l -> Stream.of(l, iterator.next().getRight()).flatMap(List::stream).collect(Collectors.toList()));
+	}
+
+	public static Preprocessor from(final Config config) {
+		return new Preprocessor(config.extractPhrases() ? new IndexerPhraseExtractor() : new NoOpPhraseExtractor());
 	}
 
 }
