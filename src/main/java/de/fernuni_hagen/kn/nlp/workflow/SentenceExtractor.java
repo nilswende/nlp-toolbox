@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp;
+package de.fernuni_hagen.kn.nlp.workflow;
 
 import java.io.File;
 import java.util.stream.Stream;
