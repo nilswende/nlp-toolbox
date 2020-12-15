@@ -21,7 +21,7 @@ public final class Utils {
 	 * @return a parameterized List
 	 */
 	@SuppressWarnings("unchecked")
-	public static <E> List<E> cast(final List arg) {
+	public static <E> List<E> cast(@SuppressWarnings("rawtypes") final List arg) {
 		return (List<E>) arg;
 	}
 

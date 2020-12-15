@@ -13,32 +13,31 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * Extracts sentences from a text file using {@link java.text.BreakIterator}.
+ * Extracts sentences from a text file using a {@link java.text.BreakIterator}.
  *
  * @author Nils Wende
  */
 public class SimpleSentenceExtractor implements SentenceExtractor {
 
-	private final LanguageExtractor languageExtractor;
+	private final Locale locale;
 	private final WhitespaceRemover whitespaceRemover;
 
-	public SimpleSentenceExtractor(final LanguageExtractor languageExtractor, final WhitespaceRemover whitespaceRemover) {
-		this.languageExtractor = languageExtractor;
+	public SimpleSentenceExtractor(final Locale locale, final WhitespaceRemover whitespaceRemover) {
+		this.locale = locale;
 		this.whitespaceRemover = whitespaceRemover;
 	}
 
 	@Override
 	public Stream<String> extract(final File textFile) {
-		final var sentenceSupplier = new LazySentenceSupplier(textFile, getLocale(textFile));
+		final var sentenceSupplier = new LazySentenceSupplier(textFile, findBestMatch(locale));
 		return Stream.iterate(extractOneSentence(sentenceSupplier),
 				Objects::nonNull,
 				s -> extractOneSentence(sentenceSupplier))
 				.onClose(() -> close(sentenceSupplier));
 	}
 
-	private Locale getLocale(final File textFile) {
+	private Locale findBestMatch(final Locale locale) {
 		final var availableLocales = List.of(BreakIterator.getAvailableLocales());
-		final var locale = languageExtractor.extract(textFile);
 		final var priorityList = List.of(new Locale.LanguageRange(locale.toLanguageTag()));
 		final var bestMatch = Locale.lookup(priorityList, availableLocales);
 		if (bestMatch == null) {

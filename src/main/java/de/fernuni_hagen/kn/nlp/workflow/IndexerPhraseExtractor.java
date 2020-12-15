@@ -9,6 +9,7 @@ import te.utils.Parameters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static de.fernuni_hagen.kn.nlp.workflow.Utils.cast;
 
@@ -47,32 +48,26 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	}
 
 	private List<String> getPhrases() {
-		final var strings = new ArrayList<String>();
 		final List<Word> phrases = cast(indexer.getPhrases());
-		for (final Word phrase : phrases) {
-			var wordStr = phrase.getWordStr();
-			if (phrase.getPos().endsWith("A N")) {
-				wordStr = StringUtils.uncapitalize(wordStr);
-			}
-			strings.add(wordStr);
-		}
-		return strings;
+		return phrases.stream()
+				.map(p -> p.getPos().endsWith("A N") ? StringUtils.uncapitalize(p.getWordStr()) : p.getWordStr())
+				.collect(Collectors.toList());
 	}
 
 	private List<Pair<String, List<String>>> getPairs(final List<String> sentences, final List<String> phrases) {
-		final var pairs = new ArrayList<Pair<String, List<String>>>(sentences.size());
-		for (final String sentence : sentences) {
-			String extractedSentence = sentence;
-			final var extractedPhrases = new ArrayList<String>();
-			for (final String phrase : phrases) {
-				if (sentence.contains(phrase)) {
-					extractedSentence = StringUtils.remove(sentence, phrase);
-					extractedPhrases.add(phrase);
-				}
+		return sentences.stream().map(s -> getPair(s, phrases)).collect(Collectors.toList());
+	}
+
+	private Pair<String, List<String>> getPair(final String sentence, final List<String> phrases) {
+		String extractedSentence = sentence;
+		final var extractedPhrases = new ArrayList<String>();
+		for (final String phrase : phrases) {
+			if (sentence.contains(phrase)) {
+				extractedSentence = StringUtils.remove(sentence, phrase);
+				extractedPhrases.add(phrase);
 			}
-			pairs.add(Pair.of(extractedSentence, extractedPhrases));
 		}
-		return pairs;
+		return Pair.of(extractedSentence, extractedPhrases);
 	}
 
 }
