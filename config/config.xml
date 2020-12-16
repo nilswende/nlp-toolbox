@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<config>
+	<!-- language of input text(s) (de or en) -->
+	<language>
+		en
+	</language>
+
+	<!-- tagger to tag input text(s) - possible values are tnt for TnT tagger or basetagger for basetagger 
+	-->
+	<tagger>
+		basetagger
+	</tagger>
+
+	<!-- threshold for frequency of words -->
+	<minFreq>
+		1
+	</minFreq>
+
+	<!-- threshold for significance measure -->
+	<minSig>
+		0.0
+	</minSig>
+
+	<!-- threshold for frequency of words in the reference corpus -->
+	<corpusMinFreq>
+		1
+	</corpusMinFreq>
+
+	<!-- significance measure to use. (LR: likelihood ratio, HQ: frequency ratio, TFIDF) -->
+	<sigFormula>
+		TFIDF
+	</sigFormula>
+
+	<!-- access to reference corpus (file: using cooccaccess with files, ram: load it into RAM) -->
+	<referenceAccess>
+		file
+	</referenceAccess>
+
+	<!-- frequency threshold for lexical morphemes -->
+	<minFreqMorphemes>
+		2
+	</minFreqMorphemes>
+
+	<!-- frequency threshold for (Dornseiff) categories of words in order for categories to be accepted -->
+	<minFreqCategories>
+		1
+	</minFreqCategories>
+
+	<!-- frequency threshold for phrases. Only relevant for English! -->
+	<minFreqPhrases>
+		3
+	</minFreqPhrases>
+
+	<!-- POS patterns to be extracted (extraction of phrases). -->
+	<!-- N = noun, A = adjective -->
+	<posPatterns>
+		<pattern>N N</pattern>
+		<pattern>A N</pattern>
+	</posPatterns>
+
+	<!-- stemming=yes means that lemmatization will be performed, no will prohibit it 
+	stemming = no will only work if the corresponding resources (resources_full.zip are available! -->
+	<stemming>yes</stemming>
+
+	<!-- fullText = yes is needed if significance values should be computed also for words that do NOT
+	surpass the frequency threshold (to be retrieved with getTypes()) -->
+	<fullText>
+		yes
+	</fullText>
+
+	<!-- indicates whether sig values of unknown words should be rescaled or left at -1 -->
+	<rescale>
+		yes
+	</rescale>
+
+	<!-- filename-prefix (with path if needed) of the qtag resource files -->
+	<!-- ATTENTION: the extension de.lex and de.mat (for german) and en.lex, en.mat (english) will be inserted automatically -->
+	<qtagdata>
+		resources/qtag/qtag-
+	</qtagdata>
+</config>
