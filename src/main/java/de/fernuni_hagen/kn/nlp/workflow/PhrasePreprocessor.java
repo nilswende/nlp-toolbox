@@ -14,14 +14,14 @@ import java.util.stream.Stream;
  */
 class PhrasePreprocessor extends Preprocessor {
 
-	// Decorator
+	// Decorator, extract interface?
 	@Override
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
 		final var pairs = new IndexerPhraseExtractor().extractPhrases(locale, sentences.collect(Collectors.toList()));
 		final var iterator = pairs.iterator();
-
+		// exclude the phrases from further processing
 		return super.processSentences(pairs.stream().map(Pair::getLeft), locale)
-				// re-add the extracted phrases
+				// include the phrases in the final result
 				.map(l -> Stream.of(l, iterator.next().getRight()).flatMap(List::stream).collect(Collectors.toList()));
 	}
 
