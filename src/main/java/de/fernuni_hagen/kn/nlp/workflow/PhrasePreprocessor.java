@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.workflow;
 
+import de.fernuni_hagen.kn.nlp.workflow.impl.IndexerPhraseExtractor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
