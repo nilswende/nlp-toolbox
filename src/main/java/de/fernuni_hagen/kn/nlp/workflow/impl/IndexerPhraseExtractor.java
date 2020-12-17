@@ -1,11 +1,11 @@
 package de.fernuni_hagen.kn.nlp.workflow.impl;
 
 import de.fernuni_hagen.kn.nlp.workflow.PhraseExtractor;
+import de.fernuni_hagen.kn.nlp.workflow.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import te.indexer.Indexer;
 import te.indexer.Word;
-import te.utils.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,20 +32,9 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 
 	private Indexer createIndexer(final Locale locale) {
 		final Indexer indexer = new Indexer();
-		indexer.setLanguage(mapLanguage(locale));
+		indexer.setLanguage(Utils.mapLanguage(locale));
 		indexer.getParameters().setStemming(false);
 		return indexer;
-	}
-
-	private int mapLanguage(final Locale locale) {
-		switch (locale.getLanguage()) {
-			case "de":
-				return Parameters.DE;
-			case "en":
-				return Parameters.EN;
-			default:
-				throw new IllegalArgumentException("Unsupported locale: " + locale);
-		}
 	}
 
 	private List<String> getPhrases(final Indexer indexer) {
