@@ -1,8 +1,10 @@
 package de.fernuni_hagen.kn.nlp.workflow.impl;
 
 import de.fernuni_hagen.kn.nlp.workflow.BaseFormReducer;
+import de.fernuni_hagen.kn.nlp.workflow.TaggedWord;
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
 
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 /**
@@ -12,11 +14,19 @@ import java.util.stream.Stream;
  */
 public class DEBaseFormReducer implements BaseFormReducer {
 
-	private final Zerleger2 reducer = new Zerleger2();
+	private final Zerleger2 reducer;
+
+	public DEBaseFormReducer() {
+		reducer = new Zerleger2();
+		final var path = Path.of("resources", "trees");
+		reducer.init(path.resolve("kompVVic.tree").toString(),
+				path.resolve("kompVHic.tree").toString(),
+				path.resolve("grfExt.tree").toString());
+	}
 
 	@Override
-	public Stream<String> reduce(Stream<String> sentence) {
-		return sentence.map(reducer::grundFormReduktion);
+	public Stream<TaggedWord> reduce(final Stream<TaggedWord> sentence) {
+		return sentence.map(w -> new TaggedWord(reducer.grundFormReduktion(w.getTerm()), w));
 	}
 
 }

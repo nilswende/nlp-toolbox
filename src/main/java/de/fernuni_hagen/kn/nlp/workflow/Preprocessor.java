@@ -5,10 +5,10 @@ import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.workflow.impl.ASVStopWordFilter;
+import de.fernuni_hagen.kn.nlp.workflow.impl.NounFilterImpl;
 import de.fernuni_hagen.kn.nlp.workflow.impl.ViterbiTagger;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -37,13 +37,15 @@ public class Preprocessor {
 
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
 		final var tagger = new ViterbiTagger(locale);
-		final var stopWordFilter = new ASVStopWordFilter(locale);
 		final var baseFormReducer = BaseFormReducer.from(locale);
+		final var nounFilter = new NounFilterImpl();
+		final var stopWordFilter = new ASVStopWordFilter(locale);
 		return sentences
 				.map(tagger::tag)
-				.map(s -> Arrays.stream(s.split(" ")))
 				.map(baseFormReducer::reduce)
+				.map(nounFilter::filter)
 				.map(stopWordFilter::filter)
+				.map(s -> s.map(TaggedWord::getTerm))
 				.map(s -> s.collect(Collectors.toList()));
 	}
 

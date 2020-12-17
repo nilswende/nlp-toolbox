@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.workflow.impl;
 
 import de.fernuni_hagen.kn.nlp.workflow.StopWordFilter;
+import de.fernuni_hagen.kn.nlp.workflow.TaggedWord;
 import de.fernuni_hagen.kn.nlp.workflow.Utils;
 import te.utils.ExternalData;
 
@@ -36,8 +37,8 @@ public class ASVStopWordFilter implements StopWordFilter {
 	}
 
 	@Override
-	public Stream<String> filter(final Stream<String> sentence) {
-		return sentence.filter(w -> !stopWords.contains(normalize(w)));
+	public Stream<TaggedWord> filter(final Stream<TaggedWord> sentence) {
+		return sentence.filter(w -> !stopWords.contains(normalize(w.getTerm())));
 	}
 
 	private String normalize(final String word) {

@@ -40,7 +40,9 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	private List<String> getPhrases(final Indexer indexer) {
 		final List<Word> phrases = cast(indexer.getPhrases());
 		return phrases.stream()
-				.map(p -> p.getPos().endsWith("A N") ? StringUtils.uncapitalize(p.getWordStr()) : p.getWordStr())
+				.map(p -> p.getPos().endsWith("A N") //TODO why?
+						? StringUtils.uncapitalize(p.getWordStr())
+						: p.getWordStr())
 				.collect(Collectors.toList());
 	}
 

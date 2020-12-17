@@ -3,17 +3,17 @@ package de.fernuni_hagen.kn.nlp.workflow;
 import java.util.stream.Stream;
 
 /**
- * Removes stop words from a sentence.
+ * Retains only nouns in sentences.
  *
  * @author Nils Wende
  */
-public interface StopWordFilter {
+public interface NounFilter {
 
 	/**
-	 * Removes stop words from a sentence.
+	 * Retains only nouns in sentences.
 	 *
 	 * @param sentence the words of a sentence
-	 * @return the sentence without stop words
+	 * @return the sentence containing only nouns
 	 */
 	Stream<TaggedWord> filter(Stream<TaggedWord> sentence);
 

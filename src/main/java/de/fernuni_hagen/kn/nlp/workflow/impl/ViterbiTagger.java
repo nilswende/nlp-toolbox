@@ -1,9 +1,14 @@
 package de.fernuni_hagen.kn.nlp.workflow.impl;
 
+import de.fernuni_hagen.kn.nlp.workflow.TaggedWord;
 import de.fernuni_hagen.kn.nlp.workflow.Tagger;
+import de.fernuni_hagen.kn.nlp.workflow.Tagset;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 /**
  * Uses POS tagging on sentences.
@@ -24,8 +29,15 @@ public class ViterbiTagger implements Tagger {
 	}
 
 	@Override
-	public String tag(final String sentence) {
-		return tagger.tagSentence(sentence);
+	public Stream<TaggedWord> tag(final String sentence) {
+		final var taggedSentence = tagger.tagSentence(sentence);
+		final var taggedWords = Arrays.stream(taggedSentence.split(StringUtils.SPACE));
+		return TaggedWord.from(taggedWords, getTagset());
+	}
+
+	@Override
+	public Tagset getTagset() {
+		return Tagset.STTS;
 	}
 
 }

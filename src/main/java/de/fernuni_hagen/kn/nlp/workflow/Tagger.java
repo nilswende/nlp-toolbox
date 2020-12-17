@@ -1,11 +1,12 @@
 package de.fernuni_hagen.kn.nlp.workflow;
 
+import java.util.stream.Stream;
+
 /**
  * Uses POS tagging on sentences.
  *
  * @author Nils Wende
  */
-@FunctionalInterface
 public interface Tagger {
 
 	/**
@@ -14,6 +15,13 @@ public interface Tagger {
 	 * @param sentence the sentence to be tagged
 	 * @return the tagged sentence
 	 */
-	String tag(String sentence);
+	Stream<TaggedWord> tag(String sentence);
+
+	/**
+	 * Returns the tagset used by this tagger.
+	 *
+	 * @return Tagset
+	 */
+	Tagset getTagset();
 
 }

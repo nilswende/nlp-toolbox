@@ -11,7 +11,6 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-@FunctionalInterface
 public interface BaseFormReducer {
 
 	/**
@@ -20,7 +19,7 @@ public interface BaseFormReducer {
 	 * @param sentence the terms of a sentence
 	 * @return the reduced terms
 	 */
-	Stream<String> reduce(Stream<String> sentence);
+	Stream<TaggedWord> reduce(Stream<TaggedWord> sentence);
 
 	/**
 	 * Factory: Creates a BaseFormReducer based on the given locale.
