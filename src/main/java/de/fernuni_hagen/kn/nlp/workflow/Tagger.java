@@ -17,11 +17,4 @@ public interface Tagger {
 	 */
 	Stream<TaggedWord> tag(String sentence);
 
-	/**
-	 * Returns the tagset used by this tagger.
-	 *
-	 * @return Tagset
-	 */
-	Tagset getTagset();
-
 }
