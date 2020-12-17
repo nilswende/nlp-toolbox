@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
+import de.fernuni_hagen.kn.nlp.workflow.impl.ViterbiTagger;
 
 import java.io.File;
 import java.util.Arrays;
@@ -34,7 +35,10 @@ public class Preprocessor {
 	}
 
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
-		return sentences.map(s -> Arrays.asList(s.split(" ")));
+		final var tagger = new ViterbiTagger(locale);
+		return sentences
+				.map(tagger::tag)
+				.map(s -> Arrays.asList(s.split(" ")));
 	}
 
 	/**
