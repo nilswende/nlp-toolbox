@@ -38,10 +38,13 @@ public class Preprocessor {
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
 		final var tagger = new ViterbiTagger(locale);
 		final var stopWordFilter = new ASVStopWordFilter(locale);
+		final var baseFormReducer = BaseFormReducer.from(locale);
 		return sentences
 				.map(tagger::tag)
+				.map(s -> Arrays.stream(s.split(" ")))
+				.map(baseFormReducer::reduce)
 				.map(stopWordFilter::filter)
-				.map(s -> Arrays.asList(s.split(" ")));
+				.map(s -> s.collect(Collectors.toList()));
 	}
 
 	/**

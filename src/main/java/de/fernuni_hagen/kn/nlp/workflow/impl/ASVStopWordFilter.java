@@ -2,13 +2,12 @@ package de.fernuni_hagen.kn.nlp.workflow.impl;
 
 import de.fernuni_hagen.kn.nlp.workflow.StopWordFilter;
 import de.fernuni_hagen.kn.nlp.workflow.Utils;
-import org.apache.commons.lang3.StringUtils;
 import te.utils.ExternalData;
 
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.fernuni_hagen.kn.nlp.workflow.Utils.cast;
 
@@ -37,10 +36,8 @@ public class ASVStopWordFilter implements StopWordFilter {
 	}
 
 	@Override
-	public String filter(final String sentence) {
-		return Arrays.stream(sentence.split(StringUtils.SPACE))
-				.filter(w -> !stopWords.contains(normalize(w)))
-				.collect(Collectors.joining(StringUtils.SPACE));
+	public Stream<String> filter(final Stream<String> sentence) {
+		return sentence.filter(w -> !stopWords.contains(normalize(w)));
 	}
 
 	private String normalize(final String word) {
