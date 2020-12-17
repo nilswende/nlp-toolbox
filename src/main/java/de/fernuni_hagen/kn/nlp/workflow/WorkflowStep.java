@@ -3,19 +3,18 @@ package de.fernuni_hagen.kn.nlp.workflow;
 import java.util.stream.Stream;
 
 /**
- * Retains only nouns in sentences.
+ * A variable step in the preprocessing workflow.
  *
  * @author Nils Wende
  */
-public interface NounFilter extends WorkflowStep {
+interface WorkflowStep {
 
 	/**
-	 * Retains only nouns in sentences.
+	 * Applies the step to the given sentence.
 	 *
 	 * @param sentence the words of a sentence
-	 * @return the sentence containing only nouns
+	 * @return the sentence with this workflow step applied
 	 */
-	@Override
 	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
 
 }

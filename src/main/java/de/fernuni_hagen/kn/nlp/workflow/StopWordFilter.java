@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public interface StopWordFilter {
+public interface StopWordFilter extends WorkflowStep {
 
 	/**
 	 * Removes stop words from a sentence.
@@ -15,6 +15,7 @@ public interface StopWordFilter {
 	 * @param sentence the words of a sentence
 	 * @return the sentence without stop words
 	 */
-	Stream<TaggedWord> filter(Stream<TaggedWord> sentence);
+	@Override
+	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
 
 }

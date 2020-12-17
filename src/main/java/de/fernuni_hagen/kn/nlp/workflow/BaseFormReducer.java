@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public interface BaseFormReducer {
+public interface BaseFormReducer extends WorkflowStep {
 
 	/**
 	 * Reduces a term to its base form.
@@ -19,7 +19,8 @@ public interface BaseFormReducer {
 	 * @param sentence the terms of a sentence
 	 * @return the reduced terms
 	 */
-	Stream<TaggedWord> reduce(Stream<TaggedWord> sentence);
+	@Override
+	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
 
 	/**
 	 * Factory: Creates a BaseFormReducer based on the given locale.

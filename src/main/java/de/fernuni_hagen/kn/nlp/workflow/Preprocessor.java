@@ -7,10 +7,14 @@ import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.workflow.impl.ASVStopWordFilter;
 import de.fernuni_hagen.kn.nlp.workflow.impl.NounFilterImpl;
 import de.fernuni_hagen.kn.nlp.workflow.impl.ViterbiTagger;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,6 +24,12 @@ import java.util.stream.Stream;
  * @author Nils Wende
  */
 public class Preprocessor {
+
+	private final List<Function<Locale, WorkflowStep>> workflowSteps;
+
+	protected Preprocessor(final List<Function<Locale, WorkflowStep>> workflowSteps) {
+		this.workflowSteps = workflowSteps;
+	}
 
 	/**
 	 * Executes the linguistic preprocessing of a document.
@@ -36,17 +46,32 @@ public class Preprocessor {
 	}
 
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
-		final var tagger = new ViterbiTagger(locale);
-		final var baseFormReducer = BaseFormReducer.from(locale);
-		final var nounFilter = new NounFilterImpl();
-		final var stopWordFilter = new ASVStopWordFilter(locale);
-		return sentences
-				.map(tagger::tag)
-				.map(baseFormReducer::reduce)
-				.map(nounFilter::filter)
-				.map(stopWordFilter::filter)
+		if (workflowSteps.isEmpty()) {
+			return simpleProcessing(sentences);
+		}
+		return applyWorkflowSteps(createTaggedStream(sentences, locale), locale)
 				.map(s -> s.map(TaggedWord::getTerm))
 				.map(s -> s.collect(Collectors.toList()));
+	}
+
+	private Stream<List<String>> simpleProcessing(final Stream<String> sentences) {
+		return sentences
+				.map(s -> s.split(StringUtils.SPACE))
+				.map(Arrays::stream)
+				.map(s -> s.collect(Collectors.toList()));
+	}
+
+	private Stream<Stream<TaggedWord>> createTaggedStream(final Stream<String> sentences, final Locale locale) {
+		final var tagger = new ViterbiTagger(locale);
+		return sentences.map(tagger::tag);
+	}
+
+	private Stream<Stream<TaggedWord>> applyWorkflowSteps(Stream<Stream<TaggedWord>> stream, final Locale locale) {
+		final var steps = workflowSteps.stream().map(step -> step.apply(locale)).collect(Collectors.toList());
+		for (final WorkflowStep step : steps) {
+			stream = stream.map(step::apply);
+		}
+		return stream;
 	}
 
 	/**
@@ -56,7 +81,17 @@ public class Preprocessor {
 	 * @return a new preprocessor
 	 */
 	public static Preprocessor from(final Config config) {
-		return config.extractPhrases() ? new PhrasePreprocessor() : new Preprocessor();
+		final var steps = new ArrayList<Function<Locale, WorkflowStep>>();
+		if (config.useBaseFormReduction()) {
+			steps.add(BaseFormReducer::from);
+		}
+		if (config.filterNouns()) {
+			steps.add(l -> new NounFilterImpl());
+		}
+		if (config.removeStopWords()) {
+			steps.add(ASVStopWordFilter::new);
+		}
+		return config.extractPhrases() ? new PhrasePreprocessor(steps) : new Preprocessor(steps);
 	}
 
 }

@@ -32,17 +32,17 @@ public class ASVStopWordFilter implements StopWordFilter {
 		final ExternalData ed = ExternalData.getInstance(Utils.mapLanguage(locale));
 		final Set<String> set = cast(ed.getStopWordMap());
 		stopWords = set.stream()
-				.map(s -> s.toLowerCase(locale))
+				.map(this::normalize)
 				.collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Override
-	public Stream<TaggedWord> filter(final Stream<TaggedWord> sentence) {
+	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
 		return sentence.filter(w -> !stopWords.contains(normalize(w.getTerm())));
 	}
 
 	private String normalize(final String word) {
-		return word.substring(0, word.lastIndexOf('|')).toLowerCase(locale);
+		return word.toLowerCase(locale);
 	}
 
 }

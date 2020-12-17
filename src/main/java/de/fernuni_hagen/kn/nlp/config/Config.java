@@ -34,6 +34,9 @@ public class Config {
 	private int sentenceFileSizeLimitBytes;
 	private boolean keepTempFiles;
 	private boolean extractPhrases;
+	private boolean useBaseFormReduction;
+	private boolean filterNouns;
+	private boolean removeStopWords;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -57,6 +60,18 @@ public class Config {
 
 	public boolean extractPhrases() {
 		return extractPhrases;
+	}
+
+	public boolean useBaseFormReduction() {
+		return useBaseFormReduction;
+	}
+
+	public boolean filterNouns() {
+		return filterNouns;
+	}
+
+	public boolean removeStopWords() {
+		return removeStopWords;
 	}
 
 	public static Path getDefaultConfigFilePath() {

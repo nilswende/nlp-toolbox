@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class NounFilterImpl implements NounFilter {
 
 	@Override
-	public Stream<TaggedWord> filter(final Stream<TaggedWord> sentence) {
+	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
 		return sentence.filter(w -> isNoun(w.getTerm(), w.getTagset()));
 	}
 

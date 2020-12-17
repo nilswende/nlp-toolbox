@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,6 +15,10 @@ import java.util.stream.Stream;
  * @author Nils Wende
  */
 class PhrasePreprocessor extends Preprocessor {
+
+	PhrasePreprocessor(final List<Function<Locale, WorkflowStep>> workflowSteps) {
+		super(workflowSteps);
+	}
 
 	//TODO Decorator, extract interface?
 	@Override

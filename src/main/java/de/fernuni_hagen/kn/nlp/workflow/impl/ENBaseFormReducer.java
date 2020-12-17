@@ -16,7 +16,7 @@ public class ENBaseFormReducer implements BaseFormReducer {
 	private final Porter reducer = new Porter();
 
 	@Override
-	public Stream<TaggedWord> reduce(final Stream<TaggedWord> sentence) {
+	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
 		return sentence.map(w -> new TaggedWord(reducer.stem(w.getTerm()), w));
 	}
 
