@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  */
 class PhrasePreprocessor extends Preprocessor {
 
-	// Decorator, extract interface?
+	//TODO Decorator, extract interface?
 	@Override
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
 		final var pairs = new IndexerPhraseExtractor().extractPhrases(locale, sentences.collect(Collectors.toList()));

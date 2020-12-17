@@ -5,6 +5,8 @@ import java.util.Locale;
 
 /**
  * Identifies the tagset of a tagger.
+ *
+ * @author Nils Wende
  */
 public enum Tagset {
 	STTS("stts", "|", "|N"),
