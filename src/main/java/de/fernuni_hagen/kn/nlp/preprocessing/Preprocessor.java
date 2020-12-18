@@ -5,6 +5,7 @@ import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ViterbiTagger;
 import org.apache.commons.lang3.StringUtils;
@@ -90,6 +91,9 @@ public class Preprocessor {
 		}
 		if (config.removeStopWords()) {
 			steps.add(ASVStopWordFilter::new);
+		}
+		if (config.removeAbbreviations()) {
+			steps.add(FileAbbreviationFilter::new);
 		}
 		return config.extractPhrases() ? new PhrasePreprocessor(steps) : new Preprocessor(steps);
 	}

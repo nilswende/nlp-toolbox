@@ -37,6 +37,7 @@ public class Config {
 	private boolean useBaseFormReduction;
 	private boolean filterNouns;
 	private boolean removeStopWords;
+	private boolean removeAbbreviations;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -72,6 +73,10 @@ public class Config {
 
 	public boolean removeStopWords() {
 		return removeStopWords;
+	}
+
+	public boolean removeAbbreviations() {
+		return removeAbbreviations;
 	}
 
 	public static Path getDefaultConfigFilePath() {
