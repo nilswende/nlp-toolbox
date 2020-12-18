@@ -54,13 +54,13 @@ public class NLPToolbox {
 	}
 
 	public static void main(final String[] args) {
+		ExternalResourcesExtractor.extractExternalResources();
 		final var configFile = parseCLI(args);
 		new NLPToolbox(configFile).run();
 		//TODO Workflow/Pipeline mit Builder und fromConfig
 	}
 
 	private static String parseCLI(final String[] args) {
-		ExternalResourcesExtractor.extractExternalResources();
 		final var options = new Options();
 		final String configFile = "configFile";
 		options.addOption(configFile, true, "path to the config file, default: " + Config.getDefaultConfigFilePath());
