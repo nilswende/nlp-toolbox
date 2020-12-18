@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import java.nio.file.Path;
-import java.util.Locale;
 
 /**
  * Identifies the tagset of a tagger.
@@ -25,23 +24,6 @@ public enum Tagset {
 		lexicon = path.resolve(".lexicon").toString();
 		taglist = path.resolve(".taglist").toString();
 		transitions = path.resolve(".transitions").toString();
-	}
-
-	/**
-	 * Maps a locale to its Tagset.
-	 *
-	 * @param locale contains the language
-	 * @return the Tagset
-	 */
-	public static Tagset from(final Locale locale) {
-		switch (locale.getLanguage()) {
-			case "de":
-				return STTS;
-			case "en":
-				return BNC;
-			default:
-				throw new IllegalArgumentException("Unsupported locale: " + locale);
-		}
 	}
 
 	public String getLexicon() {

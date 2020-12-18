@@ -62,7 +62,7 @@ public class ENFactory implements PreprocessingFactory {
 
 	@Override
 	public Tagger createTagger() {
-		return new ViterbiTagger(Tagset.from(LOCALE));
+		return new ViterbiTagger(Tagset.BNC);
 	}
 
 }
