@@ -1,9 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import te.utils.Parameters;
-
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -39,23 +36,6 @@ public final class Utils {
 	@SuppressWarnings("unchecked")
 	public static <E> Set<E> cast(@SuppressWarnings("rawtypes") final Set arg) {
 		return (Set<E>) arg;
-	}
-
-	/**
-	 * Maps a locale to its ASV language constant.
-	 *
-	 * @param locale contains the language
-	 * @return the ASV language constant
-	 */
-	public static int mapLanguage(final Locale locale) {
-		switch (locale.getLanguage()) {
-			case "de":
-				return Parameters.DE;
-			case "en":
-				return Parameters.EN;
-			default:
-				throw new IllegalArgumentException("Unsupported locale: " + locale);
-		}
 	}
 
 }

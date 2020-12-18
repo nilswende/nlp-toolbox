@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -26,25 +25,16 @@ public class FileAbbreviationFilter implements AbbreviationFilter {
 	/**
 	 * Constructor.
 	 *
-	 * @param locale the sentence's language
+	 * @param fileName the file containing the filtered abbreviations
 	 */
-	public FileAbbreviationFilter(final Locale locale) {
-		final var inputStream = Objects.requireNonNull(FileAbbreviationFilter.class.getClassLoader().getResourceAsStream(mapLocale(locale)));
+	public FileAbbreviationFilter(final String fileName) {
+		final var inputStream = Objects.requireNonNull(FileAbbreviationFilter.class.getClassLoader().getResourceAsStream(fileName));
 		try (final var lineIterator = IOUtils.lineIterator(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 			while (lineIterator.hasNext()) {
 				abbreviations.add(lineIterator.next());
 			}
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
-		}
-	}
-
-	private String mapLocale(final Locale locale) {
-		switch (locale.getLanguage()) {
-			case "de":
-				return "abbreviations/abbrev.txt";
-			default:
-				throw new IllegalArgumentException("Unsupported locale: " + locale);
 		}
 	}
 

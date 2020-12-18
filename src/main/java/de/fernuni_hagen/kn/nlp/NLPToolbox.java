@@ -33,12 +33,13 @@ public class NLPToolbox {
 		final var db = Neo4J.init(config);
 		db.deleteAll();
 		final var documentConverter = new TikaDocumentConverter(config);
+		final var preprocessor = Preprocessor.from(config);
 		try (final var paths = Files.walk(config.getInputDir(), 1)) {
 			paths.map(Path::toFile)
 					.filter(File::isFile)
 					.peek(db::addDocument)
 					.map(documentConverter::convert)
-					.flatMap(f -> Preprocessor.from(config).preprocess(f))
+					.flatMap(preprocessor::preprocess)
 					.forEach(db::addSentence);
 			db.updateDiceAndCosts();
 			db.getAllNodes().forEach(System.out::println);

@@ -5,9 +5,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import te.utils.Parameters;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +22,7 @@ class IndexerPhraseExtractorTest {
 	@ParameterizedTest
 	@MethodSource
 	void extractPhrases(final List<String> sentences, final List<String> phrases) {
-		final var pairs = new IndexerPhraseExtractor().extractPhrases(Locale.ENGLISH, sentences);
+		final var pairs = new IndexerPhraseExtractor(Parameters.EN).extractPhrases(sentences);
 		pairs.forEach(pair -> assertTrue(pair.getRight().stream().noneMatch(p -> pair.getLeft().contains(p))));
 		final List<String> right = pairs.stream().map(Pair::getRight).flatMap(List::stream).collect(Collectors.toList());
 		assertTrue(phrases.containsAll(right), right.toString());

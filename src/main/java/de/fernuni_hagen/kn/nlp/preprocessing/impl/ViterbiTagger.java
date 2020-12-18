@@ -6,7 +6,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
@@ -19,8 +18,8 @@ public class ViterbiTagger implements Tagger {
 	private final Tagset tagset;
 	private final de.uni_leipzig.asv.toolbox.viterbitagger.Tagger tagger;
 
-	public ViterbiTagger(final Locale locale) {
-		tagset = Tagset.from(locale);
+	public ViterbiTagger(final Tagset tagset) {
+		this.tagset = tagset;
 		tagger = new de.uni_leipzig.asv.toolbox.viterbitagger.Tagger(
 				tagset.getTaglist(),
 				tagset.getLexicon(),
