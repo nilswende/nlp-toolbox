@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author Nils Wende
  */
-public class FileHelper {
+public final class FileHelper {
 
 	private static final List<File> tempFiles = Collections.synchronizedList(new ArrayList<>());
 

@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
+import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
@@ -58,6 +59,7 @@ public class NLPToolbox {
 	}
 
 	private static String parseCLI(final String[] args) {
+		ExternalResourcesExtractor.extractExternalResources();
 		final var options = new Options();
 		final String configFile = "configFile";
 		options.addOption(configFile, true, "path to the config file, default: " + Config.getDefaultConfigFilePath());
