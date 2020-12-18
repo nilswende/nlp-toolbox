@@ -1,7 +1,7 @@
-package de.fernuni_hagen.kn.nlp.workflow;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import de.fernuni_hagen.kn.nlp.workflow.impl.DEBaseFormReducer;
-import de.fernuni_hagen.kn.nlp.workflow.impl.ENBaseFormReducer;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.DEBaseFormReducer;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.ENBaseFormReducer;
 
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public interface BaseFormReducer extends WorkflowStep {
+public interface BaseFormReducer extends PreprocessingStep {
 
 	/**
 	 * Reduces a term to its base form.

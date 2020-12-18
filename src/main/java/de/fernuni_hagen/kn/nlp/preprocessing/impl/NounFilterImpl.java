@@ -1,8 +1,8 @@
-package de.fernuni_hagen.kn.nlp.workflow.impl;
+package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.workflow.NounFilter;
-import de.fernuni_hagen.kn.nlp.workflow.TaggedWord;
-import de.fernuni_hagen.kn.nlp.workflow.Tagset;
+import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
 
 import java.util.stream.Stream;
 

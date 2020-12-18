@@ -6,7 +6,7 @@ import JLanI.kernel.Request;
 import JLanI.kernel.RequestException;
 import JLanI.kernel.Response;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.input.LanguageExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 

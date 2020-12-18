@@ -1,6 +1,6 @@
-package de.fernuni_hagen.kn.nlp.workflow;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import de.fernuni_hagen.kn.nlp.workflow.impl.IndexerPhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

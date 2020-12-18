@@ -1,7 +1,7 @@
-package de.fernuni_hagen.kn.nlp.workflow.impl;
+package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.workflow.BaseFormReducer;
-import de.fernuni_hagen.kn.nlp.workflow.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
 import te.utils.Porter;
 
 import java.util.stream.Stream;

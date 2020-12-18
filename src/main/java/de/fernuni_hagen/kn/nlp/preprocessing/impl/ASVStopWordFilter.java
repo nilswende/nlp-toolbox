@@ -1,8 +1,8 @@
-package de.fernuni_hagen.kn.nlp.workflow.impl;
+package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.workflow.StopWordFilter;
-import de.fernuni_hagen.kn.nlp.workflow.TaggedWord;
-import de.fernuni_hagen.kn.nlp.workflow.Utils;
+import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.Utils;
 import te.utils.ExternalData;
 
 import java.util.Locale;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.fernuni_hagen.kn.nlp.workflow.Utils.cast;
+import static de.fernuni_hagen.kn.nlp.preprocessing.Utils.cast;
 
 /**
  * Removes stop words from a sentence using the ASV library.

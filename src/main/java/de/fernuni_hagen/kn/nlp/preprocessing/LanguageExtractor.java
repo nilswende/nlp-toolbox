@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.input;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import java.io.File;
 import java.util.Locale;
@@ -8,7 +8,6 @@ import java.util.Locale;
  *
  * @author Nils Wende
  */
-@FunctionalInterface
 public interface LanguageExtractor {
 
 	/**

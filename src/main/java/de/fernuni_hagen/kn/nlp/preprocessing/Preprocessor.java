@@ -1,12 +1,12 @@
-package de.fernuni_hagen.kn.nlp.workflow;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
-import de.fernuni_hagen.kn.nlp.workflow.impl.ASVStopWordFilter;
-import de.fernuni_hagen.kn.nlp.workflow.impl.NounFilterImpl;
-import de.fernuni_hagen.kn.nlp.workflow.impl.ViterbiTagger;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.NounFilterImpl;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.ViterbiTagger;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -25,9 +25,9 @@ import java.util.stream.Stream;
  */
 public class Preprocessor {
 
-	private final List<Function<Locale, WorkflowStep>> workflowSteps;
+	private final List<Function<Locale, PreprocessingStep>> workflowSteps;
 
-	protected Preprocessor(final List<Function<Locale, WorkflowStep>> workflowSteps) {
+	protected Preprocessor(final List<Function<Locale, PreprocessingStep>> workflowSteps) {
 		this.workflowSteps = workflowSteps;
 	}
 
@@ -68,7 +68,7 @@ public class Preprocessor {
 
 	private Stream<Stream<TaggedWord>> applyWorkflowSteps(Stream<Stream<TaggedWord>> stream, final Locale locale) {
 		final var steps = workflowSteps.stream().map(step -> step.apply(locale)).collect(Collectors.toList());
-		for (final WorkflowStep step : steps) {
+		for (final PreprocessingStep step : steps) {
 			stream = stream.map(step::apply);
 		}
 		return stream;
@@ -81,7 +81,7 @@ public class Preprocessor {
 	 * @return a new preprocessor
 	 */
 	public static Preprocessor from(final Config config) {
-		final var steps = new ArrayList<Function<Locale, WorkflowStep>>();
+		final var steps = new ArrayList<Function<Locale, PreprocessingStep>>();
 		if (config.useBaseFormReduction()) {
 			steps.add(BaseFormReducer::from);
 		}

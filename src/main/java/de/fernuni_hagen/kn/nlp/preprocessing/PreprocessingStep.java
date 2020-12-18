@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.workflow;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import java.util.stream.Stream;
 
@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-interface WorkflowStep {
+interface PreprocessingStep {
 
 	/**
 	 * Applies the step to the given sentence.

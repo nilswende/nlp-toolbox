@@ -1,7 +1,7 @@
-package de.fernuni_hagen.kn.nlp.workflow.impl;
+package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.workflow.PhraseExtractor;
-import de.fernuni_hagen.kn.nlp.workflow.Utils;
+import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import te.indexer.Indexer;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static de.fernuni_hagen.kn.nlp.workflow.Utils.cast;
+import static de.fernuni_hagen.kn.nlp.preprocessing.Utils.cast;
 
 /**
  * Extracts phrases from a text using the ASV Indexer class.

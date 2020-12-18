@@ -1,6 +1,6 @@
-package de.fernuni_hagen.kn.nlp.workflow;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import de.fernuni_hagen.kn.nlp.workflow.impl.IndexerPhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  */
 class PhrasePreprocessor extends Preprocessor {
 
-	PhrasePreprocessor(final List<Function<Locale, WorkflowStep>> workflowSteps) {
+	PhrasePreprocessor(final List<Function<Locale, PreprocessingStep>> workflowSteps) {
 		super(workflowSteps);
 	}
 

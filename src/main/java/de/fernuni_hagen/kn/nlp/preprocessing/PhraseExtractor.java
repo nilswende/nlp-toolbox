@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.workflow;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import org.apache.commons.lang3.tuple.Pair;
 
