@@ -19,7 +19,7 @@ public class TaggedWord {
 		this.tagset = taggedWord.getTagset();
 	}
 
-	public TaggedWord(final String term, final String tag, Tagset tagset) {
+	public TaggedWord(final String term, final String tag, final Tagset tagset) {
 		this.term = term;
 		this.tag = tag;
 		this.tagset = tagset;
@@ -46,6 +46,11 @@ public class TaggedWord {
 	public static TaggedWord from(final String taggedWord, final Tagset tagset) {
 		final var pos = taggedWord.lastIndexOf(tagset.getTagSeparator());
 		return new TaggedWord(taggedWord.substring(0, pos), taggedWord.substring(pos), tagset);
+	}
+
+	@Override
+	public String toString() {
+		return term + tagset.getTagSeparator() + tag;
 	}
 
 	public String getTerm() {
