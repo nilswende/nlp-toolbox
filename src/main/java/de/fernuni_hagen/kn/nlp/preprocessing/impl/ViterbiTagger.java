@@ -21,7 +21,7 @@ public class ViterbiTagger implements Tagger {
 	public ViterbiTagger(final Tagset tagset) {
 		this.tagset = tagset;
 		tagger = new de.uni_leipzig.asv.toolbox.viterbitagger.Tagger(
-				tagset.getTaglist(),
+				tagset.getTagList(),
 				tagset.getLexicon(),
 				tagset.getTransitions(),
 				false);

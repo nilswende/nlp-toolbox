@@ -57,7 +57,6 @@ public class NLPToolbox {
 		ExternalResourcesExtractor.extractExternalResources();
 		final var configFile = parseCLI(args);
 		new NLPToolbox(configFile).run();
-		//TODO Workflow/Pipeline mit Builder und fromConfig
 	}
 
 	private static String parseCLI(final String[] args) {

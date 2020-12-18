@@ -12,7 +12,7 @@ public enum Tagset {
 	BNC("bnc", "|", "|N");
 
 	private final String lexicon;
-	private final String taglist;
+	private final String tagList;
 	private final String transitions;
 	private final String tagSeparator;
 	private final String nounTag;
@@ -22,7 +22,7 @@ public enum Tagset {
 		this.nounTag = nounTag;
 		final var path = Path.of("resources", "taggermodels", dir);
 		lexicon = path.resolve(".lexicon").toString();
-		taglist = path.resolve(".taglist").toString();
+		tagList = path.resolve(".taglist").toString();
 		transitions = path.resolve(".transitions").toString();
 	}
 
@@ -30,8 +30,8 @@ public enum Tagset {
 		return lexicon;
 	}
 
-	public String getTaglist() {
-		return taglist;
+	public String getTagList() {
+		return tagList;
 	}
 
 	public String getTransitions() {
