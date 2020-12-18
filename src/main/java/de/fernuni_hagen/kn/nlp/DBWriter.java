@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.List;
 
 /**
- * The database.
+ * Writes to the database.
  *
  * @author Nils Wende
  */
-public interface DB {
+public interface DBWriter {
 
 	/**
 	 * Adds a document to the DB.

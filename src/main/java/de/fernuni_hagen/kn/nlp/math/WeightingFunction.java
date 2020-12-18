@@ -17,6 +17,6 @@ public interface WeightingFunction {
 	 * @param k   total number of sentences
 	 * @return the significance coefficient of kij
 	 */
-	double calculate(int ki, int kj, int kij, int k);
+	double calculate(long ki, long kj, long kij, long k);
 
 }

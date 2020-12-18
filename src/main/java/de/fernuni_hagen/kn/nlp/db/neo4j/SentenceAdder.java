@@ -75,7 +75,11 @@ class SentenceAdder {
 
 	private void addSentenceNode(final List<Node> termNodes, final long currentDocId, final Transaction tx) {
 		final var s = tx.createNode(Labels.SENTENCE);
-		termNodes.forEach(term -> s.createRelationshipTo(term, RelationshipTypes.CONTAINS));
+		for (final Node term : termNodes) {
+			final var r = s.createRelationshipTo(term, RelationshipTypes.CONTAINS);
+			final var count = Utils.toLong(r.getProperty("count", 0)) + 1;
+			r.setProperty("count", count);
+		}
 		final var doc = tx.findNode(Labels.DOCUMENT, "id", currentDocId);
 		doc.createRelationshipTo(s, RelationshipTypes.CONTAINS);
 	}

@@ -21,4 +21,14 @@ final class Utils {
 		return ((Number) o).longValue();
 	}
 
+	/**
+	 * Converts an Object to double.
+	 *
+	 * @param o Object
+	 * @return double
+	 */
+	public static double toDouble(final Object o) {
+		return ((Number) o).doubleValue();
+	}
+
 }
