@@ -7,11 +7,11 @@ import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
 import java.util.stream.Stream;
 
 /**
- * Retains only nouns in sentences.
+ * Retains only nouns in tagged sentences.
  *
  * @author Nils Wende
  */
-public class NounFilterImpl implements NounFilter {
+public class TaggedNounFilter implements NounFilter {
 
 	@Override
 	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {

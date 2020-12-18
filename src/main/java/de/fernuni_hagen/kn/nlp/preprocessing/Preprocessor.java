@@ -5,7 +5,7 @@ import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.impl.NounFilterImpl;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ViterbiTagger;
 import org.apache.commons.lang3.StringUtils;
 
@@ -86,7 +86,7 @@ public class Preprocessor {
 			steps.add(BaseFormReducer::from);
 		}
 		if (config.filterNouns()) {
-			steps.add(l -> new NounFilterImpl());
+			steps.add(l -> new TaggedNounFilter());
 		}
 		if (config.removeStopWords()) {
 			steps.add(ASVStopWordFilter::new);
