@@ -8,7 +8,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
-import te.utils.Parameters;
 
 import java.io.File;
 
@@ -37,9 +36,9 @@ public interface PreprocessingFactory {
 		final var locale = new JLanILanguageExtractor().extract(file);
 		switch (locale.getLanguage()) {
 			case "de":
-				return new DEFactory(Parameters.DE);
+				return new DEFactory();
 			case "en":
-				return new ENFactory(Parameters.EN);
+				return new ENFactory();
 			default:
 				throw new IllegalArgumentException("Unsupported locale: " + locale);
 		}

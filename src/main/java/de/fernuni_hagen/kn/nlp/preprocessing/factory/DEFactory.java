@@ -16,6 +16,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ViterbiTagger;
+import te.utils.Parameters;
 
 import java.util.Locale;
 
@@ -27,12 +28,7 @@ import java.util.Locale;
 public class DEFactory implements PreprocessingFactory {
 
 	private static final Locale LOCALE = Locale.GERMAN;
-
-	private final int asvLanguage;
-
-	public DEFactory(final int asvLanguage) {
-		this.asvLanguage = asvLanguage;
-	}
+	private static final int ASV_LANGUAGE = Parameters.DE;
 
 	@Override
 	public AbbreviationFilter createAbbreviationFilter() {
@@ -51,7 +47,7 @@ public class DEFactory implements PreprocessingFactory {
 
 	@Override
 	public PhraseExtractor createPhraseExtractor() {
-		return new IndexerPhraseExtractor(asvLanguage);
+		return new IndexerPhraseExtractor(ASV_LANGUAGE);
 	}
 
 	@Override
@@ -61,7 +57,7 @@ public class DEFactory implements PreprocessingFactory {
 
 	@Override
 	public StopWordFilter createStopWordFilter() {
-		return new ASVStopWordFilter(LOCALE, asvLanguage);
+		return new ASVStopWordFilter(LOCALE, ASV_LANGUAGE);
 	}
 
 	@Override
