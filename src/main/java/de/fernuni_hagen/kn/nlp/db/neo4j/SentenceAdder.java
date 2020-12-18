@@ -24,7 +24,7 @@ class SentenceAdder {
 	}
 
 	/**
-	 * Delegate for {@link Neo4J#addSentence(List)}.
+	 * Delegate for {@link Neo4JWriter#addSentence(List)}.
 	 *
 	 * @param terms        terms of a sentence
 	 * @param currentDocId current document ID

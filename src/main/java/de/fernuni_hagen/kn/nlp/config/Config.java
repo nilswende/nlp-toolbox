@@ -7,7 +7,6 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -23,7 +22,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class Config {
 
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-	private static final String EMPTY_JSON = "{}";
 	private static final String DEFAULT_BASE_DIR = "data";
 	private static final String DEFAULT_CONFIG_DIR = "config";
 	private static final String DEFAULT_CONFIG_FILENAME = "config.json";
@@ -91,7 +89,7 @@ public class Config {
 	 */
 	public static Config fromJson(final String configFileName) {
 		final var configFile = (configFileName == null ? getDefaultConfigFilePath() : Path.of(configFileName)).toFile();
-		return configFile.exists() ? fromJson(configFile) : fromJson(new StringReader(EMPTY_JSON));
+		return configFile.exists() ? fromJson(configFile) : new Config();
 	}
 
 	private static Config fromJson(final File configFile) {

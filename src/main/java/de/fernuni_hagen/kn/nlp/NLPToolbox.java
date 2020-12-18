@@ -3,6 +3,8 @@ package de.fernuni_hagen.kn.nlp;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
+import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JReader;
+import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JWriter;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
@@ -30,18 +32,19 @@ public class NLPToolbox {
 
 	public NLPToolbox(final String configFile) {
 		config = Config.fromJson(configFile);
+		Neo4J.init(config);
 	}
 
 	private void run() {
-		final var db = Neo4J.init(config);
-		writeAllInputToFreshDB(db);
-		final var pageRanks = new PageRank().calculate(db, WeightingFunctions.DICE);
+		writeAllInputToFreshDB();
+		final var pageRanks = new PageRank().calculate(new Neo4JReader(), WeightingFunctions.DICE);
 		pageRanks.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue())
 				.forEach(System.out::println);
 	}
 
-	private void writeAllInputToFreshDB(Neo4J db) {
+	private void writeAllInputToFreshDB() {
+		final var db = new Neo4JWriter();
 		db.deleteAll();
 		final var documentConverter = new TikaDocumentConverter(config);
 		final var preprocessor = Preprocessor.from(config);
