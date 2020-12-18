@@ -14,11 +14,10 @@ import org.neo4j.graphdb.Transaction;
  *
  * @author Nils Wende
  */
-// if it's used, should be a singleton
 public class Neo4J {
 
 	private static final String DEFAULT_DATABASE_NAME = "neo4j";
-	private static Neo4J INSTANCE;
+	private static volatile Neo4J INSTANCE;
 	private final GraphDatabaseService graphDb;
 
 	public Neo4J(final Config config) {
@@ -59,15 +58,30 @@ public class Neo4J {
 		return graphDb;
 	}
 
+	/**
+	 * Return the singleton instance.
+	 */
+	// double-checked locking
 	public static Neo4J instance() {
-		return INSTANCE;
+		var localRef = INSTANCE;
+		if (localRef == null) {
+			synchronized (Neo4J.class) {
+				localRef = INSTANCE;
+			}
+		}
+		return localRef;
 	}
 
-	public static Neo4J init(final Config config) {
-		if (INSTANCE != null) {
+	/**
+	 * Initialize the singleton instance with the given config.
+	 *
+	 * @param config Config
+	 */
+	public static synchronized void init(final Config config) {
+		if (INSTANCE != null) { // else instance() may fail to return the newer instance
 			throw new AssertionError();
 		}
-		return INSTANCE = new Neo4J(config);
+		INSTANCE = new Neo4J(config);
 	}
 
 }
