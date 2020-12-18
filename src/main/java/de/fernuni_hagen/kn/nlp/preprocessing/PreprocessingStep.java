@@ -10,10 +10,10 @@ import java.util.stream.Stream;
 interface PreprocessingStep {
 
 	/**
-	 * Applies the step to the given sentence.
+	 * Applies the preprocessing step to the given sentence.
 	 *
 	 * @param sentence the words of a sentence
-	 * @return the sentence with this workflow step applied
+	 * @return the sentence with this preprocessing step applied
 	 */
 	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
 

@@ -8,11 +8,9 @@ import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ViterbiTagger;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -42,32 +40,24 @@ public class Preprocessor {
 		final var locale = new JLanILanguageExtractor().extract(document);
 		final var sentenceExtractor = new SimpleSentenceExtractor(locale, new RegexWhitespaceRemover());
 		// file level
-		final var sentences = sentenceExtractor.extract(document).collect(Collectors.toList());
-		return processSentences(sentences.stream(), locale);
+		final var sentences = sentenceExtractor.extract(document);
+		return processSentences(sentences, locale);
 	}
 
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final Locale locale) {
-		if (workflowSteps.isEmpty()) {
-			return simpleProcessing(sentences);
-		}
-		return applyWorkflowSteps(createTaggedStream(sentences, locale), locale)
+		final var taggedSentences = createTaggedSentences(sentences, locale);
+		return applyWorkflowSteps(taggedSentences, locale)
 				.map(s -> s.map(TaggedWord::getTerm))
 				.map(s -> s.collect(Collectors.toList()));
 	}
 
-	private Stream<List<String>> simpleProcessing(final Stream<String> sentences) {
-		return sentences
-				.map(s -> s.split(StringUtils.SPACE))
-				.map(Arrays::stream)
-				.map(s -> s.collect(Collectors.toList()));
-	}
-
-	private Stream<Stream<TaggedWord>> createTaggedStream(final Stream<String> sentences, final Locale locale) {
+	private Stream<Stream<TaggedWord>> createTaggedSentences(final Stream<String> sentences, final Locale locale) {
 		final var tagger = new ViterbiTagger(locale);
 		return sentences.map(tagger::tag);
 	}
 
-	private Stream<Stream<TaggedWord>> applyWorkflowSteps(Stream<Stream<TaggedWord>> stream, final Locale locale) {
+	private Stream<Stream<TaggedWord>> applyWorkflowSteps(final Stream<Stream<TaggedWord>> taggedSentences, final Locale locale) {
+		Stream<Stream<TaggedWord>> stream = taggedSentences;
 		final var steps = workflowSteps.stream().map(step -> step.apply(locale)).collect(Collectors.toList());
 		for (final PreprocessingStep step : steps) {
 			stream = stream.map(step::apply);
