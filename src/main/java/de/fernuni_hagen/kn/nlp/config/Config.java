@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.File;
@@ -117,6 +118,7 @@ public class Config {
 		private boolean pageRank;
 		private boolean hits;
 		private int limit;
+		private WeightingFunctions weightingFunction;
 
 		public boolean pageRank() {
 			return pageRank;
@@ -128,6 +130,10 @@ public class Config {
 
 		public int getLimit() {
 			return limit;
+		}
+
+		public WeightingFunctions getWeightingFunction() {
+			return weightingFunction;
 		}
 	}
 

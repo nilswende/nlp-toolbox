@@ -9,7 +9,6 @@ import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JWriter;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.cli.DefaultParser;
@@ -43,7 +42,7 @@ public class NLPToolbox {
 		//writeAllInputToFreshDB();
 		if (config.getAnalysis().pageRank()) {
 			final var start = logStart("PageRank");
-			final var pageRanks = new PageRank().calculate(new Neo4JReader(), WeightingFunctions.DICE);
+			final var pageRanks = new PageRank().calculate(new Neo4JReader(), config.getAnalysis().getWeightingFunction());
 			pageRanks.entrySet().stream()
 					.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 					.limit(config.getAnalysis().getLimit())
