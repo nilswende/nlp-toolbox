@@ -1,0 +1,10 @@
+{
+	"filterNouns": true,
+	"removeStopWords": true,
+	"useBaseFormReduction": true,
+	"analysis": {
+		"pageRank": true,
+		"hits": true,
+		"limit": 15
+	}
+}

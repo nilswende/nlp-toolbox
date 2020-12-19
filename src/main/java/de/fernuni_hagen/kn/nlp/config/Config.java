@@ -36,6 +36,7 @@ public class Config {
 	private boolean filterNouns;
 	private boolean removeStopWords;
 	private boolean removeAbbreviations;
+	private Analysis analysis;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -77,6 +78,10 @@ public class Config {
 		return removeAbbreviations;
 	}
 
+	public Analysis getAnalysis() {
+		return analysis;
+	}
+
 	public static Path getDefaultConfigFilePath() {
 		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
 	}
@@ -102,6 +107,28 @@ public class Config {
 
 	private static Config fromJson(final Reader reader) {
 		return new Gson().fromJson(reader, Config.class);
+	}
+
+	/**
+	 * Contains the analysis config.
+	 */
+	public static class Analysis {
+
+		private boolean pageRank;
+		private boolean hits;
+		private int limit;
+
+		public boolean pageRank() {
+			return pageRank;
+		}
+
+		public boolean hits() {
+			return hits;
+		}
+
+		public int getLimit() {
+			return limit;
+		}
 	}
 
 }
