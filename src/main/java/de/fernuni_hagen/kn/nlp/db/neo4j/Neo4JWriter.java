@@ -10,7 +10,6 @@ import org.neo4j.graphdb.Transaction;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
 
@@ -73,24 +72,6 @@ public class Neo4JWriter implements DBWriter {
 		var ab = toLong(row.get("r.count"));
 		ab = Math.min(ab, Math.min(a, b));
 		return Math.min(1, WeightingFunctions.DICE.calculate(a, b, ab, 0));
-	}
-
-	public List<String> getAllNodes() {
-		try (final Transaction tx = graphDb.beginTx()) {
-			final var nodes = tx.getAllNodes();
-			return nodes.stream()
-					.map(n -> n.getAllProperties().toString())
-					.collect(Collectors.toList());
-		}
-	}
-
-	public List<String> getAllRelationships() {
-		try (final Transaction tx = graphDb.beginTx()) {
-			final var relationships = tx.getAllRelationships();
-			return relationships.stream()
-					.map(r -> r.getStartNode() + " " + r.getAllProperties().toString() + " " + r.getEndNode())
-					.collect(Collectors.toList());
-		}
 	}
 
 }
