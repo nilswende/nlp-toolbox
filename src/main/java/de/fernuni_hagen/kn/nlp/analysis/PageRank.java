@@ -36,10 +36,10 @@ public class PageRank {
 	}
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {
-		final var pageranks = new TreeMap<String, Double>();
-		final var init = Double.valueOf(INV_WEIGHT);
-		terms.forEach(t -> pageranks.put(t, init));
-		return pageranks;
+		final var pageRanks = new TreeMap<String, Double>();
+		final Double init = INV_WEIGHT;
+		terms.forEach(t -> pageRanks.put(t, init));
+		return pageRanks;
 	}
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
