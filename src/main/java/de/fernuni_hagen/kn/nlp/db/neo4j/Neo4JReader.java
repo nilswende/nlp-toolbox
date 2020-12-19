@@ -5,6 +5,7 @@ import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -20,6 +21,24 @@ import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
 public class Neo4JReader implements DBReader {
 
 	private final GraphDatabaseService graphDb = Neo4J.instance().getGraphDb();
+
+	@Override
+	public Map<String, List<String>> getCooccurrences() {
+		try (final Transaction tx = graphDb.beginTx()) {
+			final var matchCooccs = "MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
+					"RETURN t1.name, t2.name";
+			try (final var result = tx.execute(matchCooccs)) {
+				final var map = new TreeMap<String, List<String>>();
+				while (result.hasNext()) {
+					final var row = result.next();
+					final var t1 = row.get("t1.name").toString();
+					final var t2 = row.get("t2.name").toString();
+					map.computeIfAbsent(t1, t -> new ArrayList<>()).add(t2);
+				}
+				return map;
+			}
+		}
+	}
 
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
