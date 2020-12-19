@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
@@ -37,7 +38,7 @@ public class Config {
 	private boolean filterNouns;
 	private boolean removeStopWords;
 	private boolean removeAbbreviations;
-	private Analysis analysis;
+	private AnalysisConfig analysis = new AnalysisConfig();
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
@@ -79,7 +80,7 @@ public class Config {
 		return removeAbbreviations;
 	}
 
-	public Analysis getAnalysis() {
+	public AnalysisConfig getAnalysisConfig() {
 		return analysis;
 	}
 
@@ -113,28 +114,71 @@ public class Config {
 	/**
 	 * Contains the analysis config.
 	 */
-	public static class Analysis {
+	public static class AnalysisConfig {
 
-		private boolean pageRank;
-		private boolean hits;
-		private int limit;
-		private WeightingFunctions weightingFunction;
+		private PageRankConfig pageRank = new PageRankConfig();
+		private HITSConfig hits = new HITSConfig();
 
-		public boolean pageRank() {
+		public PageRankConfig getPageRankConfig() {
 			return pageRank;
 		}
 
-		public boolean hits() {
+		public HITSConfig getHitsConfig() {
 			return hits;
 		}
 
-		public int getLimit() {
-			return limit;
+		/**
+		 * Contains the PageRank config.
+		 */
+		public static class PageRankConfig {
+			private boolean calculate;
+			private int iterations = 25;
+			private int resultLimit = Integer.MAX_VALUE;
+			private double weight = 0.85;
+			private WeightingFunctions weightingFunction = WeightingFunctions.DICE;
+
+			public boolean calculate() {
+				return calculate;
+			}
+
+			public int getIterations() {
+				return iterations;
+			}
+
+			public int getResultLimit() {
+				return resultLimit;
+			}
+
+			public double getWeight() {
+				return weight;
+			}
+
+			public WeightingFunction getWeightingFunction() {
+				return weightingFunction;
+			}
 		}
 
-		public WeightingFunctions getWeightingFunction() {
-			return weightingFunction;
+		/**
+		 * Contains the HITS config.
+		 */
+		public static class HITSConfig {
+			private boolean calculate;
+			private int iterations = 50;
+			private int resultLimit = Integer.MAX_VALUE;
+
+			public boolean calculate() {
+				return calculate;
+			}
+
+			public int getIterations() {
+				return iterations;
+			}
+
+			public int getResultLimit() {
+				return resultLimit;
+			}
 		}
+
 	}
 
 }

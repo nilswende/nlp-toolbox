@@ -1,10 +1,8 @@
 package de.fernuni_hagen.kn.nlp;
 
-import de.fernuni_hagen.kn.nlp.analysis.HITS;
-import de.fernuni_hagen.kn.nlp.analysis.PageRank;
+import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
-import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JReader;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JWriter;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
@@ -17,12 +15,10 @@ import org.apache.commons.cli.ParseException;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.Comparator;
-import java.util.Map;
+
+import static de.fernuni_hagen.kn.nlp.Logger.*;
 
 /**
  * Main class of NLPToolbox.
@@ -40,28 +36,7 @@ public class NLPToolbox {
 
 	private void run() {
 		//writeAllInputToFreshDB();
-		if (config.getAnalysis().pageRank()) {
-			final var start = logStart("PageRank");
-			final var pageRanks = new PageRank().calculate(new Neo4JReader(), config.getAnalysis().getWeightingFunction());
-			pageRanks.entrySet().stream()
-					.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-					.limit(config.getAnalysis().getLimit())
-					.forEach(System.out::println);
-			logDuration("PageRank", start);
-		}
-		if (config.getAnalysis().hits()) {
-			final var start = logStart("HITS");
-			final var hits = new HITS().calculate(new Neo4JReader());
-			hits.entrySet().stream()
-					.sorted(Comparator.comparingDouble(e -> -e.getValue().getAuthorityScore()))
-					.limit(config.getAnalysis().getLimit())
-					.forEach(e -> System.out.println("Authority score of " + e.getKey() + ": " + e.getValue().getAuthorityScore()));
-			hits.entrySet().stream()
-					.sorted(Comparator.comparingDouble(e -> -e.getValue().getHubScore()))
-					.limit(config.getAnalysis().getLimit())
-					.forEach(e -> System.out.println("Hub score of " + e.getKey() + ": " + e.getValue().getHubScore()));
-			logDuration("HITS", start);
-		}
+		new Analysis(config.getAnalysisConfig()).analyze();
 	}
 
 	private void writeAllInputToFreshDB() {
@@ -105,21 +80,6 @@ public class NLPToolbox {
 		} catch (final ParseException e) {
 			throw new UncheckedException(e);
 		}
-	}
-
-	private static long logStart(final String name) {
-		System.out.println("start " + name);
-		return System.nanoTime();
-	}
-
-	private static void logDuration(final String name, final long start) {
-		final var d = Duration.ofNanos(System.nanoTime() - start);
-		System.out.println(String.format("%s duration: %d s %d ms", name, d.toSecondsPart(), d.toMillisPart()));
-	}
-
-	private static void logCurrentThreadCpuTime() {
-		final var d = Duration.ofNanos(ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime());
-		System.out.println(String.format("main thread CPU time: %d m %d s %d ms", d.toMinutesPart(), d.toSecondsPart(), d.toMillisPart()));
 	}
 
 }

@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.PageRankConfig;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,22 +14,27 @@ import java.util.TreeMap;
  */
 public class PageRank {
 
-	private static final double WEIGHT = 0.85;
-	private static final double INV_WEIGHT = 1 - WEIGHT;
-	private static final int ITERATIONS = 25;
+	private final PageRankConfig config;
+	private final double weight;
+	private final double inv_weight;
+
+	public PageRank(final PageRankConfig config) {
+		this.config = config;
+		weight = this.config.getWeight();
+		inv_weight = 1 - weight;
+	}
 
 	/**
 	 * Calculates the PageRanks for all terms in the DB.
 	 *
-	 * @param db       DB
-	 * @param function WeightingFunction
+	 * @param db DB
 	 * @return PageRanks
 	 */
-	public Map<String, Double> calculate(final DBReader db, final WeightingFunction function) {
-		final var significances = db.getSignificances(function);
+	public Map<String, Double> calculate(final DBReader db) {
+		final var significances = db.getSignificances(config.getWeightingFunction());
 
 		final var pageRanks = initPageRanks(significances.keySet());
-		for (int i = 0; i < ITERATIONS; i++) {
+		for (int i = 0; i < config.getIterations(); i++) {
 			calculate(pageRanks, significances);
 		}
 		return normalize(pageRanks);
@@ -37,14 +42,14 @@ public class PageRank {
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {
 		final var pageRanks = new TreeMap<String, Double>();
-		final Double init = INV_WEIGHT;
+		final Double init = inv_weight;
 		terms.forEach(t -> pageRanks.put(t, init));
 		return pageRanks;
 	}
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
 		significances.forEach((t1, v) -> {
-			final double pr = INV_WEIGHT + WEIGHT * sumAdjacentPageRanks(pageRanks, v);
+			final double pr = inv_weight + weight * sumAdjacentPageRanks(pageRanks, v);
 			pageRanks.put(t1, pr);
 		});
 	}
