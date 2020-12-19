@@ -2,7 +2,9 @@ package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import org.neo4j.graphdb.Entity;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.ArrayList;
@@ -82,20 +84,26 @@ public class Neo4JReader implements DBReader {
 
 	public List<String> getAllNodes() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var nodes = tx.getAllNodes();
-			return nodes.stream()
-					.map(n -> n.getAllProperties().toString())
+			return tx.getAllNodes().stream()
+					.map(this::formatEntity)
 					.collect(Collectors.toList());
 		}
 	}
 
+	private String formatEntity(final Entity e) {
+		return e.getAllProperties().toString();
+	}
+
 	public List<String> getAllRelationships() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var relationships = tx.getAllRelationships();
-			return relationships.stream()
-					.map(r -> r.getStartNode() + " " + r.getAllProperties().toString() + " " + r.getEndNode())
+			return tx.getAllRelationships().stream()
+					.map(this::formatRelationship)
 					.collect(Collectors.toList());
 		}
+	}
+
+	private String formatRelationship(final Relationship r) {
+		return formatEntity(r.getStartNode()) + " " + formatEntity(r) + " " + formatEntity(r.getEndNode());
 	}
 
 }
