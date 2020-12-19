@@ -9,6 +9,8 @@ import java.util.stream.Stream;
  */
 public class TaggedWord {
 
+	private static final boolean DEBUG = false;
+
 	private final String term;
 	private final String tag;
 	private final Tagset tagset;
@@ -33,6 +35,9 @@ public class TaggedWord {
 	 * @return TaggedWords
 	 */
 	public static Stream<TaggedWord> from(final Stream<String> sentence, final Tagset tagset) {
+		if (DEBUG) {
+			System.out.println();
+		}
 		return sentence.map(w -> TaggedWord.from(w, tagset));
 	}
 
@@ -44,8 +49,22 @@ public class TaggedWord {
 	 * @return TaggedWord
 	 */
 	public static TaggedWord from(final String taggedWord, final Tagset tagset) {
-		final var pos = taggedWord.lastIndexOf(tagset.getTagSeparator());
-		return new TaggedWord(taggedWord.substring(0, pos), taggedWord.substring(pos), tagset);
+		final var separator = tagset.getTagSeparator();
+		final var pos = taggedWord.lastIndexOf(separator);
+		final var word = new TaggedWord(taggedWord.substring(0, pos), taggedWord.substring(pos + separator.length()), tagset);
+		if (DEBUG) {
+			System.out.print(word + " ");
+		}
+		return word;
+	}
+
+	/**
+	 * Checks if this word is a noun.
+	 *
+	 * @return true, if this word is tagged as a noun.
+	 */
+	public boolean isNoun() {
+		return tag.startsWith(tagset.getNounTag());
 	}
 
 	@Override

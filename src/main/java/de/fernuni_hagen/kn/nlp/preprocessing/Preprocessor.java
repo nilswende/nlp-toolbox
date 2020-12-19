@@ -66,8 +66,8 @@ public class Preprocessor {
 	 */
 	public static Preprocessor from(final Config config) {
 		final var steps = new ArrayList<Function<PreprocessingFactory, PreprocessingStep>>();
-		if (config.useBaseFormReduction()) {
-			steps.add(PreprocessingFactory::createBaseFormReducer);
+		if (config.removeAbbreviations()) {
+			steps.add(PreprocessingFactory::createAbbreviationFilter);
 		}
 		if (config.filterNouns()) {
 			steps.add(PreprocessingFactory::createNounFilter);
@@ -75,8 +75,8 @@ public class Preprocessor {
 		if (config.removeStopWords()) {
 			steps.add(PreprocessingFactory::createStopWordFilter);
 		}
-		if (config.removeAbbreviations()) {
-			steps.add(PreprocessingFactory::createAbbreviationFilter);
+		if (config.useBaseFormReduction()) {
+			steps.add(PreprocessingFactory::createBaseFormReducer);
 		}
 		return config.extractPhrases() ? new PhrasePreprocessor(steps) : new Preprocessor(steps);
 	}

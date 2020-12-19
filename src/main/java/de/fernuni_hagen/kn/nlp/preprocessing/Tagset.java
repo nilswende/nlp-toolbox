@@ -8,8 +8,8 @@ import java.nio.file.Path;
  * @author Nils Wende
  */
 public enum Tagset {
-	STTS("stts", "|", "|N"),
-	BNC("bnc", "|", "|N");
+	STTS("stts", "|", "N"),
+	BNC("bnc", "|", "N");
 
 	private final String lexicon;
 	private final String tagList;
