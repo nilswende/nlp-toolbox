@@ -42,5 +42,14 @@ public enum WeightingFunctions implements WeightingFunction {
 			final var div = (ki / (double) k) * (kj / (double) k);
 			return (factorialLog((int) kij) - kij * Math.log(div) + div) / Math.log(k);
 		}
+	},
+	/**
+	 * Weighs everything equally.
+	 */
+	NULL {
+		@Override
+		public double calculate(final long ki, final long kj, final long kij, final long k) {
+			return 1.0;
+		}
 	}
 }
