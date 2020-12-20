@@ -75,6 +75,9 @@ public class Preprocessor {
 		if (config.removeStopWords()) {
 			steps.add(PreprocessingFactory::createStopWordFilter);
 		}
+		if (config.normalizeCase()) {
+			steps.add(PreprocessingFactory::createCaseNormalizer);
+		}
 		if (config.useBaseFormReduction()) {
 			steps.add(PreprocessingFactory::createBaseFormReducer);
 		}

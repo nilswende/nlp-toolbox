@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
@@ -16,8 +17,8 @@ import java.nio.file.Path;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 /**
- * Config class for NLPToolbox.
- * It can be created from a JSON file in the default config location.
+ * Config class for NLPToolbox.<br>
+ * It can be created from a JSON file in the default config location.<br>
  *
  * @author Nils Wende
  */
@@ -28,6 +29,10 @@ public class Config {
 	private static final String DEFAULT_CONFIG_DIR = "config";
 	private static final String DEFAULT_CONFIG_FILENAME = "config.json";
 
+	/**
+	 * It is important that this class and all inner classes contain no final fields,
+	 * since GSON will not be able to correctly overwrite them.
+	 */
 	private String baseDir;
 	private String inputDir;
 	private String dbDir;
@@ -38,6 +43,7 @@ public class Config {
 	private boolean filterNouns;
 	private boolean removeStopWords;
 	private boolean removeAbbreviations;
+	private boolean normalizeCase;
 	private AnalysisConfig analysis = new AnalysisConfig();
 
 	public String getBaseDir() {
@@ -78,6 +84,10 @@ public class Config {
 
 	public boolean removeAbbreviations() {
 		return removeAbbreviations;
+	}
+
+	public boolean normalizeCase() {
+		return normalizeCase;
 	}
 
 	public AnalysisConfig getAnalysisConfig() {
@@ -165,6 +175,7 @@ public class Config {
 			private boolean calculate;
 			private int iterations = 50;
 			private int resultLimit = Integer.MAX_VALUE;
+			private DirectedWeightingFunctions directedWeightingFunction = DirectedWeightingFunctions.DIRECTED;
 
 			public boolean calculate() {
 				return calculate;
@@ -176,6 +187,10 @@ public class Config {
 
 			public int getResultLimit() {
 				return resultLimit;
+			}
+
+			public DirectedWeightingFunctions getDirectedWeightingFunction() {
+				return directedWeightingFunction;
 			}
 		}
 

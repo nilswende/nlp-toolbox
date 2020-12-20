@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
+import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
@@ -12,6 +13,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.DEBaseFormReducer;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.DECaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
@@ -38,6 +40,11 @@ public class DEFactory implements PreprocessingFactory {
 	@Override
 	public BaseFormReducer createBaseFormReducer() {
 		return new DEBaseFormReducer();
+	}
+
+	@Override
+	public CaseNormalizer createCaseNormalizer() {
+		return new DECaseNormalizer();
 	}
 
 	@Override

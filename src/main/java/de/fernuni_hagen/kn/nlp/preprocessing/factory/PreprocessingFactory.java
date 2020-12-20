@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
+import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
@@ -22,6 +23,8 @@ public interface PreprocessingFactory {
 
 	BaseFormReducer createBaseFormReducer();
 
+	CaseNormalizer createCaseNormalizer();
+
 	NounFilter createNounFilter();
 
 	PhraseExtractor createPhraseExtractor();
@@ -32,8 +35,14 @@ public interface PreprocessingFactory {
 
 	Tagger createTagger();
 
-	static PreprocessingFactory from(final File file) {
-		final var locale = new JLanILanguageExtractor().extract(file);
+	/**
+	 * Creates a concrete factory according to the language of the given file.
+	 *
+	 * @param textFile a text file
+	 * @return a concrete factory
+	 */
+	static PreprocessingFactory from(final File textFile) {
+		final var locale = new JLanILanguageExtractor().extract(textFile);
 		switch (locale.getLanguage()) {
 			case "de":
 				return new DEFactory();

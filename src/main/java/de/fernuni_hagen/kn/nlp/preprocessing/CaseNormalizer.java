@@ -3,17 +3,17 @@ package de.fernuni_hagen.kn.nlp.preprocessing;
 import java.util.stream.Stream;
 
 /**
- * Reduces the terms of a sentence to their base forms.
+ * Normalizes the case of a word.
  *
  * @author Nils Wende
  */
-public interface BaseFormReducer extends PreprocessingStep {
+public interface CaseNormalizer extends PreprocessingStep {
 
 	/**
-	 * Reduces a term to its base form.
+	 * Normalizes the case of a word.
 	 *
 	 * @param sentence the terms of a sentence
-	 * @return the reduced terms
+	 * @return the case-normalized terms
 	 */
 	@Override
 	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);

@@ -67,6 +67,15 @@ public class TaggedWord {
 		return tag.startsWith(tagset.getNounTag());
 	}
 
+	/**
+	 * Checks if this word is a proper noun.
+	 *
+	 * @return true, if this word is tagged as a proper noun.
+	 */
+	public boolean isProperNoun() {
+		return tag.startsWith(tagset.getProperNounTag());
+	}
+
 	@Override
 	public String toString() {
 		return term + tagset.getTagSeparator() + tag;
