@@ -10,4 +10,12 @@ import org.neo4j.graphdb.Label;
 enum Labels implements Label {
 	TERM, SENTENCE, DOCUMENT, // functional
 	SEQUENCE // technical
+	;
+
+	private final String displayName = name().charAt(0) + name().substring(1).toLowerCase();
+
+	@Override
+	public String toString() {
+		return displayName;
+	}
 }

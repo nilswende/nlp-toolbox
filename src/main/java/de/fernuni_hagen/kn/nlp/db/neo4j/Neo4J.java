@@ -21,7 +21,10 @@ public class Neo4J {
 	private final GraphDatabaseService graphDb;
 
 	public Neo4J(final Config config) {
-		final var managementService = new DatabaseManagementServiceBuilder(config.getDbDir()).build();
+		final var managementService = new DatabaseManagementServiceBuilder(config.getDbDir())
+//				.setConfig(BoltConnector.enabled, true)
+//				.setConfig(BoltConnector.listen_address, new SocketAddress("localhost", 7687))
+				.build();
 		graphDb = managementService.database(DEFAULT_DATABASE_NAME);
 		stopDbOnShutdown(managementService);
 		createUniqueConstraints();
@@ -36,6 +39,8 @@ public class Neo4J {
 		try (final Transaction tx = graphDb.beginTx()) {
 			createUniqueNameConstraint(Labels.TERM, tx);
 			createUniqueNameConstraint(Labels.SEQUENCE, tx);
+			createUniqueIdConstraint(Labels.SENTENCE, tx);
+			createUniqueIdConstraint(Labels.DOCUMENT, tx);
 			tx.commit();
 		}
 	}
@@ -43,6 +48,14 @@ public class Neo4J {
 	private void createUniqueNameConstraint(final Labels label, final Transaction tx) {
 		final var stmt = "CREATE CONSTRAINT unique" + label + "Names IF NOT EXISTS\n" +
 				"ON (l:" + label + ") ASSERT l.name IS UNIQUE\n";
+		StatementPrinter.print(stmt);
+		tx.execute(stmt);
+	}
+
+	private void createUniqueIdConstraint(final Labels label, final Transaction tx) {
+		final var stmt = "CREATE CONSTRAINT unique" + label + "Ids IF NOT EXISTS\n" +
+				"ON (l:" + label + ") ASSERT l.id IS UNIQUE\n";
+		StatementPrinter.print(stmt);
 		tx.execute(stmt);
 	}
 

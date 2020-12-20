@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp;
 import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
+import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JReader;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JWriter;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
@@ -37,6 +38,8 @@ public class NLPToolbox {
 	private void run() {
 		//writeAllInputToFreshDB();
 		new Analysis(config.getAnalysisConfig()).analyze();
+		//new CsvExporter().export();
+		new Neo4JReader().getAllRelationships().forEach(System.out::println);
 	}
 
 	private void writeAllInputToFreshDB() {

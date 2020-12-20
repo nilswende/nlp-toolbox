@@ -16,12 +16,12 @@ public class PageRank {
 
 	private final PageRankConfig config;
 	private final double weight;
-	private final double inv_weight;
+	private final double invWeight;
 
 	public PageRank(final PageRankConfig config) {
 		this.config = config;
 		weight = this.config.getWeight();
-		inv_weight = 1 - weight;
+		invWeight = 1 - weight;
 	}
 
 	/**
@@ -42,21 +42,21 @@ public class PageRank {
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {
 		final var pageRanks = new TreeMap<String, Double>();
-		final Double init = inv_weight;
+		final Double init = invWeight;
 		terms.forEach(t -> pageRanks.put(t, init));
 		return pageRanks;
 	}
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
 		significances.forEach((t1, v) -> {
-			final double pr = inv_weight + weight * sumAdjacentPageRanks(pageRanks, v);
+			final double pr = invWeight + weight * sumAdjacentPageRanks(pageRanks, v, significances);
 			pageRanks.put(t1, pr);
 		});
 	}
 
-	private double sumAdjacentPageRanks(final Map<String, Double> pageRanks, final Map<String, Double> v) {
+	private double sumAdjacentPageRanks(final Map<String, Double> pageRanks, final Map<String, Double> v, final Map<String, Map<String, Double>> significances) {
 		return v.entrySet().stream()
-				.mapToDouble(e -> (pageRanks.get(e.getKey()) * e.getValue()) / v.size())
+				.mapToDouble(e -> (pageRanks.get(e.getKey()) * e.getValue()) / significances.get(e.getKey()).size())
 				.sum();
 	}
 
