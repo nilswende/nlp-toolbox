@@ -45,9 +45,9 @@ public class Preprocessor {
 	}
 
 	private Stream<String> cleanSentences(Stream<String> sentences, PreprocessingFactory factory) {
-		final var characterRemover = factory.createCharacterRemover();
+		final var sentenceCleaner = factory.createSentenceCleaner();
 		return sentences
-				.map(characterRemover::removeCharacters)
+				.map(sentenceCleaner::clean)
 				.filter(s -> !s.isEmpty());
 	}
 

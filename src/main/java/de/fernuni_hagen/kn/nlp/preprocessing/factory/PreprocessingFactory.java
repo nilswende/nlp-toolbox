@@ -3,10 +3,10 @@ package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
-import de.fernuni_hagen.kn.nlp.preprocessing.CharacterRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
@@ -27,7 +27,7 @@ public interface PreprocessingFactory {
 
 	CaseNormalizer createCaseNormalizer();
 
-	CharacterRemover createCharacterRemover();
+	SentenceCleaner createSentenceCleaner();
 
 	NounFilter createNounFilter();
 

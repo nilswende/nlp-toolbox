@@ -12,12 +12,12 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class RegexCharacterRemoverTest {
+class RegexSentenceCleanerTest {
 
 	@ParameterizedTest
 	@MethodSource
 	void test(final CharSequence input, final String expected) {
-		final var actual = new RegexCharacterRemover().removeCharacters(input);
+		final var actual = new RegexSentenceCleaner().clean(input);
 		assertEquals(expected, actual);
 	}
 

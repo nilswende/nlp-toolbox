@@ -5,9 +5,9 @@ import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
-import de.fernuni_hagen.kn.nlp.preprocessing.CharacterRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
@@ -17,7 +17,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.impl.DEBaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.DECaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
-import de.fernuni_hagen.kn.nlp.preprocessing.impl.RegexCharacterRemover;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.RegexSentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ViterbiTagger;
 import te.utils.Parameters;
@@ -50,8 +50,8 @@ public class DEFactory implements PreprocessingFactory {
 	}
 
 	@Override
-	public CharacterRemover createCharacterRemover() {
-		return new RegexCharacterRemover();
+	public SentenceCleaner createSentenceCleaner() {
+		return new RegexSentenceCleaner();
 	}
 
 	@Override
