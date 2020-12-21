@@ -9,12 +9,30 @@ import static org.apache.commons.math3.util.CombinatoricsUtils.factorialLog;
  */
 public enum WeightingFunctions implements WeightingFunction {
 	/**
+	 * Jaccard index.
+	 */
+	JACCARD {
+		@Override
+		public double calculate(final long ki, final long kj, final long kij, final long k) {
+			return (kij / (double) (ki + kj - kij));
+		}
+	},
+	/**
 	 * Dice coefficient.
 	 */
 	DICE {
 		@Override
 		public double calculate(final long ki, final long kj, final long kij, final long k) {
-			return 2 * (kij / (ki + (double) kj));
+			return 2 * (kij / (double) (ki + kj));
+		}
+	},
+	/**
+	 * Mutual information.
+	 */
+	MUTUAL_INFORMATION {
+		@Override
+		public double calculate(final long ki, final long kj, final long kij, final long k) {
+			return Math.log((k * kij) / (double) (ki * kj));
 		}
 	},
 	/**
@@ -39,7 +57,7 @@ public enum WeightingFunctions implements WeightingFunction {
 	POISSON {
 		@Override
 		public double calculate(final long ki, final long kj, final long kij, final long k) {
-			final var div = (ki / (double) k) * (kj / (double) k);
+			final var div = (ki * kj) / (double) k;
 			return (factorialLog((int) kij) - kij * Math.log(div) + div) / Math.log(k);
 		}
 	},
