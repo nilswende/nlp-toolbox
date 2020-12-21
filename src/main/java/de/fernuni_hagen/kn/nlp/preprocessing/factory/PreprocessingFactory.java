@@ -1,14 +1,16 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 
-import de.fernuni_hagen.kn.nlp.input.impl.JLanILanguageExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
+import de.fernuni_hagen.kn.nlp.preprocessing.CharacterRemover;
+import de.fernuni_hagen.kn.nlp.preprocessing.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.JLanILanguageExtractor;
 
 import java.io.File;
 
@@ -24,6 +26,8 @@ public interface PreprocessingFactory {
 	BaseFormReducer createBaseFormReducer();
 
 	CaseNormalizer createCaseNormalizer();
+
+	CharacterRemover createCharacterRemover();
 
 	NounFilter createNounFilter();
 
@@ -42,7 +46,8 @@ public interface PreprocessingFactory {
 	 * @return a concrete factory
 	 */
 	static PreprocessingFactory from(final File textFile) {
-		final var locale = new JLanILanguageExtractor().extract(textFile);
+		final LanguageExtractor languageExtractor = new JLanILanguageExtractor();
+		final var locale = languageExtractor.extract(textFile);
 		switch (locale.getLanguage()) {
 			case "de":
 				return new DEFactory();

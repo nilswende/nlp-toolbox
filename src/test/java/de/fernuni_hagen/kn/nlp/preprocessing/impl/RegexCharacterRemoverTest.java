@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.input.impl;
+package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,12 +12,12 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class RegexWhitespaceRemoverTest {
+class RegexCharacterRemoverTest {
 
 	@ParameterizedTest
 	@MethodSource
 	void removeWhitespace(final CharSequence input, final String expected) {
-		final var actual = new RegexWhitespaceRemover().removeWhitespace(input);
+		final var actual = new RegexCharacterRemover().removeCharacters(input);
 		assertEquals(expected, actual);
 	}
 

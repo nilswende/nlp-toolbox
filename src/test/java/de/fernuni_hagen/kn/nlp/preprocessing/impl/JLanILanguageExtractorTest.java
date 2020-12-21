@@ -1,5 +1,6 @@
-package de.fernuni_hagen.kn.nlp.input.impl;
+package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -8,7 +9,6 @@ import java.io.StringReader;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
@@ -22,7 +22,7 @@ class JLanILanguageExtractorTest {
 		final int length = inputLength == -1 ? sentence.length() : inputLength;
 		try (final var reader = new StringReader(sentence)) {
 			final var language = new JLanILanguageExtractor().extract(reader, length);
-			assertEquals(locale, language);
+			Assertions.assertEquals(locale, language);
 		}
 	}
 
