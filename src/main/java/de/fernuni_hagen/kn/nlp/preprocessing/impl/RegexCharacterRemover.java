@@ -12,14 +12,11 @@ import java.util.regex.Pattern;
  */
 public class RegexCharacterRemover implements CharacterRemover {
 
-	private static final Pattern WHITESPACE = Pattern.compile("[\\v\\h]+");
-	private static final Pattern ALLOWED = Pattern.compile("[^\\p{Alnum}äöüÄÖÜß|\\-# ]");
+	private static final Pattern DISALLOWED = Pattern.compile("[^\\p{Alnum}äöüÄÖÜß|\\-# ]");
 
 	@Override
 	public String removeCharacters(final CharSequence chars) {
-		final var singleSpaced = WHITESPACE.matcher(chars).replaceAll(StringUtils.SPACE);
-		final var cleaned = ALLOWED.matcher(singleSpaced).replaceAll(StringUtils.EMPTY);
-		return cleaned.stripTrailing();
+		return DISALLOWED.matcher(chars).replaceAll(StringUtils.EMPTY);
 	}
 
 }

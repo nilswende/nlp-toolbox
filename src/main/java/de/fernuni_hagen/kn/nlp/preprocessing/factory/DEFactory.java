@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
+import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
@@ -65,7 +66,7 @@ public class DEFactory implements PreprocessingFactory {
 
 	@Override
 	public SentenceExtractor createSentenceExtractor() {
-		return new SimpleSentenceExtractor(LOCALE);
+		return new SimpleSentenceExtractor(LOCALE, new RegexWhitespaceRemover());
 	}
 
 	@Override
