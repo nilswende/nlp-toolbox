@@ -18,7 +18,7 @@ public enum DirectedWeightingFunctions {
 	/**
 	 * Weighs everything equally.
 	 */
-	NULL {
+	NONE {
 		@Override
 		public double calculate(final long kij, final long kmax) {
 			return 1.0;

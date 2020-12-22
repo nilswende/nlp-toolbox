@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.ArrayList;
@@ -45,8 +46,8 @@ public class Neo4JReader implements DBReader {
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
-			final var matchCooccs = " MATCH (:" + Labels.SENTENCE + ")-[s1:" + RelationshipTypes.CONTAINS + "]-(t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")-[s2:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")\n" +
-					"RETURN t1.name, t2.name, s1.count as ki, s2.count as kj, c.count as kij\n";
+			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
+					"RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -85,10 +86,9 @@ public class Neo4JReader implements DBReader {
 	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var kmax = getMaxSentencesCount(tx);
-			final var matchCooccs = " MATCH (:" + Labels.SENTENCE + ")-[s1:" + RelationshipTypes.CONTAINS + "]-(t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")-[s2:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")\n" +
-					"  WITH t1.name as t1name, t2.name as t2name, c.count as kij, sum(s1.count) as scount1, sum(s2.count) as scount2\n" +
-					" WHERE (kij / scount1) >= (kij / scount2)\n" + //TODO case = appears twice
-					"RETURN t1name, t2name, kij\n";
+			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
+					" WHERE (c.count / t1.count) >= (c.count / t2.count)\n" + //TODO case = appears twice
+					"RETURN t1.name, t2.name, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -107,8 +107,8 @@ public class Neo4JReader implements DBReader {
 	}
 
 	private void putDominantSig(final Map<String, Object> row, final double sig, final Map<String, Map<String, Double>> map) {
-		final var t1 = row.get("t1name").toString();
-		final var t2 = row.get("t2name").toString();
+		final var t1 = row.get("t1.name").toString();
+		final var t2 = row.get("t2.name").toString();
 		if (map.containsKey(t2)) {
 			if (map.get(t2).containsKey(t1)) {
 				return;  // workaround case = appears twice
@@ -139,6 +139,20 @@ public class Neo4JReader implements DBReader {
 			return tx.getAllRelationships().stream()
 					.map(EntityFormatter::formatRelationship)
 					.collect(Collectors.toList());
+		}
+	}
+
+	public void printPath(final String t1, final String t2) {
+		final var stmt = " MATCH (t1:" + Labels.TERM + " {name: $t1}),\n" +
+				"       (t2:" + Labels.TERM + " {name: $t2}),\n" +
+				"       p = shortestPath((t1)-[:" + RelationshipTypes.COOCCURS + "*]-(t2))\n" +
+				"RETURN p\n";
+		try (final Transaction tx = graphDb.beginTx()) {
+			final Map<String, Object> params = Map.of("t1", t1, "t2", t2);
+			tx.execute(stmt, params).stream()
+					.map(map -> ((Path) map.get("p")))
+					.map(EntityFormatter::formatPath)
+					.forEach(System.out::println);
 		}
 	}
 

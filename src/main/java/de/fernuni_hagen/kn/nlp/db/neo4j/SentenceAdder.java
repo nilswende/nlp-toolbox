@@ -52,20 +52,18 @@ class SentenceAdder {
 		tx.execute(stmt, params);
 	}
 
-	private void addTermRelationships(final List<String> terms, final Transaction tx) {
+	private void addTermRelationships(final List<String> distinctTerms, final Transaction tx) {
 		final var stmt = "MATCH (t1:" + Labels.TERM + " {name: $name1}),(t2:" + Labels.TERM + " {name: $name2})\n" +
 				"MERGE (t1)-[r:" + RelationshipTypes.COOCCURS + "]-(t2)\n" +
 				"ON CREATE SET r.count = 1\n" +
 				"ON  MATCH SET r.count = r.count + 1\n";
-		for (int i = 0; i < terms.size(); i++) {
-			final var term1 = terms.get(i);
-			for (int j = i + 1; j < terms.size(); j++) {
-				final var term2 = terms.get(j);
-				if (!term1.equals(term2)) {
-					final Map<String, Object> params = Map.of("name1", term1, "name2", term2);
-					StatementPrinter.print(stmt, params);
-					tx.execute(stmt, params);
-				}
+		for (int i = 0; i < distinctTerms.size(); i++) {
+			final var term1 = distinctTerms.get(i);
+			for (int j = i + 1; j < distinctTerms.size(); j++) {
+				final var term2 = distinctTerms.get(j);
+				final Map<String, Object> params = Map.of("name1", term1, "name2", term2);
+				StatementPrinter.print(stmt, params);
+				tx.execute(stmt, params);
 			}
 		}
 	}

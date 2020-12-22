@@ -64,7 +64,7 @@ public enum WeightingFunctions implements WeightingFunction {
 	/**
 	 * Weighs everything equally.
 	 */
-	NULL {
+	NONE {
 		@Override
 		public double calculate(final long ki, final long kj, final long kij, final long k) {
 			return 1.0;

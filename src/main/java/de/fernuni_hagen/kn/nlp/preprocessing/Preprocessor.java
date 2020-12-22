@@ -44,7 +44,7 @@ public class Preprocessor {
 				.map(s -> s.collect(Collectors.toList()));
 	}
 
-	private Stream<String> cleanSentences(Stream<String> sentences, PreprocessingFactory factory) {
+	private Stream<String> cleanSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		final var sentenceCleaner = factory.createSentenceCleaner();
 		return sentences
 				.map(sentenceCleaner::clean)
