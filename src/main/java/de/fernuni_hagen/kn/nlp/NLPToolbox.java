@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryReader;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryWriter;
-import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
@@ -32,7 +31,7 @@ public class NLPToolbox {
 
 	public NLPToolbox(final String configFile) {
 		config = Config.fromJson(configFile);
-		Neo4J.init(config);
+		//Neo4J.init(config);
 	}
 
 	private void run() {
