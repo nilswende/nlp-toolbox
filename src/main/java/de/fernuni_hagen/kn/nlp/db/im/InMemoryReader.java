@@ -63,6 +63,12 @@ public class InMemoryReader implements DBReader {
 		return map;
 	}
 
+	/**
+	 * Gets all terms in the given document.
+	 *
+	 * @param path original path of a preprocessed file
+	 * @return all terms in the given document
+	 */
 	public List<String> getAllTermsInDocument(final Path path) {
 		final var terms = new ArrayList<String>();
 		InMemoryDB.INSTANCE.getData().forEach((term, v) -> {
