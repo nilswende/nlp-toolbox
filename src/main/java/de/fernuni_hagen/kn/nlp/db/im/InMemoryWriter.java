@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,8 +20,8 @@ public class InMemoryWriter implements DBWriter {
 	}
 
 	@Override
-	public void addDocument(final File file) {
-		// do nothing
+	public void addDocument(final Path path) {
+		InMemoryDB.INSTANCE.addDocument(path);
 	}
 
 	@Override

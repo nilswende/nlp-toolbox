@@ -7,7 +7,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +35,11 @@ public class Neo4JWriter implements DBWriter {
 	}
 
 	@Override
-	public void addDocument(final File file) {
+	public void addDocument(final Path path) {
 		currentDocId = sequences.nextValueFor(Labels.DOCUMENT);
 		try (final Transaction tx = graphDb.beginTx()) {
 			final Node doc = tx.createNode(Labels.DOCUMENT);
-			doc.setProperty("name", file.getName());
+			doc.setProperty("name", path.toAbsolutePath().toString());
 			doc.setProperty("id", currentDocId);
 			tx.commit();
 		}

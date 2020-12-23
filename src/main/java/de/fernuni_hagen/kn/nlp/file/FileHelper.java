@@ -2,13 +2,11 @@ package de.fernuni_hagen.kn.nlp.file;
 
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,15 +18,15 @@ import java.util.List;
  */
 public final class FileHelper {
 
-	private static final List<File> tempFiles = Collections.synchronizedList(new ArrayList<>());
+	private static final List<Path> tempFiles = Collections.synchronizedList(new ArrayList<>());
 
 	private FileHelper() {
 		throw new AssertionError(); // no init
 	}
 
-	public static File createTempFile(final String suffix) {
+	public static Path createTempFile(final String suffix) {
 		try {
-			final var tempFile = File.createTempFile("nlp", suffix);
+			final var tempFile = Files.createTempFile("nlp", suffix);
 			tempFiles.add(tempFile);
 			return tempFile;
 		} catch (final IOException e) {
@@ -36,9 +34,11 @@ public final class FileHelper {
 		}
 	}
 
-	public static void delete(final File file) {
-		if (file != null && !file.delete()) {
-			LoggerFactory.getLogger(FileHelper.class).warn("could not delete " + file);
+	public static void delete(final Path path) {
+		try {
+			Files.deleteIfExists(path);
+		} catch (final IOException e) {
+			throw new UncheckedException(e);
 		}
 	}
 
@@ -46,8 +46,8 @@ public final class FileHelper {
 		tempFiles.forEach(FileHelper::delete);
 	}
 
-	public static Reader newFileReader(final File file) throws IOException {
-		return new InputStreamReader(new FileInputStream(file), Config.DEFAULT_CHARSET);
+	public static Reader newFileReader(final Path path) throws IOException {
+		return Files.newBufferedReader(path, Config.DEFAULT_CHARSET);
 	}
 
 }

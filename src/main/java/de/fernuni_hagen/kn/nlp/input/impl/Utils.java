@@ -3,12 +3,11 @@ package de.fernuni_hagen.kn.nlp.input.impl;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Utilities.
@@ -24,12 +23,12 @@ public final class Utils {
 	/**
 	 * Counts the number of characters in the file using the given charset.
 	 *
-	 * @param file    the file to be read
+	 * @param path    the file to be read
 	 * @param charset the file's charset
 	 * @return the number of characters in the file
 	 */
-	public static long countChars(final File file, final Charset charset) {
-		try (final Reader reader = new InputStreamReader(new FileInputStream(file), charset)) {
+	public static long countChars(final Path path, final Charset charset) {
+		try (final Reader reader = Files.newBufferedReader(path, charset)) {
 			return countChars(reader);
 		} catch (final IOException e) {
 			throw new UncheckedException(e);

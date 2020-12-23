@@ -13,10 +13,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static de.fernuni_hagen.kn.nlp.Logger.*;
 
@@ -31,7 +29,7 @@ public class NLPToolbox {
 
 	public NLPToolbox(final String configFile) {
 		config = Config.fromJson(configFile);
-		//Neo4J.init(config);
+		//Neo4J.init(config); //TODO Factory
 	}
 
 	private void run() {
@@ -48,8 +46,7 @@ public class NLPToolbox {
 		final var documentConverter = new TikaDocumentConverter(config);
 		final var preprocessor = Preprocessor.from(config);
 		try (final var paths = Files.walk(config.getInputDir())) {
-			paths.map(Path::toFile)
-					.filter(File::isFile)
+			paths.filter(p -> Files.isRegularFile(p))
 					.peek(db::addDocument)
 					.map(documentConverter::convert)
 					.flatMap(preprocessor::preprocess)

@@ -4,15 +4,15 @@ import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.JLanILanguageExtractor;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
  */
 class SimpleSentenceExtractorTest {
 
-	private static File tempFile;
+	private static Path tempFile;
 
 	@BeforeAll
 	static void setUp() {
@@ -36,7 +36,7 @@ class SimpleSentenceExtractorTest {
 	@MethodSource
 	void extract(final List<String> sentences) throws IOException {
 		final String input = String.join(" ", sentences);
-		FileUtils.write(tempFile, input, Config.DEFAULT_CHARSET);
+		Files.writeString(tempFile, input, Config.DEFAULT_CHARSET);
 		final var languageExtractor = new JLanILanguageExtractor();
 		final var extractor = new SimpleSentenceExtractor(languageExtractor.extract(tempFile), new RegexWhitespaceRemover());
 		final var strings = extractor.extract(tempFile).collect(Collectors.toList());

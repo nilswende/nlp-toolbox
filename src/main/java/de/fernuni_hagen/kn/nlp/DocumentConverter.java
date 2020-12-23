@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Converts documents from any format to plain text.
@@ -13,9 +13,9 @@ public interface DocumentConverter {
 	/**
 	 * Converts the file to a plain text file.
 	 *
-	 * @param file file in any format
+	 * @param path file in any format
 	 * @return text file
 	 */
-	File convert(File file);
+	Path convert(Path path);
 
 }

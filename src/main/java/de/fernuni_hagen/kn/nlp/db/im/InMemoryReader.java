@@ -4,6 +4,8 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -59,6 +61,16 @@ public class InMemoryReader implements DBReader {
 			}
 		}
 		return map;
+	}
+
+	public List<String> getAllTermsInDocument(final Path path) {
+		final var terms = new ArrayList<String>();
+		InMemoryDB.INSTANCE.getData().forEach((term, v) -> {
+			if (v.getDocuments().contains(path)) {
+				terms.add(term);
+			}
+		});
+		return terms;
 	}
 
 }

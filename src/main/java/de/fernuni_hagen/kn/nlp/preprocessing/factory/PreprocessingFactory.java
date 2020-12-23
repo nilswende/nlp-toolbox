@@ -12,7 +12,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.JLanILanguageExtractor;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Defines a factory for the components used in preprocessing (Abstract Factory Pattern).
@@ -45,7 +45,7 @@ public interface PreprocessingFactory {
 	 * @param textFile a text file
 	 * @return a concrete factory
 	 */
-	static PreprocessingFactory from(final File textFile) {
+	static PreprocessingFactory from(final Path textFile) {
 		final LanguageExtractor languageExtractor = new JLanILanguageExtractor();
 		final var locale = languageExtractor.extract(textFile);
 		switch (locale.getLanguage()) {

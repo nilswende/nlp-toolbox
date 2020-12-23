@@ -3,15 +3,15 @@ package de.fernuni_hagen.kn.nlp.input;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
  */
 class LazySentenceSupplierTest {
 
-	private static File tempFile;
+	private static Path tempFile;
 
 	@BeforeAll
 	static void setUp() {
@@ -37,7 +37,7 @@ class LazySentenceSupplierTest {
 	void get(final List<String> sentences) {
 		final String input = String.join("", sentences);
 		try {
-			FileUtils.write(tempFile, input, Config.DEFAULT_CHARSET);
+			Files.writeString(tempFile, input, Config.DEFAULT_CHARSET);
 			final var strings = new ArrayList<String>();
 			try (final var sentenceSupplier = new LazySentenceSupplier(tempFile, Locale.ENGLISH)) {
 				for (char[] s; (s = sentenceSupplier.get()) != null; ) {

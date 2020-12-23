@@ -10,9 +10,10 @@ import de.fernuni_hagen.kn.nlp.preprocessing.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ import java.util.Map;
 public class JLanILanguageExtractor implements LanguageExtractor {
 
 	@Override
-	public Locale extract(final File textFile) {
+	public Locale extract(final Path textFile) {
 		try (final var reader = FileHelper.newFileReader(textFile)) {
 			return extract(reader, getInputLength(textFile));
 		} catch (final IOException e) {
@@ -32,8 +33,8 @@ public class JLanILanguageExtractor implements LanguageExtractor {
 		}
 	}
 
-	private int getInputLength(final File textFile) {
-		return (int) Math.max(Math.sqrt(textFile.length()), 30);
+	private int getInputLength(final Path textFile) throws IOException {
+		return (int) Math.max(Math.sqrt(Files.size(textFile)), 30);
 	}
 
 	Locale extract(final Reader reader, final int inputLength) {

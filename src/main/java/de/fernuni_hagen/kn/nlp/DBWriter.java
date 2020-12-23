@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -18,9 +18,9 @@ public interface DBWriter {
 	/**
 	 * Adds a document to the DB.
 	 *
-	 * @param file the file containing the document
+	 * @param path the document's file pah
 	 */
-	void addDocument(File file);
+	void addDocument(Path path);
 
 	/**
 	 * Adds a sentence in the form of terms to the DB.

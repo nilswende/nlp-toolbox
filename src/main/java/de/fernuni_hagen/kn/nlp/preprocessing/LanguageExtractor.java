@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Locale;
 
 /**
@@ -16,6 +16,6 @@ public interface LanguageExtractor {
 	 * @param textFile text file
 	 * @return a Locale representing the text's language
 	 */
-	Locale extract(File textFile);
+	Locale extract(Path textFile);
 
 }

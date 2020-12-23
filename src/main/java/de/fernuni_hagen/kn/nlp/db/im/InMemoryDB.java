@@ -1,6 +1,9 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -12,6 +15,16 @@ enum InMemoryDB {
 	INSTANCE; // enum singleton pattern
 
 	private final Map<String, Values> data = new TreeMap<>();
+	private Path currentDoc;
+
+	/**
+	 * Starts a new document to write sentences from.
+	 *
+	 * @param path the document's file pah
+	 */
+	public void addDocument(final Path path) {
+		currentDoc = path;
+	}
 
 	/**
 	 * Adds a term to the database.
@@ -19,7 +32,9 @@ enum InMemoryDB {
 	 * @param term a term
 	 */
 	public void addTerm(final String term) {
-		data.computeIfAbsent(term, t -> new Values()).count++;
+		final var values = data.computeIfAbsent(term, t -> new Values());
+		values.count++;
+		values.getDocuments().add(currentDoc);
 	}
 
 	/**
@@ -72,15 +87,20 @@ enum InMemoryDB {
 	 * All values a term in the database is mapped to.
 	 */
 	static class Values {
+		private final Set<Path> documents = new HashSet<>();
 		private final Map<String, Long> cooccs = new TreeMap<>();
 		private long count = 0;
 
-		public long getCount() {
-			return count;
+		public Set<Path> getDocuments() {
+			return documents;
 		}
 
 		public Map<String, Long> getCooccs() {
 			return cooccs;
+		}
+
+		public long getCount() {
+			return count;
 		}
 	}
 

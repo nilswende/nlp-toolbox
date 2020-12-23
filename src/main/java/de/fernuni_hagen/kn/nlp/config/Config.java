@@ -7,11 +7,11 @@ import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -105,11 +105,11 @@ public class Config {
 	 * @return Config
 	 */
 	public static Config fromJson(final String configFileName) {
-		final var configFile = (configFileName == null ? getDefaultConfigFilePath() : Path.of(configFileName)).toFile();
-		return configFile.exists() ? fromJson(configFile) : new Config();
+		final var configFile = configFileName == null ? getDefaultConfigFilePath() : Path.of(configFileName);
+		return Files.exists(configFile) ? fromJson(configFile) : new Config();
 	}
 
-	private static Config fromJson(final File configFile) {
+	private static Config fromJson(final Path configFile) {
 		try (final var reader = FileHelper.newFileReader(configFile)) {
 			return fromJson(reader);
 		} catch (final IOException e) {

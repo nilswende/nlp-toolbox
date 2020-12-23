@@ -11,11 +11,10 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.WriteOutContentHandler;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Converts documents from any format to plain text using Apache Tika.
@@ -31,18 +30,18 @@ public class TikaDocumentConverter implements DocumentConverter {
 	}
 
 	@Override
-	public File convert(final File file) {
+	public Path convert(final Path path) {
 		final var tempFile = FileHelper.createTempFile(".txt");
-		try (final var writer = new OutputStreamWriter(new FileOutputStream(tempFile), Config.DEFAULT_CHARSET)) {
-			parseInput(file, writer);
+		try (final var writer = Files.newBufferedWriter(tempFile, Config.DEFAULT_CHARSET)) {
+			parseInput(path, writer);
 			return tempFile;
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}
 	}
 
-	private void parseInput(final File file, final OutputStreamWriter writer) throws IOException {
-		try (final var inputStream = new FileInputStream(file)) {
+	private void parseInput(final Path path, final Writer writer) throws IOException {
+		try (final var inputStream = Files.newInputStream(path)) {
 			final var parser = new AutoDetectParser();
 			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
 			final var metadata = new Metadata();

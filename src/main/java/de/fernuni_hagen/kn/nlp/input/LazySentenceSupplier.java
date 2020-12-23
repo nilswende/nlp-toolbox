@@ -5,8 +5,8 @@ import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileCharacterIterator;
 import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileReader;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.BreakIterator;
 import java.util.Locale;
 
@@ -28,7 +28,7 @@ class LazySentenceSupplier implements Closeable {
 	 * @param textFile the text file to be read
 	 * @param locale   the file's language
 	 */
-	public LazySentenceSupplier(final File textFile, final Locale locale) {
+	public LazySentenceSupplier(final Path textFile, final Locale locale) {
 		fileReader = new BufferedFileReader(textFile, Config.DEFAULT_CHARSET);
 		iter = new BufferedFileCharacterIterator(new BufferedFileReader(textFile, Config.DEFAULT_CHARSET));
 		boundary = BreakIterator.getSentenceInstance(locale);

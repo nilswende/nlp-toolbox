@@ -4,14 +4,12 @@ import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
@@ -21,7 +19,7 @@ import java.util.Arrays;
  */
 public class BufferedFileReader implements Closeable {
 
-	private final File file;
+	private final Path path;
 	private final Charset charset;
 	private Reader reader;
 	private long offset;
@@ -29,11 +27,11 @@ public class BufferedFileReader implements Closeable {
 	/**
 	 * Constructor.
 	 *
-	 * @param file    the file to be read
+	 * @param path    the file to be read
 	 * @param charset the file's charset
 	 */
-	public BufferedFileReader(final File file, final Charset charset) {
-		this.file = file;
+	public BufferedFileReader(final Path path, final Charset charset) {
+		this.path = path;
 		this.charset = charset;
 	}
 
@@ -120,7 +118,7 @@ public class BufferedFileReader implements Closeable {
 	// non private for tests
 	Reader createReader() {
 		try {
-			final var reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+			final var reader = Files.newBufferedReader(path, charset);
 			offset = 0;
 			return reader;
 		} catch (final IOException e) {
@@ -141,13 +139,13 @@ public class BufferedFileReader implements Closeable {
 	 * @return file length
 	 */
 	public long getLength() {
-		return Utils.countChars(file, Config.DEFAULT_CHARSET);
+		return Utils.countChars(path, Config.DEFAULT_CHARSET);
 	}
 
 	@Override
 	public String toString() {
 		return "BufferedFileReader{" +
-				"file=" + file +
+				"file=" + path +
 				", offset=" + offset +
 				'}';
 	}

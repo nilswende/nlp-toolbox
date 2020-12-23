@@ -3,9 +3,9 @@ package de.fernuni_hagen.kn.nlp.input;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.file.Path;
 import java.text.BreakIterator;
 import java.util.List;
 import java.util.Locale;
@@ -28,7 +28,7 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 	}
 
 	@Override
-	public Stream<String> extract(final File textFile) {
+	public Stream<String> extract(final Path textFile) {
 		final var sentenceSupplier = new LazySentenceSupplier(textFile, findBestMatch(locale));
 		return Stream.iterate(extractOneSentence(sentenceSupplier),
 				Objects::nonNull,

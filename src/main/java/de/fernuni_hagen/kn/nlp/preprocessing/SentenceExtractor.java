@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 /**
@@ -16,6 +16,6 @@ public interface SentenceExtractor {
 	 * @param textFile text file
 	 * @return sentences
 	 */
-	Stream<String> extract(File textFile);
+	Stream<String> extract(Path textFile);
 
 }

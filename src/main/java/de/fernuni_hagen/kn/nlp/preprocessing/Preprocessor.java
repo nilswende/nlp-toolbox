@@ -3,7 +3,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -29,7 +29,7 @@ public class Preprocessor {
 	 * @param document the document to be processed
 	 * @return stream of the sentences inside the document, split into words
 	 */
-	public Stream<List<String>> preprocess(final File document) {
+	public Stream<List<String>> preprocess(final Path document) {
 		final PreprocessingFactory factory = PreprocessingFactory.from(document);
 		final SentenceExtractor sentenceExtractor = factory.createSentenceExtractor();
 		final var sentences = sentenceExtractor.extract(document);
