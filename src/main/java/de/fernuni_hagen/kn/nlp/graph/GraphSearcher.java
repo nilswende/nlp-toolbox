@@ -37,7 +37,9 @@ public class GraphSearcher {
 	private Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
 		final Set<String> terms = new TreeSet<>();
 		final Deque<String> stack = new ArrayDeque<>();
-		stack.push(significances.keySet().stream().filter(t -> !exclude.contains(t)).findAny().orElse(null));
+		final var any = significances.keySet().stream().filter(t -> !exclude.contains(t)).findAny().orElse(null);
+		terms.add(any);
+		stack.push(any);
 		while (!stack.isEmpty()) {
 			final var term = stack.pop();
 			final var cooccs = significances.get(term).keySet();

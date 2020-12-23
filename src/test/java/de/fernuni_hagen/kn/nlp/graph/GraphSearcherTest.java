@@ -18,10 +18,15 @@ class GraphSearcherTest {
 	@Test
 	void findBiggestSubgraphEmpty() {
 		final Map<String, List<String>> adjacencyList = Map.of();
-		final var expected = toSigMap(adjacencyList);
-		final var actual = new TreeMap<>(expected);
-		new GraphSearcher().findBiggestSubgraph(actual);
-		assertEquals(expected, actual);
+		testEquality(adjacencyList);
+	}
+
+	@Test
+	void findBiggestSubgraphSingle() {
+		final var adjacencyList = Map.of(
+				"A", List.<String>of()
+		);
+		testEquality(adjacencyList);
 	}
 
 	@Test
@@ -33,10 +38,23 @@ class GraphSearcherTest {
 				"D", List.of("B", "C", "E"),
 				"E", List.of("D")
 		);
+		testEquality(adjacencyList);
+	}
+
+	private void testEquality(final Map<String, List<String>> adjacencyList) {
 		final var expected = toSigMap(adjacencyList);
 		final var actual = new TreeMap<>(expected);
 		new GraphSearcher().findBiggestSubgraph(actual);
 		assertEquals(expected, actual);
+	}
+
+	private Map<String, Map<String, Double>> toSigMap(final Map<String, List<String>> adjacencyList) {
+		final var sigs = new TreeMap<String, Map<String, Double>>();
+		adjacencyList.forEach(
+				(k, v) -> v.forEach(
+						c -> sigs.computeIfAbsent(k, x -> new TreeMap<>()).put(c, 0.0)
+				));
+		return sigs;
 	}
 
 	@Test
@@ -50,11 +68,7 @@ class GraphSearcherTest {
 				"F", List.of("G"),
 				"G", List.of("F")
 		);
-		final var expected = toSigMap(adjacencyList);
-		final var actual = new TreeMap<>(expected);
-		new GraphSearcher().findBiggestSubgraph(actual);
-		assertNotEquals(expected, actual);
-		assertEquals(Set.of("A", "B", "C", "D", "E"), actual.keySet());
+		testInequality(Set.of("A", "B", "C", "D", "E"), adjacencyList);
 	}
 
 	@Test
@@ -68,19 +82,27 @@ class GraphSearcherTest {
 				"F", List.of("E", "G"),
 				"G", List.of("E", "F")
 		);
+		testInequality(Set.of("E", "F", "G"), adjacencyList);
+	}
+
+	@Test
+	void findBiggestSubgraphSmallerFirstUnderHalf() {
+		final var adjacencyList = Map.of(
+				"A", List.of("B"),
+				"B", List.of("A"),
+				"C", List.of("D", "E"),
+				"D", List.of("C", "E"),
+				"E", List.of("C", "D")
+		);
+		testInequality(Set.of("C", "D", "E"), adjacencyList);
+	}
+
+	private void testInequality(final Set<String> expectedTerms, final Map<String, List<String>> adjacencyList) {
 		final var expected = toSigMap(adjacencyList);
 		final var actual = new TreeMap<>(expected);
 		new GraphSearcher().findBiggestSubgraph(actual);
 		assertNotEquals(expected, actual);
-		assertEquals(Set.of("E", "F", "G"), actual.keySet());
+		assertEquals(expectedTerms, actual.keySet());
 	}
 
-	private Map<String, Map<String, Double>> toSigMap(final Map<String, List<String>> adjacencyList) {
-		final var sigs = new TreeMap<String, Map<String, Double>>();
-		adjacencyList.forEach(
-				(k, v) -> v.forEach(
-						c -> sigs.computeIfAbsent(k, x -> new TreeMap<>()).put(c, 0.0)
-				));
-		return sigs;
-	}
 }
