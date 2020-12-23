@@ -25,7 +25,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var map = new TreeMap<String, Map<String, Double>>();
-		final var data = InMemoryDB.INSTANCE.getData();
+		final var data = InMemoryDB.instance().getData();
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
 			final var cooccs = entry.getValue().getCooccs();
@@ -44,7 +44,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
 		final var map = new TreeMap<String, Map<String, Double>>();
-		final var db = InMemoryDB.INSTANCE;
+		final var db = InMemoryDB.instance();
 		final var data = db.getData();
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
@@ -70,9 +70,10 @@ public class InMemoryReader implements DBReader {
 	 * @return all terms in the given document
 	 */
 	public List<String> getAllTermsInDocument(final Path path) {
+		final var pathStr = path.toAbsolutePath().toString();
 		final var terms = new ArrayList<String>();
-		InMemoryDB.INSTANCE.getData().forEach((term, v) -> {
-			if (v.getDocuments().contains(path)) {
+		InMemoryDB.instance().getData().forEach((term, v) -> {
+			if (v.getDocuments().contains(pathStr)) {
 				terms.add(term);
 			}
 		});

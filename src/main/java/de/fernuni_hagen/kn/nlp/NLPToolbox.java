@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.db.im.InMemoryDB;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryReader;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryWriter;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
@@ -30,6 +31,7 @@ public class NLPToolbox {
 	public NLPToolbox(final String configFile) {
 		config = Config.fromJson(configFile);
 		//Neo4J.init(config); //TODO Factory
+		InMemoryDB.init(config); //TODO Factory
 	}
 
 	private void run() {

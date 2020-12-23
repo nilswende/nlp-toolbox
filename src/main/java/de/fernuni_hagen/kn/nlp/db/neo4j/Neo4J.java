@@ -21,7 +21,7 @@ public class Neo4J {
 	private final GraphDatabaseService graphDb;
 
 	public Neo4J(final Config config) {
-		final var managementService = new DatabaseManagementServiceBuilder(config.getDbDir())
+		final var managementService = new DatabaseManagementServiceBuilder(config.getNeo4JDbDir())
 //				.setConfig(BoltConnector.enabled, true)
 //				.setConfig(BoltConnector.listen_address, new SocketAddress("localhost", 7687))
 				.build();

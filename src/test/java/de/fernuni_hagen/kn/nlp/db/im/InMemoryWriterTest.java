@@ -1,8 +1,12 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
+import de.fernuni_hagen.kn.nlp.config.Config;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -15,12 +19,19 @@ class InMemoryWriterTest {
 
 	InMemoryWriter writer = new InMemoryWriter();
 
+	@BeforeAll
+	static void before() {
+		final var mock = Mockito.mock(Config.class);
+		Mockito.when(mock.getInMemoryDbDir()).thenReturn(Path.of(""));
+		InMemoryDB.init(mock);
+	}
+
 	@Test
 	void addSentence() {
 		final var input = List.of("art", "competition", "game", "year");
 		writer.addSentence(input);
 
-		final var data = InMemoryDB.INSTANCE.getData();
+		final var data = InMemoryDB.instance().getData();
 
 		assertEquals(input.size(), data.size());
 		data.forEach((k, v) -> {
@@ -41,7 +52,7 @@ class InMemoryWriterTest {
 		);
 		input.forEach(writer::addSentence);
 
-		final var data = InMemoryDB.INSTANCE.getData();
+		final var data = InMemoryDB.instance().getData();
 
 		assertEquals(input.stream().mapToInt(List::size).sum() - 1, data.size());
 
@@ -59,7 +70,7 @@ class InMemoryWriterTest {
 
 	@AfterEach
 	void tearDown() {
-		InMemoryDB.INSTANCE.deleteAll();
+		InMemoryDB.instance().deleteAll();
 	}
 
 }

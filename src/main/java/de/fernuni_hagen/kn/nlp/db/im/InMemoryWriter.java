@@ -16,12 +16,12 @@ public class InMemoryWriter implements DBWriter {
 
 	@Override
 	public void deleteAll() {
-		InMemoryDB.INSTANCE.deleteAll();
+		InMemoryDB.instance().deleteAll();
 	}
 
 	@Override
 	public void addDocument(final Path path) {
-		InMemoryDB.INSTANCE.addDocument(path);
+		InMemoryDB.instance().addDocument(path);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class InMemoryWriter implements DBWriter {
 	}
 
 	private void addTerms(final List<String> distinctTerms) {
-		distinctTerms.forEach(InMemoryDB.INSTANCE::addTerm);
+		distinctTerms.forEach(InMemoryDB.instance()::addTerm);
 	}
 
 	private void addRelationships(final List<String> distinctTerms) {
@@ -40,7 +40,7 @@ public class InMemoryWriter implements DBWriter {
 			final var term1 = distinctTerms.get(i);
 			for (int j = i + 1; j < distinctTerms.size(); j++) {
 				final var term2 = distinctTerms.get(j);
-				InMemoryDB.INSTANCE.addUndirectedRelationship(term1, term2);
+				InMemoryDB.instance().addUndirectedRelationship(term1, term2);
 			}
 		}
 	}

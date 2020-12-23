@@ -36,8 +36,9 @@ public class Config {
 	private String baseDir;
 	private String inputDir;
 	private String dbDir;
-	private int sentenceFileSizeLimitBytes;
 	private boolean keepTempFiles;
+	private boolean persistInMemoryDb;
+	private int sentenceFileSizeLimitBytes;
 	private boolean extractPhrases;
 	private boolean useBaseFormReduction;
 	private boolean filterNouns;
@@ -58,12 +59,24 @@ public class Config {
 		return Path.of(getBaseDir(), defaultIfNull(dbDir, "db"));
 	}
 
-	public int getSentenceFileSizeLimitBytes() {
-		return sentenceFileSizeLimitBytes <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimitBytes;
+	public Path getInMemoryDbDir() {
+		return getDbDir().resolve("im");
+	}
+
+	public Path getNeo4JDbDir() {
+		return getDbDir().resolve("neo4j");
 	}
 
 	public boolean keepTempFiles() {
 		return keepTempFiles;
+	}
+
+	public boolean persistInMemoryDb() {
+		return persistInMemoryDb;
+	}
+
+	public int getSentenceFileSizeLimitBytes() {
+		return sentenceFileSizeLimitBytes <= 0 ? Integer.MAX_VALUE : sentenceFileSizeLimitBytes;
 	}
 
 	public boolean extractPhrases() {

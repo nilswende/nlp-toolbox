@@ -1,5 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
+import de.fernuni_hagen.kn.nlp.config.Config;
+
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,11 +13,20 @@ import java.util.TreeMap;
  *
  * @author Nils Wende
  */
-enum InMemoryDB {
-	INSTANCE; // enum singleton pattern
+public class InMemoryDB {
 
-	private final Map<String, Values> data = new TreeMap<>();
-	private Path currentDoc;
+	public static final String JSON_FILE = "data.json.gz";
+	private static volatile InMemoryDB INSTANCE;
+	private final Map<String, Values> data;
+	private String currentDoc;
+
+	private InMemoryDB(final Config config) {
+		final var path = config.getInMemoryDbDir().resolve(JSON_FILE);
+		data = InMemoryDeserializer.deserialize(path);
+		if (config.persistInMemoryDb()) {
+			InMemorySerializer.persistOnShutdown(path, data);
+		}
+	}
 
 	/**
 	 * Starts a new document to write sentences from.
@@ -23,7 +34,7 @@ enum InMemoryDB {
 	 * @param path the document's file pah
 	 */
 	public void addDocument(final Path path) {
-		currentDoc = path;
+		currentDoc = path.toAbsolutePath().toString();
 	}
 
 	/**
@@ -87,11 +98,11 @@ enum InMemoryDB {
 	 * All values a term in the database is mapped to.
 	 */
 	static class Values {
-		private final Set<Path> documents = new HashSet<>();
+		private final Set<String> documents = new HashSet<>();
 		private final Map<String, Long> cooccs = new TreeMap<>();
 		private long count = 0;
 
-		public Set<Path> getDocuments() {
+		public Set<String> getDocuments() {
 			return documents;
 		}
 
@@ -102,6 +113,32 @@ enum InMemoryDB {
 		public long getCount() {
 			return count;
 		}
+	}
+
+	/**
+	 * Return the singleton instance.
+	 */
+	// double-checked locking
+	public static InMemoryDB instance() {
+		var localRef = INSTANCE;
+		if (localRef == null) {
+			synchronized (InMemoryDB.class) {
+				localRef = INSTANCE;
+			}
+		}
+		return localRef;
+	}
+
+	/**
+	 * Initialize the singleton instance with the given config.
+	 *
+	 * @param config Config
+	 */
+	public static synchronized void init(final Config config) {
+		if (INSTANCE != null) { // else instance() may fail to return the newer instance
+			throw new AssertionError();
+		}
+		INSTANCE = new InMemoryDB(config);
 	}
 
 }

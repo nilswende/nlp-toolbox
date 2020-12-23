@@ -1,10 +1,14 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
+import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +24,13 @@ class InMemoryReaderTest {
 
 	InMemoryReader reader = new InMemoryReader();
 	InMemoryWriter writer = new InMemoryWriter();
+
+	@BeforeAll
+	static void before() {
+		final var mock = Mockito.mock(Config.class);
+		Mockito.when(mock.getInMemoryDbDir()).thenReturn(Path.of(""));
+		InMemoryDB.init(mock);
+	}
 
 	@Test
 	void getSignificances() {
@@ -54,7 +65,7 @@ class InMemoryReaderTest {
 
 	@AfterEach
 	void tearDown() {
-		InMemoryDB.INSTANCE.deleteAll();
+		InMemoryDB.instance().deleteAll();
 	}
 
 }
