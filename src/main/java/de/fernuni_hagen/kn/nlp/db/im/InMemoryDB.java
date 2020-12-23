@@ -50,14 +50,27 @@ enum InMemoryDB {
 		data.clear();
 	}
 
+	/**
+	 * Returns the database content.
+	 *
+	 * @return the database content
+	 */
 	public Map<String, Values> getData() {
 		return data;
 	}
 
+	/**
+	 * Returns the maximum number of sentences that contain any term.
+	 *
+	 * @return the maximum number of sentences that contain any term
+	 */
 	public long getMaxSentencesCount() {
 		return data.values().stream().mapToLong(Values::getCount).max().orElse(0L);
 	}
 
+	/**
+	 * All values a term in the database is mapped to.
+	 */
 	static class Values {
 		private final Map<String, Long> cooccs = new TreeMap<>();
 		private long count = 0;

@@ -8,9 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
+ * Implements writing to the in-memory database.
+ *
  * @author Nils Wende
  */
 public class InMemoryWriter implements DBWriter {
+
+	@Override
+	public void deleteAll() {
+		InMemoryDB.INSTANCE.deleteAll();
+	}
 
 	@Override
 	public void addDocument(final File file) {

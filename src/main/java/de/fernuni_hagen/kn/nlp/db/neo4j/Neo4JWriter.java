@@ -24,6 +24,7 @@ public class Neo4JWriter implements DBWriter {
 	private final Sequences sequences = new Sequences(graphDb);
 	private long currentDocId;
 
+	@Override
 	public void deleteAll() {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var stmt = "MATCH (n)\n" +
@@ -49,7 +50,9 @@ public class Neo4JWriter implements DBWriter {
 		new SentenceAdder(graphDb).addSentence(terms, currentDocId);
 	}
 
-	@Override
+	/**
+	 * Updates the Dice ratio and costs for all relationships present in the DB.
+	 */
 	public void updateDiceAndCosts() {
 		final var stmt = "MATCH (t1:" + Labels.TERM + ")-[r:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
 				"RETURN t1.count, t2.count, r.count, r";

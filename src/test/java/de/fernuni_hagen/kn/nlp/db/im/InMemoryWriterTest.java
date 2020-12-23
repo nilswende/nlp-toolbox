@@ -3,8 +3,8 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,10 +26,9 @@ class InMemoryWriterTest {
 		data.forEach((k, v) -> {
 			assertEquals(1, v.getCount());
 
-			final var terms = new HashSet<>(input);
+			final var terms = new TreeSet<>(input);
 			terms.remove(k);
 			final var cooccs = v.getCooccs();
-			assertEquals(terms.size(), cooccs.size());
 			assertEquals(terms, cooccs.keySet());
 		});
 	}

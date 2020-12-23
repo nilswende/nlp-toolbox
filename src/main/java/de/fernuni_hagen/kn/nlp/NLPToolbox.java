@@ -2,9 +2,9 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.db.im.InMemoryReader;
+import de.fernuni_hagen.kn.nlp.db.im.InMemoryWriter;
 import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4J;
-import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JReader;
-import de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JWriter;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
@@ -36,15 +36,15 @@ public class NLPToolbox {
 	}
 
 	private void run() {
-		//writeAllInputToFreshDB();
-		new Analysis(config.getAnalysisConfig()).analyze();
+		writeAllInputToFreshDB();
+		new Analysis(config.getAnalysisConfig(), new InMemoryReader()).analyze();
 		//new CsvExporter().export();
-		new Neo4JReader().getAllRelationships().forEach(System.out::println);
+		//new Neo4JReader().printPath("art", "version");
 	}
 
 	private void writeAllInputToFreshDB() {
 		final var start = logStart("writeDB");
-		final var db = new Neo4JWriter();
+		final var db = new InMemoryWriter();
 		db.deleteAll();
 		final var documentConverter = new TikaDocumentConverter(config);
 		final var preprocessor = Preprocessor.from(config);

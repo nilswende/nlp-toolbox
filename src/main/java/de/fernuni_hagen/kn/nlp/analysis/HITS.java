@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -28,13 +27,13 @@ public class HITS {
 	 * @return HITS scores
 	 */
 	public Map<String, Scores> calculate(final DBReader db) {
-		final Map<String, List<String>> cooccurrences = db.getCooccurrences();
-		final var terms = cooccurrences.keySet();
+		final Map<String, Map<String, Double>> significances = db.getSignificances(hitsConfig.getDirectedWeightingFunction());
+		final var terms = significances.keySet();
 		final Map<String, Double> auths = initMap(terms);
 		final Map<String, Double> hubs = initMap(terms);
 		for (int i = 0; i < hitsConfig.getIterations(); i++) {
-			calcScore(auths, hubs, cooccurrences);
-			calcScore(hubs, auths, cooccurrences);
+			calcScore(auths, hubs, significances);
+			calcScore(hubs, auths, significances);
 		}
 		return createResultMap(terms, auths, hubs);
 	}
@@ -46,11 +45,18 @@ public class HITS {
 		return map;
 	}
 
-	private void calcScore(final Map<String, Double> targetScore, final Map<String, Double> otherScore, final Map<String, List<String>> cooccurrences) {
+	private void calcScore(final Map<String, Double> targetScore, final Map<String, Double> otherScore, final Map<String, Map<String, Double>> significances) {
 		double tempNorm = 0;
-		for (final Map.Entry<String, List<String>> entry : cooccurrences.entrySet()) {
-			final var sum = entry.getValue().stream().mapToDouble(otherScore::get).sum();
-			targetScore.put(entry.getKey(), sum);
+		for (final Map.Entry<String, Map<String, Double>> cooccs : significances.entrySet()) {
+			double sum = 0;
+			for (final Map.Entry<String, Double> sigs : cooccs.getValue().entrySet()) {
+				try {
+					sum += otherScore.get(sigs.getKey()) * sigs.getValue();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			targetScore.put(cooccs.getKey(), sum);
 			tempNorm += sum * sum;
 		}
 		final double norm = Math.sqrt(tempNorm);

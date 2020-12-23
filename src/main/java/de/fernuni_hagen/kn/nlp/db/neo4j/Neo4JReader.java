@@ -87,7 +87,7 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
-					" WHERE (c.count / t1.count) >= (c.count / t2.count)\n" + //TODO case = appears twice
+					" WHERE (c.count / t1.count) >= (c.count / t2.count)\n" +
 					"RETURN t1.name, t2.name, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
@@ -109,10 +109,8 @@ public class Neo4JReader implements DBReader {
 	private void putDominantSig(final Map<String, Object> row, final double sig, final Map<String, Map<String, Double>> map) {
 		final var t1 = row.get("t1.name").toString();
 		final var t2 = row.get("t2.name").toString();
-		if (map.containsKey(t2)) {
-			if (map.get(t2).containsKey(t1)) {
-				return;  // workaround case = appears twice
-			}
+		if (map.containsKey(t2) && map.get(t2).containsKey(t1)) {
+			return;  // workaround case = appears twice
 		}
 		map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 	}

@@ -11,6 +11,11 @@ import java.util.List;
 public interface DBWriter {
 
 	/**
+	 * Removes all data from the database.
+	 */
+	void deleteAll();
+
+	/**
 	 * Adds a document to the DB.
 	 *
 	 * @param file the file containing the document
@@ -23,10 +28,5 @@ public interface DBWriter {
 	 * @param terms terms of a sentence
 	 */
 	void addSentence(List<String> terms);
-
-	/**
-	 * Updates the Dice ratio and costs for all relationships present in the DB.
-	 */
-	void updateDiceAndCosts();
 
 }

@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
+ * Implements reading from the in-memory database.
+ *
  * @author Nils Wende
  */
 public class InMemoryReader implements DBReader {
@@ -50,8 +52,10 @@ public class InMemoryReader implements DBReader {
 				final var kij = coocc.getValue();
 				final var dom = ki > kj ? entry.getKey() : coocc.getKey();
 				final var sub = ki > kj ? coocc.getKey() : entry.getKey();
-				final var sig = function.calculate(kij, db.getMaxSentencesCount());
-				map.computeIfAbsent(dom, k -> new TreeMap<>()).put(sub, sig);
+				if (!map.containsKey(sub) || !map.get(sub).containsKey(dom)) {
+					final var sig = function.calculate(kij, db.getMaxSentencesCount());
+					map.computeIfAbsent(dom, k -> new TreeMap<>()).put(sub, sig);
+				}
 			}
 		}
 		return map;
