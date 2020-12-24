@@ -3,10 +3,10 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import de.fernuni_hagen.kn.nlp.config.Config;
 
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * A simple in-memory database.
@@ -97,7 +97,7 @@ public class InMemoryDB {
 	 * All values a term in the database is mapped to.
 	 */
 	static class Values {
-		private final Set<String> documents = new HashSet<>();
+		private final Set<String> documents = new TreeSet<>();
 		private final Map<String, Long> cooccs = new TreeMap<>();
 		private long count = 0;
 
