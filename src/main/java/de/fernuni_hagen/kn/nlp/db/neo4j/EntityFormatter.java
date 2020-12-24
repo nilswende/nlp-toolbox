@@ -5,6 +5,9 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
 
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 public class EntityFormatter {
 
 	public static String formatNode(final Node n) {
@@ -20,12 +23,9 @@ public class EntityFormatter {
 	}
 
 	public static String formatPath(final Path p) {
-		final var sb = new StringBuilder();
-		for (Relationship relationship : p.relationships()) {
-			sb.append(formatRelationship(relationship));
-			sb.append('\n');
-		}
-		return sb.toString();
+		return StreamSupport.stream(p.relationships().spliterator(), false)
+				.map(EntityFormatter::formatRelationship)
+				.collect(Collectors.joining("\n"));
 	}
 
 }
