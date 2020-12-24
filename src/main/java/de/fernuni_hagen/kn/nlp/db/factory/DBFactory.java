@@ -41,7 +41,7 @@ public abstract class DBFactory {
 	/**
 	 * Returns the singleton instance.
 	 */
-	// double-checked locking
+	// single-checked locking
 	public static DBFactory instance() {
 		var localRef = INSTANCE;
 		if (localRef == null) {
