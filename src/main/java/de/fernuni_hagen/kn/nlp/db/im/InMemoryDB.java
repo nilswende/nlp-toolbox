@@ -16,11 +16,10 @@ import java.util.TreeMap;
 public class InMemoryDB {
 
 	public static final String JSON_FILE = "data.json.gz";
-	private static volatile InMemoryDB INSTANCE;
 	private final Map<String, Values> data;
 	private String currentDoc;
 
-	private InMemoryDB(final Config config) {
+	public InMemoryDB(final Config config) {
 		final var path = config.getInMemoryDbDir().resolve(JSON_FILE);
 		data = InMemoryDeserializer.deserialize(path);
 		if (config.persistInMemoryDb()) {
@@ -113,34 +112,6 @@ public class InMemoryDB {
 		public long getCount() {
 			return count;
 		}
-	}
-
-	/**
-	 * Return the singleton instance.
-	 */
-	// double-checked locking
-	public static InMemoryDB instance() {
-		var localRef = INSTANCE;
-		if (localRef == null) {
-			synchronized (InMemoryDB.class) {
-				localRef = INSTANCE;
-			}
-		}
-		return localRef;
-	}
-
-	/**
-	 * Initialize the singleton instance with the given config.
-	 *
-	 * @param config Config
-	 */
-	public static synchronized void init(final Config config) {
-		if (INSTANCE != null) {
-			throw new AssertionError();
-			// else instance() may fail to return the newer instance
-			// the null check may only see the old instance
-		}
-		INSTANCE = new InMemoryDB(config);
 	}
 
 }

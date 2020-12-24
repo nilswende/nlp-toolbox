@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.util.Map;
 
 /**
+ * Prints Cypher statements to a PrintStream.
+ *
  * @author Nils Wende
  */
 public class StatementPrinter {

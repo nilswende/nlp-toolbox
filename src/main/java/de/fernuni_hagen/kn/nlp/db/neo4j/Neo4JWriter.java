@@ -20,9 +20,14 @@ import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
  */
 public class Neo4JWriter implements DBWriter {
 
-	private final GraphDatabaseService graphDb = Neo4J.instance().getGraphDb();
-	private final Sequences sequences = new Sequences(graphDb);
+	private final GraphDatabaseService graphDb;
+	private final Sequences sequences;
 	private long currentDocId;
+
+	public Neo4JWriter(Neo4J db) {
+		graphDb = db.getGraphDb();
+		sequences = new Sequences(graphDb);
+	}
 
 	@Override
 	public void deleteAll() {

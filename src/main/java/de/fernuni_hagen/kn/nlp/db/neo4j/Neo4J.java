@@ -8,16 +8,15 @@ import org.neo4j.graphdb.Transaction;
 
 /**
  * Neo4j graph database.<br>
- * <a href="https://neo4j.com/docs/java-reference/4.2/javadocs/">Neo4J Javadocs</a><br>
+ * <a href="https://neo4j.com/docs/java-reference/4.2/javadocs/">Neo4j Javadocs</a><br>
  * <a href="https://neo4j.com/docs/java-reference/current/java-embedded/">Using Neo4j embedded in Java applications</a><br>
- * <a href="https://neo4j.com/docs/cypher-manual/4.2/">The Neo4j Cypher Manual v4.2</a><br>
+ * <a href="https://neo4j.com/docs/cypher-manual/4.2/">Neo4j Cypher Manual v4.2</a><br>
  *
  * @author Nils Wende
  */
 public class Neo4J {
 
 	private static final String DEFAULT_DATABASE_NAME = "neo4j";
-	private static volatile Neo4J INSTANCE;
 	private final GraphDatabaseService graphDb;
 
 	public Neo4J(final Config config) {
@@ -69,34 +68,6 @@ public class Neo4J {
 
 	public GraphDatabaseService getGraphDb() {
 		return graphDb;
-	}
-
-	/**
-	 * Return the singleton instance.
-	 */
-	// double-checked locking
-	public static Neo4J instance() {
-		var localRef = INSTANCE;
-		if (localRef == null) {
-			synchronized (Neo4J.class) {
-				localRef = INSTANCE;
-			}
-		}
-		return localRef;
-	}
-
-	/**
-	 * Initialize the singleton instance with the given config.
-	 *
-	 * @param config Config
-	 */
-	public static synchronized void init(final Config config) {
-		if (INSTANCE != null) {
-			throw new AssertionError();
-			// else instance() may fail to return the newer instance
-			// the null check may only see the old instance
-		}
-		INSTANCE = new Neo4J(config);
 	}
 
 }

@@ -2,9 +2,7 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.Config;
-import de.fernuni_hagen.kn.nlp.db.im.InMemoryDB;
-import de.fernuni_hagen.kn.nlp.db.im.InMemoryReader;
-import de.fernuni_hagen.kn.nlp.db.im.InMemoryWriter;
+import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
@@ -30,20 +28,19 @@ public class NLPToolbox {
 
 	public NLPToolbox(final String configFile) {
 		config = Config.fromJson(configFile);
-		//Neo4J.init(config); //TODO Factory
-		InMemoryDB.init(config); //TODO Factory
+		DBFactory.init(config);
 	}
 
 	private void run() {
 		writeAllInputToFreshDB();
-		new Analysis(config.getAnalysisConfig(), new InMemoryReader()).analyze();
+		new Analysis(config.getAnalysisConfig(), DBFactory.instance().getReader()).analyze();
 		//new CsvExporter().export();
-		//new Neo4JReader().printPath("art", "version");
+		//((Neo4JReader)DBFactory.instance().getReader()).printPath("art", "version");
 	}
 
 	private void writeAllInputToFreshDB() {
 		final var start = logStart("writeDB");
-		final var db = new InMemoryWriter();
+		final var db = DBFactory.instance().getWriter();
 		db.deleteAll();
 		final var documentConverter = new TikaDocumentConverter(config);
 		final var preprocessor = Preprocessor.from(config);

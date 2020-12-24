@@ -28,6 +28,8 @@ public class Config {
 	private static final String DEFAULT_BASE_DIR = "data";
 	private static final String DEFAULT_CONFIG_DIR = "config";
 	private static final String DEFAULT_CONFIG_FILENAME = "config.json";
+	public static final String DB_IN_MEMORY = "im";
+	public static final String DB_NEO4J = "neo4j";
 
 	/**
 	 * It is important that this class and all inner classes contain no final fields,
@@ -36,8 +38,9 @@ public class Config {
 	private String baseDir;
 	private String inputDir;
 	private String dbDir;
-	private boolean keepTempFiles;
+	private String db = DB_IN_MEMORY;
 	private boolean persistInMemoryDb;
+	private boolean keepTempFiles;
 	private int sentenceFileSizeLimitBytes;
 	private boolean extractPhrases;
 	private boolean useBaseFormReduction;
@@ -60,19 +63,23 @@ public class Config {
 	}
 
 	public Path getInMemoryDbDir() {
-		return getDbDir().resolve("im");
+		return getDbDir().resolve(DB_IN_MEMORY);
 	}
 
 	public Path getNeo4JDbDir() {
-		return getDbDir().resolve("neo4j");
+		return getDbDir().resolve(DB_NEO4J);
 	}
 
-	public boolean keepTempFiles() {
-		return keepTempFiles;
+	public String getDb() {
+		return db;
 	}
 
 	public boolean persistInMemoryDb() {
 		return persistInMemoryDb;
+	}
+
+	public boolean keepTempFiles() {
+		return keepTempFiles;
 	}
 
 	public int getSentenceFileSizeLimitBytes() {

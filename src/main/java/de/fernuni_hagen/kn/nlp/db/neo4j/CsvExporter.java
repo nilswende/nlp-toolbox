@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
+import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.neo4j.graphdb.Entity;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -27,7 +28,7 @@ public class CsvExporter {
 	private final GraphDatabaseService graphDb;
 
 	public CsvExporter() {
-		graphDb = Neo4J.instance().getGraphDb();
+		graphDb = ((Neo4J) DBFactory.instance().getDb()).getGraphDb();
 	}
 
 	public void export() {

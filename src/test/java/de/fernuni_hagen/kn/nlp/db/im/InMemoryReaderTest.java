@@ -1,14 +1,10 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.db.DBTest;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,17 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Nils Wende
  */
-class InMemoryReaderTest {
-
-	InMemoryReader reader = new InMemoryReader();
-	InMemoryWriter writer = new InMemoryWriter();
-
-	@BeforeAll
-	static void before() {
-		final var mock = Mockito.mock(Config.class);
-		Mockito.when(mock.getInMemoryDbDir()).thenReturn(Path.of(""));
-		InMemoryDB.init(mock);
-	}
+class InMemoryReaderTest extends DBTest {
 
 	@Test
 	void getSignificances() {
@@ -56,16 +42,11 @@ class InMemoryReaderTest {
 		assertOneDirectedRelationshipBetweenTwoNodes(significances);
 	}
 
-	private void assertOneDirectedRelationshipBetweenTwoNodes(Map<String, Map<String, Double>> significances) {
+	private void assertOneDirectedRelationshipBetweenTwoNodes(final Map<String, Map<String, Double>> significances) {
 		significances.forEach(
 				(k, v) -> v.keySet().forEach(
 						coocc -> assertTrue(!significances.containsKey(coocc) || !significances.get(coocc).containsKey(k))
 				));
-	}
-
-	@AfterEach
-	void tearDown() {
-		InMemoryDB.instance().deleteAll();
 	}
 
 }

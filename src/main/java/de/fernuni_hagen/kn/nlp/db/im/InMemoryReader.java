@@ -17,6 +17,12 @@ import java.util.TreeMap;
  */
 public class InMemoryReader implements DBReader {
 
+	private final InMemoryDB db;
+
+	public InMemoryReader(InMemoryDB db) {
+		this.db = db;
+	}
+
 	@Override
 	public Map<String, List<String>> getCooccurrences() {
 		return null;
@@ -25,7 +31,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var map = new TreeMap<String, Map<String, Double>>();
-		final var data = InMemoryDB.instance().getData();
+		final var data = db.getData();
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
 			final var cooccs = entry.getValue().getCooccs();
@@ -44,7 +50,6 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
 		final var map = new TreeMap<String, Map<String, Double>>();
-		final var db = InMemoryDB.instance();
 		final var data = db.getData();
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
@@ -72,7 +77,7 @@ public class InMemoryReader implements DBReader {
 	public List<String> getAllTermsInDocument(final Path path) {
 		final var pathStr = path.toAbsolutePath().toString();
 		final var terms = new ArrayList<String>();
-		InMemoryDB.instance().getData().forEach((term, v) -> {
+		db.getData().forEach((term, v) -> {
 			if (v.getDocuments().contains(pathStr)) {
 				terms.add(term);
 			}

@@ -22,7 +22,11 @@ import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
  */
 public class Neo4JReader implements DBReader {
 
-	private final GraphDatabaseService graphDb = Neo4J.instance().getGraphDb();
+	private final GraphDatabaseService graphDb;
+
+	public Neo4JReader(final Neo4J db) {
+		graphDb = db.getGraphDb();
+	}
 
 	@Override
 	public Map<String, List<String>> getCooccurrences() {
