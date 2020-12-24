@@ -31,7 +31,7 @@ class InMemoryDBFactory extends DBFactory {
 	}
 
 	@Override
-	public Object getDb() {
+	public InMemoryDB getDb() {
 		return db;
 	}
 
