@@ -8,20 +8,43 @@ import org.neo4j.graphdb.Relationship;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class EntityFormatter {
+/**
+ * Formats Neo4j entities for printing.
+ *
+ * @author Nils Wende
+ */
+class EntityFormatter {
 
+	/**
+	 * Formats a Node.
+	 *
+	 * @param n Node
+	 * @return formatted Node
+	 */
 	public static String formatNode(final Node n) {
 		return "(:" + n.getLabels().iterator().next() + " " + formatEntity(n) + ")";
 	}
 
-	public static String formatEntity(final Entity e) {
+	private static String formatEntity(final Entity e) {
 		return e.getAllProperties().toString();
 	}
 
+	/**
+	 * Formats a Relationship.
+	 *
+	 * @param r Relationship
+	 * @return formatted Relationship
+	 */
 	public static String formatRelationship(final Relationship r) {
 		return formatNode(r.getStartNode()) + "-[:" + formatEntity(r) + "]-" + formatNode(r.getEndNode());
 	}
 
+	/**
+	 * Formats a Path.
+	 *
+	 * @param p Path
+	 * @return formatted Path
+	 */
 	public static String formatPath(final Path p) {
 		return StreamSupport.stream(p.relationships().spliterator(), false)
 				.map(EntityFormatter::formatRelationship)
