@@ -22,10 +22,11 @@ import java.util.zip.GZIPInputStream;
 class InMemoryDeserializer {
 
 	/**
-	 * Deserializes the in-memory database from disk or returns a new Map.
+	 * Deserializes the in-memory database from disk or returns a new Map, if the file doesn't exist.
 	 *
-	 * @param path persisted file
+	 * @param path the persisted file
 	 * @return the in-memory database's state
+	 * @throws UncheckedException if there's an IO exception while reading the file
 	 */
 	public static Map<String, InMemoryDB.Values> deserialize(final Path path) {
 		return Files.exists(path) ? deserializeJson(path) : new TreeMap<>();

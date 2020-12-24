@@ -23,6 +23,7 @@ class InMemorySerializer {
 	 *
 	 * @param path the target file
 	 * @param data the in-memory database's state
+	 * @throws UncheckedException if there's an IO exception while writing the file
 	 */
 	public static void persistOnShutdown(final Path path, final Map<String, InMemoryDB.Values> data) {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> persist(path, data)));

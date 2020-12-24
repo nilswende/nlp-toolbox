@@ -135,8 +135,10 @@ public class InMemoryDB {
 	 * @param config Config
 	 */
 	public static synchronized void init(final Config config) {
-		if (INSTANCE != null) { // else instance() may fail to return the newer instance
+		if (INSTANCE != null) {
 			throw new AssertionError();
+			// else instance() may fail to return the newer instance
+			// the null check may only see the old instance
 		}
 		INSTANCE = new InMemoryDB(config);
 	}
