@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,7 +34,9 @@ class InMemoryDeserializer {
 	}
 
 	private static Map<String, InMemoryDB.Values> deserializeJson(final Path path) {
-		try (final var reader = new InputStreamReader(new GZIPInputStream(Files.newInputStream(path)), StandardCharsets.UTF_8)) {
+		try (final var reader = new InputStreamReader(
+				new GZIPInputStream(Files.newInputStream(path), IOUtils.DEFAULT_BUFFER_SIZE),
+				StandardCharsets.UTF_8)) {
 			return new Gson().fromJson(reader, getType());
 		} catch (final IOException e) {
 			throw new UncheckedException(e);

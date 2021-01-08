@@ -50,11 +50,7 @@ public class HITS {
 		for (final Map.Entry<String, Map<String, Double>> cooccs : significances.entrySet()) {
 			double sum = 0;
 			for (final Map.Entry<String, Double> sigs : cooccs.getValue().entrySet()) {
-				try {
-					sum += otherScore.get(sigs.getKey()) * sigs.getValue();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				sum += otherScore.get(sigs.getKey()) * sigs.getValue();
 			}
 			targetScore.put(cooccs.getKey(), sum);
 			tempNorm += sum * sum;

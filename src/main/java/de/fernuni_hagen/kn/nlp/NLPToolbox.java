@@ -46,8 +46,8 @@ public class NLPToolbox {
 		final var preprocessor = Preprocessor.from(config);
 		try (final var paths = Files.walk(config.getInputDir())) {
 			paths.filter(p -> Files.isRegularFile(p))
-					.peek(db::addDocument)
 					.map(documentConverter::convert)
+					.peek(db::addDocument)
 					.flatMap(preprocessor::preprocess)
 					.forEach(db::addSentence);
 		} catch (final IOException e) {

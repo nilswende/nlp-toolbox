@@ -7,7 +7,7 @@ import de.fernuni_hagen.kn.nlp.config.Config;
 /**
  * Defines a factory for the database (Abstract Factory Pattern).<br>
  * This factory ensures the singleton property of the database it creates.<br>
- * That's why the database must only be accessed via instances created by this factory.
+ * That is why the database must only be accessed via instances created by this factory.
  *
  * @author Nils Wende
  */

@@ -43,7 +43,10 @@ public final class FileHelper {
 	}
 
 	public static void deleteTempFiles() {
-		tempFiles.forEach(FileHelper::delete);
+		synchronized (tempFiles) {
+			tempFiles.forEach(FileHelper::delete);
+			tempFiles.clear();
+		}
 	}
 
 	public static Reader newFileReader(final Path path) throws IOException {
