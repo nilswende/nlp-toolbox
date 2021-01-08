@@ -2,8 +2,8 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ class InMemorySerializer {
 
 	private static void persist(final Path path, final Map<String, InMemoryDB.Values> data) {
 		try (final var writer = new OutputStreamWriter(
-				new GZIPOutputStream(Files.newOutputStream(path), IOUtils.DEFAULT_BUFFER_SIZE),
+				new GZIPOutputStream(new BufferedOutputStream(Files.newOutputStream(path))),
 				StandardCharsets.UTF_8)) {
 			new Gson().toJson(data, writer);
 		} catch (final IOException e) {
