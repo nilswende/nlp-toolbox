@@ -4,12 +4,10 @@ import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.WriteOutContentHandler;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -40,20 +38,18 @@ public class TikaDocumentConverter implements DocumentConverter {
 		}
 	}
 
-	private void parseInput(final Path path, final Writer writer) throws IOException {
+	private void parseInput(final Path path, final Writer writer) {
 		try (final var inputStream = Files.newInputStream(path)) {
 			final var parser = new AutoDetectParser();
 			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
 			final var metadata = new Metadata();
 			parser.parse(inputStream, contentHandler, metadata);
-		} catch (final TikaException e) {
-			throw new UncheckedException(e);
-		} catch (final SAXException e) {
-			handleSAXException(e);
+		} catch (final Exception e) {
+			handleException(e);
 		}
 	}
 
-	private void handleSAXException(final SAXException e) {
+	private void handleException(final Exception e) {
 		// WriteLimitReachedException is private
 		if ("WriteLimitReachedException".equals(e.getClass().getSimpleName())) {
 			System.out.println(e.getMessage());

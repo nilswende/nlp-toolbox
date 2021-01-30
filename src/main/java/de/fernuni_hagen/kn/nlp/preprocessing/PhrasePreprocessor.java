@@ -19,13 +19,14 @@ class PhrasePreprocessor extends Preprocessor {
 		super(workflowSteps);
 	}
 
-	//TODO Decorator, extract interface?
 	@Override
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var pairs = factory.createPhraseExtractor().extractPhrases(sentences.collect(Collectors.toList()));
+		final List<Pair<String, List<String>>> pairs = factory.createPhraseExtractor().extractPhrases(sentences.collect(Collectors.toList()));
 		final var iterator = pairs.iterator();
 		// exclude the phrases from further processing
 		return super.processSentences(pairs.stream().map(Pair::getLeft), factory)
+				// ensure sequential-ness to safely use the iterator
+				.sequential()
 				// include the phrases in the final result
 				.map(l -> Stream.of(l, iterator.next().getRight()).flatMap(List::stream).collect(Collectors.toList()));
 	}

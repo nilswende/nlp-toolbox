@@ -30,15 +30,15 @@ public class Preprocessor {
 	 * @return stream of the sentences inside the document, split into words
 	 */
 	public Stream<List<String>> preprocess(final Path document) {
-		final PreprocessingFactory factory = PreprocessingFactory.from(document);
-		final SentenceExtractor sentenceExtractor = factory.createSentenceExtractor();
+		final var factory = PreprocessingFactory.from(document);
+		final var sentenceExtractor = factory.createSentenceExtractor();
 		final var sentences = sentenceExtractor.extract(document);
-		return processSentences(sentences, factory);
+		final var cleanedSentences = cleanSentences(sentences, factory);
+		return processSentences(cleanedSentences, factory);
 	}
 
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var cleanedSentences = cleanSentences(sentences, factory);
-		final var taggedSentences = tagSentences(cleanedSentences, factory);
+		final var taggedSentences = tagSentences(sentences, factory);
 		return applyPreprocessingSteps(taggedSentences, factory)
 				.map(s -> s.map(TaggedWord::getTerm))
 				.map(s -> s.collect(Collectors.toList()));
@@ -52,14 +52,14 @@ public class Preprocessor {
 	}
 
 	private Stream<Stream<TaggedWord>> tagSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final Tagger tagger = factory.createTagger();
+		final var tagger = factory.createTagger();
 		return sentences.map(tagger::tag);
 	}
 
 	private Stream<Stream<TaggedWord>> applyPreprocessingSteps(final Stream<Stream<TaggedWord>> taggedSentences, final PreprocessingFactory factory) {
 		var stream = taggedSentences;
 		final var steps = preprocessingSteps.stream().map(step -> step.apply(factory)).collect(Collectors.toList());
-		for (final PreprocessingStep step : steps) {
+		for (final var step : steps) {
 			stream = stream.map(step::apply);
 		}
 		return stream;
