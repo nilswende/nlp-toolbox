@@ -17,7 +17,7 @@ public class ENBaseFormReducer implements BaseFormReducer {
 
 	@Override
 	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
-		return sentence.map(w -> new TaggedTerm(reducer.stem(w.getTerm()), w));
+		return sentence.map(t -> t.withTerm(reducer::stem));
 	}
 
 }

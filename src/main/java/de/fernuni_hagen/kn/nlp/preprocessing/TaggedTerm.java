@@ -1,5 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
+import java.util.function.Function;
+
 /**
  * A POS tagged term.
  *
@@ -11,13 +13,7 @@ public class TaggedTerm {
 	private final String tag;
 	private final Tagset tagset;
 
-	public TaggedTerm(final String term, final TaggedTerm taggedTerm) {
-		this.term = term;
-		this.tag = taggedTerm.getTag();
-		this.tagset = taggedTerm.getTagset();
-	}
-
-	public TaggedTerm(final String term, final String tag, final Tagset tagset) {
+	private TaggedTerm(final String term, final String tag, final Tagset tagset) {
 		this.term = term;
 		this.tag = tag;
 		this.tagset = tagset;
@@ -34,6 +30,26 @@ public class TaggedTerm {
 		final var separator = tagset.getTagSeparator();
 		final var pos = taggedTerm.lastIndexOf(separator);
 		return new TaggedTerm(taggedTerm.substring(0, pos), taggedTerm.substring(pos + separator.length()), tagset);
+	}
+
+	/**
+	 * Returns a copy of this TaggedTerm with the given term.
+	 *
+	 * @param term the new term
+	 * @return TaggedTerm
+	 */
+	public TaggedTerm withTerm(final String term) {
+		return new TaggedTerm(term, tag, tagset);
+	}
+
+	/**
+	 * Returns a copy of this TaggedTerm with the mapper applied to the current term.
+	 *
+	 * @param mapper creating the new term from the old
+	 * @return TaggedTerm
+	 */
+	public TaggedTerm withTerm(final Function<String, String> mapper) {
+		return withTerm(mapper.apply(term));
 	}
 
 	/**

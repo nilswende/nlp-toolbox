@@ -15,11 +15,11 @@ public class DECaseNormalizer implements CaseNormalizer {
 
 	@Override
 	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
-		return sentence.map(w -> w.isNoun() ? w : normalizeCase(w));
+		return sentence.map(t -> t.isNoun() ? t : normalizeCase(t));
 	}
 
-	private TaggedTerm normalizeCase(final TaggedTerm w) {
-		return new TaggedTerm(w.getTerm().toLowerCase(Locale.GERMAN), w);
+	private TaggedTerm normalizeCase(final TaggedTerm tagged) {
+		return tagged.withTerm(t -> t.toLowerCase(Locale.GERMAN));
 	}
 
 }

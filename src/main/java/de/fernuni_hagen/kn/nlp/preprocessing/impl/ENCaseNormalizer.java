@@ -15,11 +15,11 @@ public class ENCaseNormalizer implements CaseNormalizer {
 
 	@Override
 	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
-		return sentence.map(w -> w.isProperNoun() ? w : normalizeCase(w));
+		return sentence.map(t -> t.isProperNoun() ? t : normalizeCase(t));
 	}
 
-	private TaggedTerm normalizeCase(TaggedTerm w) {
-		return new TaggedTerm(w.getTerm().toLowerCase(Locale.ENGLISH), w);
+	private TaggedTerm normalizeCase(final TaggedTerm tagged) {
+		return tagged.withTerm(t -> t.toLowerCase(Locale.ENGLISH));
 	}
 
 }

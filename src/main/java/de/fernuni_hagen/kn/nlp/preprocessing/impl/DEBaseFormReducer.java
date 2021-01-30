@@ -26,7 +26,7 @@ public class DEBaseFormReducer implements BaseFormReducer {
 
 	@Override
 	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
-		return sentence.map(w -> new TaggedTerm(reducer.grundFormReduktion(w.getTerm()), w));
+		return sentence.map(t -> t.withTerm(reducer::grundFormReduktion));
 	}
 
 }

@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.BreakIterator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -31,10 +32,20 @@ class LazySentenceSupplier implements Closeable {
 	public LazySentenceSupplier(final Path textFile, final Locale locale) {
 		fileReader = new BufferedFileReader(textFile, Config.DEFAULT_CHARSET);
 		iter = new BufferedFileCharacterIterator(new BufferedFileReader(textFile, Config.DEFAULT_CHARSET));
-		boundary = BreakIterator.getSentenceInstance(locale);
+		boundary = BreakIterator.getSentenceInstance(findBestMatch(locale));
 		boundary.setText(iter);
 		start = boundary.first();
 		end = boundary.next();
+	}
+
+	private Locale findBestMatch(final Locale locale) {
+		final var availableLocales = List.of(BreakIterator.getAvailableLocales());
+		final var priorityList = List.of(new Locale.LanguageRange(locale.toLanguageTag()));
+		final var bestMatch = Locale.lookup(priorityList, availableLocales);
+		if (bestMatch == null) {
+			throw new IllegalArgumentException("BreakIterator does not support locale " + locale);
+		}
+		return bestMatch;
 	}
 
 	/**

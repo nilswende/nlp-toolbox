@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.function.Function;
@@ -20,15 +19,13 @@ class PhrasePreprocessor extends Preprocessor {
 	}
 
 	@Override
-	protected Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final List<Pair<String, List<String>>> pairs = factory.createPhraseExtractor().extractPhrases(sentences.collect(Collectors.toList()));
-		final var iterator = pairs.iterator();
-		// exclude the phrases from further processing
-		return super.processSentences(pairs.stream().map(Pair::getLeft), factory)
-				// ensure sequential-ness to safely use the iterator
-				.sequential()
-				// include the phrases in the final result
-				.map(l -> Stream.of(l, iterator.next().getRight()).flatMap(List::stream).collect(Collectors.toList()));
+	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+		final var phraseExtractor = factory.createPhraseExtractor();
+		final var tagger = factory.createTagger();
+		return phraseExtractor
+				.extractPhrases(sentences.collect(Collectors.toList()))
+				.stream()
+				.map(p -> new Sentence(tagger.tag(p.getLeft()), p.getRight()));
 	}
 
 }

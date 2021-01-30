@@ -37,13 +37,6 @@ public class Preprocessor {
 		return processSentences(cleanedSentences, factory);
 	}
 
-	protected Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var taggedSentences = tagSentences(sentences, factory);
-		return applyPreprocessingSteps(taggedSentences, factory)
-				.map(s -> s.map(TaggedTerm::getTerm))
-				.map(s -> s.collect(Collectors.toList()));
-	}
-
 	private Stream<String> cleanSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		final var sentenceCleaner = factory.createSentenceCleaner();
 		return sentences
@@ -51,13 +44,21 @@ public class Preprocessor {
 				.filter(s -> !s.isEmpty());
 	}
 
-	private Stream<Stream<TaggedTerm>> tagSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var tagger = factory.createTagger();
-		return sentences.map(tagger::tag);
+	private Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+		final var taggedSentences = createSentences(sentences, factory);
+		return applyPreprocessingSteps(taggedSentences, factory)
+				.map(s -> s.map(TaggedTerm::getTerm))
+				.map(s -> s.collect(Collectors.toList()));
 	}
 
-	private Stream<Stream<TaggedTerm>> applyPreprocessingSteps(final Stream<Stream<TaggedTerm>> taggedSentences, final PreprocessingFactory factory) {
-		var stream = taggedSentences;
+	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+		final var tagger = factory.createTagger();
+		return sentences.map(s -> new Sentence(tagger.tag(s)));
+	}
+
+	//TODO: use Sentence in the steps
+	private Stream<Stream<TaggedTerm>> applyPreprocessingSteps(final Stream<Sentence> taggedSentences, final PreprocessingFactory factory) {
+		var stream = taggedSentences.map(s -> s.getTerms().stream());
 		final var steps = preprocessingSteps.stream().map(step -> step.apply(factory)).collect(Collectors.toList());
 		for (final var step : steps) {
 			stream = stream.map(step::apply);

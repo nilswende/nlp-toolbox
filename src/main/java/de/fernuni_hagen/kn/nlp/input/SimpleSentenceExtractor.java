@@ -6,14 +6,12 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
-import java.text.BreakIterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * Extracts sentences from a text file using a {@link java.text.BreakIterator}.
+ * Extracts sentences from a text file using a {@link LazySentenceSupplier}.
  *
  * @author Nils Wende
  */
@@ -29,21 +27,11 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 
 	@Override
 	public Stream<String> extract(final Path textFile) {
-		final var sentenceSupplier = new LazySentenceSupplier(textFile, findBestMatch(locale));
+		final var sentenceSupplier = new LazySentenceSupplier(textFile, locale);
 		return Stream.iterate(extractOneSentence(sentenceSupplier),
 				Objects::nonNull,
 				s -> extractOneSentence(sentenceSupplier))
 				.onClose(() -> close(sentenceSupplier));
-	}
-
-	private Locale findBestMatch(final Locale locale) {
-		final var availableLocales = List.of(BreakIterator.getAvailableLocales());
-		final var priorityList = List.of(new Locale.LanguageRange(locale.toLanguageTag()));
-		final var bestMatch = Locale.lookup(priorityList, availableLocales);
-		if (bestMatch == null) {
-			throw new IllegalArgumentException("BreakIterator does not support locale " + locale);
-		}
-		return bestMatch;
 	}
 
 	private String extractOneSentence(final LazySentenceSupplier sentenceSupplier) {
