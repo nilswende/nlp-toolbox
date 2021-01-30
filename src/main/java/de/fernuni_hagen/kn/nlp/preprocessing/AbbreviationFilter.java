@@ -16,6 +16,6 @@ public interface AbbreviationFilter extends PreprocessingStep {
 	 * @return the sentence without abbreviations
 	 */
 	@Override
-	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
+	Stream<TaggedTerm> apply(Stream<TaggedTerm> sentence);
 
 }

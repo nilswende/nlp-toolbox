@@ -16,6 +16,6 @@ public interface BaseFormReducer extends PreprocessingStep {
 	 * @return the reduced terms
 	 */
 	@Override
-	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
+	Stream<TaggedTerm> apply(Stream<TaggedTerm> sentence);
 
 }

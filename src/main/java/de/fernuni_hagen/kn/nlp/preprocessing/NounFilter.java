@@ -16,6 +16,6 @@ public interface NounFilter extends PreprocessingStep {
 	 * @return the sentence containing only nouns
 	 */
 	@Override
-	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
+	Stream<TaggedTerm> apply(Stream<TaggedTerm> sentence);
 
 }

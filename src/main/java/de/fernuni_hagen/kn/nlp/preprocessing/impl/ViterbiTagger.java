@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +28,10 @@ public class ViterbiTagger implements Tagger {
 	}
 
 	@Override
-	public Stream<TaggedWord> tag(final String sentence) {
+	public Stream<TaggedTerm> tag(final String sentence) {
 		final var taggedSentence = tagger.tagSentence(sentence).stripLeading();
-		final var taggedWords = Arrays.stream(taggedSentence.split(StringUtils.SPACE));
-		return TaggedWord.from(taggedWords, tagset);
+		return Arrays.stream(taggedSentence.split(StringUtils.SPACE))
+				.map(t -> TaggedTerm.from(t, tagset));
 	}
 
 }

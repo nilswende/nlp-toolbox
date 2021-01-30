@@ -15,6 +15,6 @@ public interface Tagger {
 	 * @param sentence the sentence to be tagged
 	 * @return the tagged sentence
 	 */
-	Stream<TaggedWord> tag(String sentence);
+	Stream<TaggedTerm> tag(String sentence);
 
 }

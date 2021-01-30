@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
-import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
 
 import java.nio.file.Path;
@@ -25,8 +25,8 @@ public class DEBaseFormReducer implements BaseFormReducer {
 	}
 
 	@Override
-	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
-		return sentence.map(w -> new TaggedWord(reducer.grundFormReduktion(w.getTerm()), w));
+	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
+		return sentence.map(w -> new TaggedTerm(reducer.grundFormReduktion(w.getTerm()), w));
 	}
 
 }

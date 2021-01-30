@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 import te.utils.ExternalData;
 
 import java.util.Locale;
@@ -36,7 +36,7 @@ public class ASVStopWordFilter implements StopWordFilter {
 	}
 
 	@Override
-	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
+	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
 		return sentence.filter(w -> !stopWords.contains(normalize(w.getTerm())));
 	}
 

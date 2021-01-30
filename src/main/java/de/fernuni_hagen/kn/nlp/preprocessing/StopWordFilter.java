@@ -16,6 +16,6 @@ public interface StopWordFilter extends PreprocessingStep {
 	 * @return the sentence without stop words
 	 */
 	@Override
-	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
+	Stream<TaggedTerm> apply(Stream<TaggedTerm> sentence);
 
 }

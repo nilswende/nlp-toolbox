@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
@@ -39,7 +39,7 @@ public class FileAbbreviationFilter implements AbbreviationFilter {
 	}
 
 	@Override
-	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
+	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
 		return sentence.filter(w -> !abbreviations.contains(w.getTerm()));
 	}
 

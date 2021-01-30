@@ -40,7 +40,7 @@ public class Preprocessor {
 	protected Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		final var taggedSentences = tagSentences(sentences, factory);
 		return applyPreprocessingSteps(taggedSentences, factory)
-				.map(s -> s.map(TaggedWord::getTerm))
+				.map(s -> s.map(TaggedTerm::getTerm))
 				.map(s -> s.collect(Collectors.toList()));
 	}
 
@@ -51,12 +51,12 @@ public class Preprocessor {
 				.filter(s -> !s.isEmpty());
 	}
 
-	private Stream<Stream<TaggedWord>> tagSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+	private Stream<Stream<TaggedTerm>> tagSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		final var tagger = factory.createTagger();
 		return sentences.map(tagger::tag);
 	}
 
-	private Stream<Stream<TaggedWord>> applyPreprocessingSteps(final Stream<Stream<TaggedWord>> taggedSentences, final PreprocessingFactory factory) {
+	private Stream<Stream<TaggedTerm>> applyPreprocessingSteps(final Stream<Stream<TaggedTerm>> taggedSentences, final PreprocessingFactory factory) {
 		var stream = taggedSentences;
 		final var steps = preprocessingSteps.stream().map(step -> step.apply(factory)).collect(Collectors.toList());
 		for (final var step : steps) {

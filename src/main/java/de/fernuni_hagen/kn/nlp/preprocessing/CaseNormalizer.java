@@ -16,6 +16,6 @@ public interface CaseNormalizer extends PreprocessingStep {
 	 * @return the case-normalized terms
 	 */
 	@Override
-	Stream<TaggedWord> apply(Stream<TaggedWord> sentence);
+	Stream<TaggedTerm> apply(Stream<TaggedTerm> sentence);
 
 }

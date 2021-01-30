@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.TaggedWord;
+import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 
 import java.util.stream.Stream;
 
@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 public class TaggedNounFilter implements NounFilter {
 
 	@Override
-	public Stream<TaggedWord> apply(final Stream<TaggedWord> sentence) {
-		return sentence.filter(TaggedWord::isNoun);
+	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
+		return sentence.filter(TaggedTerm::isNoun);
 	}
 
 }
