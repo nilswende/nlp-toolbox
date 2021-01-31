@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -29,7 +28,7 @@ public class Preprocessor {
 	 * @param document the document to be processed
 	 * @return stream of the sentences inside the document, split into words
 	 */
-	public Stream<List<String>> preprocess(final Path document) {
+	public Stream<Sentence> preprocess(final Path document) {
 		final var factory = PreprocessingFactory.from(document);
 		final var sentenceExtractor = factory.createSentenceExtractor();
 		final var sentences = sentenceExtractor.extract(document);
@@ -44,11 +43,9 @@ public class Preprocessor {
 				.filter(s -> !s.isEmpty());
 	}
 
-	private Stream<List<String>> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+	private Stream<Sentence> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		final var taggedSentences = createSentences(sentences, factory);
-		return applyPreprocessingSteps(taggedSentences, factory)
-				.map(s -> s.map(TaggedTerm::getTerm))
-				.map(s -> s.collect(Collectors.toList()));
+		return applyPreprocessingSteps(taggedSentences, factory);
 	}
 
 	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
@@ -56,14 +53,12 @@ public class Preprocessor {
 		return sentences.map(s -> new Sentence(tagger.tag(s)));
 	}
 
-	//TODO: use Sentence in the steps
-	private Stream<Stream<TaggedTerm>> applyPreprocessingSteps(final Stream<Sentence> taggedSentences, final PreprocessingFactory factory) {
-		var stream = taggedSentences.map(s -> s.getTerms().stream());
-		final var steps = preprocessingSteps.stream().map(step -> step.apply(factory)).collect(Collectors.toList());
-		for (final var step : steps) {
-			stream = stream.map(step::apply);
-		}
-		return stream;
+	private Stream<Sentence> applyPreprocessingSteps(final Stream<Sentence> taggedSentences, final PreprocessingFactory factory) {
+		return preprocessingSteps.stream()
+				.map(step -> (Function<Stream<TaggedTerm>, Stream<TaggedTerm>>) step.apply(factory))
+				.reduce(Function::andThen)
+				.map(steps -> taggedSentences.map(s -> s.withTerms(steps)))
+				.orElse(taggedSentences);
 	}
 
 	/**

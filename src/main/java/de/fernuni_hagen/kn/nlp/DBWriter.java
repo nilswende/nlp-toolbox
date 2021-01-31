@@ -1,7 +1,8 @@
 package de.fernuni_hagen.kn.nlp;
 
+import de.fernuni_hagen.kn.nlp.preprocessing.Sentence;
+
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Writes to the database.
@@ -23,10 +24,10 @@ public interface DBWriter {
 	void addDocument(Path path);
 
 	/**
-	 * Adds a sentence in the form of terms to the DB.
+	 * Adds a sentence to the DB.
 	 *
-	 * @param terms terms of a sentence
+	 * @param sentence a sentence
 	 */
-	void addSentence(List<String> terms);
+	void addSentence(Sentence sentence);
 
 }

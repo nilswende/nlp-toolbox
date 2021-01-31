@@ -16,7 +16,7 @@ public interface PhraseExtractor {
 	 * The phrases are removed from the text's sentences and put in a different list.
 	 *
 	 * @param sentences the text from which phrases should be extracted
-	 * @return the list of (sentence, phrases) tuples
+	 * @return the list of (terms, phrases) tuples, each forming one sentence
 	 */
 	List<Pair<String, List<String>>> extractPhrases(List<String> sentences);
 

@@ -2,13 +2,13 @@ package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.preprocessing.Sentence;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 
 import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
@@ -51,8 +51,8 @@ public class Neo4JWriter implements DBWriter {
 	}
 
 	@Override
-	public void addSentence(final List<String> terms) {
-		new SentenceAdder(graphDb).addSentence(terms, currentDocId);
+	public void addSentence(final Sentence sentence) {
+		new SentenceAdder(graphDb).addSentence(sentence, currentDocId);
 	}
 
 	/**
