@@ -69,11 +69,11 @@ public class Preprocessor {
 	 */
 	public static Preprocessor from(final Config config) {
 		final var steps = new ArrayList<Function<PreprocessingFactory, PreprocessingStep>>();
-		if (config.removeAbbreviations()) {
-			steps.add(PreprocessingFactory::createAbbreviationFilter);
-		}
 		if (config.filterNouns()) {
 			steps.add(PreprocessingFactory::createNounFilter);
+		}
+		if (config.removeAbbreviations()) {
+			steps.add(PreprocessingFactory::createAbbreviationFilter);
 		}
 		if (config.removeStopWords()) {
 			steps.add(PreprocessingFactory::createStopWordFilter);
