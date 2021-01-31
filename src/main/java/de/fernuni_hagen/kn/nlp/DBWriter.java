@@ -3,6 +3,8 @@ package de.fernuni_hagen.kn.nlp;
 import de.fernuni_hagen.kn.nlp.preprocessing.Sentence;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Writes to the database.
@@ -26,8 +28,18 @@ public interface DBWriter {
 	/**
 	 * Adds a sentence to the DB.
 	 *
+	 * @param distinctTerms a sentence in the form of distinct terms
+	 */
+	void addSentence(List<String> distinctTerms);
+
+	/**
+	 * Adds a sentence to the DB.
+	 *
 	 * @param sentence a sentence
 	 */
-	void addSentence(Sentence sentence);
+	default void addSentence(final Sentence sentence) {
+		final var distinctTerms = sentence.getContent().distinct().collect(Collectors.toList());
+		addSentence(distinctTerms);
+	}
 
 }

@@ -1,11 +1,9 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.preprocessing.Sentence;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implements writing to the in-memory database.
@@ -31,8 +29,7 @@ public class InMemoryWriter implements DBWriter {
 	}
 
 	@Override
-	public void addSentence(final Sentence sentence) {
-		final var distinctTerms = sentence.getContent().distinct().collect(Collectors.toList());
+	public void addSentence(final List<String> distinctTerms) {
 		addTerms(distinctTerms);
 		addRelationships(distinctTerms);
 	}

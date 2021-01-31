@@ -1,12 +1,10 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.Sentence;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Adds a sentence to the DB.
@@ -24,13 +22,12 @@ class SentenceAdder {
 	}
 
 	/**
-	 * Delegate for {@link Neo4JWriter#addSentence(Sentence)}.
+	 * Delegate for {@link Neo4JWriter#addSentence(List)}.
 	 *
-	 * @param sentence a sentence
-	 * @param docId    document ID
+	 * @param distinctTerms a sentence
+	 * @param docId         document ID
 	 */
-	public void addSentence(final Sentence sentence, final long docId) {
-		final var distinctTerms = sentence.getContent().distinct().collect(Collectors.toList());
+	public void addSentence(final List<String> distinctTerms, final long docId) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			addTermNodes(distinctTerms, tx);
 			addTermRelationships(distinctTerms, tx);
