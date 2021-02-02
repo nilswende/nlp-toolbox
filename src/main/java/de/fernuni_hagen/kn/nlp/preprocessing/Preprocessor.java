@@ -32,19 +32,19 @@ public class Preprocessor {
 		final var factory = PreprocessingFactory.from(document);
 		final var sentenceExtractor = factory.createSentenceExtractor();
 		final var sentences = sentenceExtractor.extract(document);
+		return processSentences(sentences, factory);
+	}
+
+	private Stream<Sentence> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		final var cleanedSentences = cleanSentences(sentences, factory);
-		return processSentences(cleanedSentences, factory);
+		final var taggedSentences = createSentences(cleanedSentences, factory);
+		return applyPreprocessingSteps(taggedSentences, factory);
 	}
 
 	private Stream<String> cleanSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
 		return sentences
 				.map(factory.createSentenceCleaner())
 				.filter(s -> !s.isEmpty());
-	}
-
-	private Stream<Sentence> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var taggedSentences = createSentences(sentences, factory);
-		return applyPreprocessingSteps(taggedSentences, factory);
 	}
 
 	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
