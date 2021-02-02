@@ -37,9 +37,8 @@ public class Preprocessor {
 	}
 
 	private Stream<String> cleanSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var sentenceCleaner = factory.createSentenceCleaner();
 		return sentences
-				.map(sentenceCleaner::clean)
+				.map(factory.createSentenceCleaner())
 				.filter(s -> !s.isEmpty());
 	}
 
@@ -49,14 +48,15 @@ public class Preprocessor {
 	}
 
 	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var tagger = factory.createTagger();
-		return sentences.map(s -> new Sentence(tagger.tag(s)));
+		return sentences
+				.map(factory.createTagger())
+				.map(Sentence::new);
 	}
 
 	private Stream<Sentence> applyPreprocessingSteps(final Stream<Sentence> taggedSentences, final PreprocessingFactory factory) {
 		return preprocessingSteps.stream()
-				.map(step -> (Function<Stream<TaggedTerm>, Stream<TaggedTerm>>) step.apply(factory))
-				.reduce(Function::andThen)
+				.map(step -> step.apply(factory))
+				.reduce(PreprocessingStep::chain)
 				.map(steps -> taggedSentences.map(s -> s.withTerms(steps)))
 				.orElse(taggedSentences);
 	}

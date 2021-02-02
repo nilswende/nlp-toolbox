@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
-import de.fernuni_hagen.kn.nlp.preprocessing.LanguageExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceCleaner;
@@ -46,7 +45,7 @@ public interface PreprocessingFactory {
 	 * @return a concrete factory
 	 */
 	static PreprocessingFactory from(final Path textFile) {
-		final LanguageExtractor languageExtractor = new JLanILanguageExtractor();
+		final var languageExtractor = new JLanILanguageExtractor();
 		final var locale = languageExtractor.extract(textFile);
 		switch (locale.getLanguage()) {
 			case "de":

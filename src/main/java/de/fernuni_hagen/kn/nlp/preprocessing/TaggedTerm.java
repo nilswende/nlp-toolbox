@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * A POS tagged term.
@@ -48,7 +48,7 @@ public class TaggedTerm {
 	 * @param mapper creating the new term from the old
 	 * @return TaggedTerm
 	 */
-	public TaggedTerm withTerm(final Function<String, String> mapper) {
+	public TaggedTerm withTerm(final UnaryOperator<String> mapper) {
 		return withTerm(mapper.apply(term));
 	}
 

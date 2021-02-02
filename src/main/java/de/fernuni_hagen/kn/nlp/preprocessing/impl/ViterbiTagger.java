@@ -29,7 +29,7 @@ public class ViterbiTagger implements Tagger {
 	}
 
 	@Override
-	public List<TaggedTerm> tag(final String sentence) {
+	public List<TaggedTerm> apply(final String sentence) {
 		final var taggedSentence = tagger.tagSentence(sentence).stripLeading();
 		return Arrays.stream(taggedSentence.split(StringUtils.SPACE))
 				.map(t -> TaggedTerm.from(t, tagset))

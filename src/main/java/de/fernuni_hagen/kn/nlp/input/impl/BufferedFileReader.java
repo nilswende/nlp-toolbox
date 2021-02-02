@@ -118,9 +118,7 @@ public class BufferedFileReader implements Closeable {
 	// non private for tests
 	Reader createReader() {
 		try {
-			final var reader = Files.newBufferedReader(path, charset);
-			offset = 0;
-			return reader;
+			return Files.newBufferedReader(path, charset);
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}

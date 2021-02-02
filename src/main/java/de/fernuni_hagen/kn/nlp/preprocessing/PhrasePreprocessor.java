@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -23,9 +22,8 @@ class PhrasePreprocessor extends Preprocessor {
 		final var phraseExtractor = factory.createPhraseExtractor();
 		final var tagger = factory.createTagger();
 		return phraseExtractor
-				.extractPhrases(sentences.collect(Collectors.toList()))
-				.stream()
-				.map(p -> new Sentence(tagger.tag(p.getLeft()), p.getRight()));
+				.extractPhrases(sentences)
+				.map(p -> new Sentence(tagger.apply(p.getLeft()), p.getRight()));
 	}
 
 }

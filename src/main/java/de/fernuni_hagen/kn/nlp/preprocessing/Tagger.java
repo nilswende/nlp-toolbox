@@ -1,13 +1,14 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Uses POS tagging on sentences.
  *
  * @author Nils Wende
  */
-public interface Tagger {
+public interface Tagger extends Function<String, List<TaggedTerm>> {
 
 	/**
 	 * Uses POS tagging on sentences.
@@ -15,6 +16,6 @@ public interface Tagger {
 	 * @param sentence the sentence to be tagged
 	 * @return the tagged sentence
 	 */
-	List<TaggedTerm> tag(String sentence);
+	List<TaggedTerm> apply(String sentence);
 
 }

@@ -1,8 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,7 +32,7 @@ public class Sentence {
 	 * @param terms TaggedTerms
 	 */
 	public Sentence(final List<TaggedTerm> terms) {
-		this(terms, Collections.emptyList());
+		this(terms, List.of());
 	}
 
 	/**
@@ -42,7 +41,7 @@ public class Sentence {
 	 * @param mapper creating the new terms from the old
 	 * @return Sentence
 	 */
-	public Sentence withTerms(final Function<Stream<TaggedTerm>, Stream<TaggedTerm>> mapper) {
+	public Sentence withTerms(final UnaryOperator<Stream<TaggedTerm>> mapper) {
 		final var newTerms = mapper.apply(terms.stream()).collect(Collectors.toList());
 		return new Sentence(newTerms, phrases);
 	}
