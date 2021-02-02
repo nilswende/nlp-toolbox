@@ -18,7 +18,7 @@ class PhrasePreprocessor extends Preprocessor {
 	}
 
 	@Override
-	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
 		final var phraseExtractor = factory.createPhraseExtractor();
 		final var tagger = factory.createTagger();
 		return phraseExtractor

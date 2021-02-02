@@ -6,6 +6,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 public class Preprocessor {
 
 	private final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps;
+	protected PreprocessingFactory factory;
 
 	protected Preprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps) {
 		this.preprocessingSteps = preprocessingSteps;
@@ -29,36 +31,40 @@ public class Preprocessor {
 	 * @return stream of the sentences inside the document, split into words
 	 */
 	public Stream<Sentence> preprocess(final Path document) {
-		final var factory = PreprocessingFactory.from(document);
+		factory = PreprocessingFactory.from(document);
 		final var sentenceExtractor = factory.createSentenceExtractor();
 		final var sentences = sentenceExtractor.extract(document);
-		return processSentences(sentences, factory);
+		return processSentences(sentences);
 	}
 
-	private Stream<Sentence> processSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
-		final var cleanedSentences = cleanSentences(sentences, factory);
-		final var taggedSentences = createSentences(cleanedSentences, factory);
-		return applyPreprocessingSteps(taggedSentences, factory);
+	private Stream<Sentence> processSentences(final Stream<String> sentences) {
+		final var cleanedSentences = cleanSentences(sentences);
+		final var taggedSentences = createSentences(cleanedSentences);
+		return applyPreprocessingSteps(taggedSentences);
 	}
 
-	private Stream<String> cleanSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+	private Stream<String> cleanSentences(final Stream<String> sentences) {
 		return sentences
 				.map(factory.createSentenceCleaner())
 				.filter(s -> !s.isEmpty());
 	}
 
-	protected Stream<Sentence> createSentences(final Stream<String> sentences, final PreprocessingFactory factory) {
+	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
 		return sentences
 				.map(factory.createTagger())
 				.map(Sentence::new);
 	}
 
-	private Stream<Sentence> applyPreprocessingSteps(final Stream<Sentence> taggedSentences, final PreprocessingFactory factory) {
-		return preprocessingSteps.stream()
-				.map(step -> step.apply(factory))
-				.reduce(PreprocessingStep::chain)
+	private Stream<Sentence> applyPreprocessingSteps(final Stream<Sentence> taggedSentences) {
+		return chainPreprocessingSteps()
 				.map(steps -> taggedSentences.map(s -> s.withTerms(steps)))
 				.orElse(taggedSentences);
+	}
+
+	private Optional<PreprocessingStep> chainPreprocessingSteps() {
+		return preprocessingSteps.stream()
+				.map(step -> step.apply(factory))
+				.reduce(PreprocessingStep::chain);
 	}
 
 	/**
