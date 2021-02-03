@@ -17,7 +17,7 @@ class RegexSentenceCleanerTest {
 	@ParameterizedTest
 	@MethodSource
 	void test(final CharSequence input, final String expected) {
-		final var actual = new RegexSentenceCleaner().clean(input);
+		final var actual = new RegexSentenceCleaner().apply(input);
 		assertEquals(expected, actual);
 	}
 

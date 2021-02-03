@@ -15,7 +15,7 @@ public class RegexSentenceCleaner implements SentenceCleaner {
 	private static final Pattern DISALLOWED = Pattern.compile("[^\\p{Alnum}äöüÄÖÜß|\\-# ]");
 
 	@Override
-	public String clean(final CharSequence sentence) {
+	public String apply(final CharSequence sentence) {
 		return DISALLOWED.matcher(sentence).replaceAll(StringUtils.EMPTY);
 	}
 

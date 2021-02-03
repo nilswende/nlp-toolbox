@@ -22,7 +22,9 @@ class IndexerPhraseExtractorTest {
 	@ParameterizedTest
 	@MethodSource
 	void extractPhrases(final List<String> sentences, final List<String> phrases) {
-		final var pairs = new IndexerPhraseExtractor(Parameters.EN).extractPhrases(sentences);
+		final var pairs = new IndexerPhraseExtractor(Parameters.EN)
+				.extractPhrases(sentences.stream())
+				.collect(Collectors.toList());
 		pairs.forEach(pair -> assertTrue(pair.getRight().stream().noneMatch(p -> pair.getLeft().contains(p))));
 		final List<String> right = pairs.stream().map(Pair::getRight).flatMap(List::stream).collect(Collectors.toList());
 		assertTrue(phrases.containsAll(right), right.toString());

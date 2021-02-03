@@ -26,6 +26,10 @@ public abstract class DBTest {
 		DBFactory.init(mock);
 	}
 
+	{
+		writer.addDocument(Path.of(""));
+	}
+
 	@AfterEach
 	void tearDown() {
 		writer.deleteAll();
