@@ -6,7 +6,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -18,10 +17,11 @@ import java.util.stream.Stream;
 public class Preprocessor {
 
 	private final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps;
-	protected PreprocessingFactory factory;
+	private final boolean extractPhrases;
 
-	protected Preprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps) {
+	private Preprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final boolean extractPhrases) {
 		this.preprocessingSteps = preprocessingSteps;
+		this.extractPhrases = extractPhrases;
 	}
 
 	/**
@@ -31,40 +31,11 @@ public class Preprocessor {
 	 * @return stream of the sentences inside the document, split into words
 	 */
 	public Stream<Sentence> preprocess(final Path document) {
-		factory = PreprocessingFactory.from(document);
-		final var sentenceExtractor = factory.createSentenceExtractor();
-		final var sentences = sentenceExtractor.extract(document);
-		return processSentences(sentences);
-	}
-
-	private Stream<Sentence> processSentences(final Stream<String> sentences) {
-		final var cleanedSentences = cleanSentences(sentences);
-		final var taggedSentences = createSentences(cleanedSentences);
-		return applyPreprocessingSteps(taggedSentences);
-	}
-
-	private Stream<String> cleanSentences(final Stream<String> sentences) {
-		return sentences
-				.map(factory.createSentenceCleaner())
-				.filter(s -> !s.isEmpty());
-	}
-
-	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
-		return sentences
-				.map(factory.createTagger())
-				.map(Sentence::new);
-	}
-
-	private Stream<Sentence> applyPreprocessingSteps(final Stream<Sentence> taggedSentences) {
-		return chainPreprocessingSteps()
-				.map(steps -> taggedSentences.map(s -> s.withTerms(steps)))
-				.orElse(taggedSentences);
-	}
-
-	private Optional<PreprocessingStep> chainPreprocessingSteps() {
-		return preprocessingSteps.stream()
-				.map(step -> step.apply(factory))
-				.reduce(PreprocessingStep::chain);
+		final var factory = PreprocessingFactory.from(document);
+		final var sentencePreprocessor = extractPhrases ? new PhrasedSentencePreprocessor(preprocessingSteps, factory)
+				: new SentencePreprocessor(preprocessingSteps, factory);
+		final var sentences = factory.createSentenceExtractor().extract(document);
+		return sentencePreprocessor.processSentences(sentences);
 	}
 
 	/**
@@ -90,7 +61,7 @@ public class Preprocessor {
 		if (config.useBaseFormReduction()) {
 			steps.add(PreprocessingFactory::createBaseFormReducer);
 		}
-		return config.extractPhrases() ? new PhrasePreprocessor(steps) : new Preprocessor(steps);
+		return new Preprocessor(steps, config.extractPhrases());
 	}
 
 }

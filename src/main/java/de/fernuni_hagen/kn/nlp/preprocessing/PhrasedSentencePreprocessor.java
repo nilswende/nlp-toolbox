@@ -7,14 +7,14 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Executes the linguistic preprocessing of a document, including phrase extraction.
+ * Executes the linguistic preprocessing on Strings, including phrase extraction.
  *
  * @author Nils Wende
  */
-class PhrasePreprocessor extends Preprocessor {
+class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
-	PhrasePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> workflowSteps) {
-		super(workflowSteps);
+	public PhrasedSentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+		super(preprocessingSteps, factory);
 	}
 
 	@Override
