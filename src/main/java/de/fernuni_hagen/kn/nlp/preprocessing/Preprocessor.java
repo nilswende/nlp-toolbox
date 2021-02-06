@@ -50,7 +50,7 @@ public class Preprocessor {
 			steps.add(PreprocessingFactory::createNounFilter);
 		}
 		if (config.removeAbbreviations()) {
-			steps.add(PreprocessingFactory::createAbbreviationFilter);
+			steps.add(PreprocessingFactory::createAbbreviationRemover);
 		}
 		if (config.removeStopWords()) {
 			steps.add(PreprocessingFactory::createStopWordRemover);

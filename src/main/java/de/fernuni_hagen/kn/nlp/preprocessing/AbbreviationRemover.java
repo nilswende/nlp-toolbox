@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public interface AbbreviationFilter extends PreprocessingStep {
+public interface AbbreviationRemover extends PreprocessingStep {
 
 	/**
 	 * Removes abbreviations from a sentence.

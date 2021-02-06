@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
-import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
@@ -35,8 +35,8 @@ public class ENFactory implements PreprocessingFactory {
 	private static final int ASV_LANGUAGE = Parameters.EN;
 
 	@Override
-	public AbbreviationFilter createAbbreviationFilter() {
-		throw new NotImplementedException("no AbbreviationFilter implemented for " + LOCALE);
+	public AbbreviationRemover createAbbreviationRemover() {
+		throw new NotImplementedException("no AbbreviationRemover implemented for locale " + LOCALE);
 	}
 
 	@Override

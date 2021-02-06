@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
@@ -20,7 +20,7 @@ import java.nio.file.Path;
  */
 public interface PreprocessingFactory {
 
-	AbbreviationFilter createAbbreviationFilter();
+	AbbreviationRemover createAbbreviationRemover();
 
 	BaseFormReducer createBaseFormReducer();
 

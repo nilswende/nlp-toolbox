@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public class FileAbbreviationFilter implements AbbreviationFilter {
+public class FileAbbreviationRemover implements AbbreviationRemover {
 
 	private final Set<String> abbreviations = new HashSet<>();
 
@@ -27,8 +27,8 @@ public class FileAbbreviationFilter implements AbbreviationFilter {
 	 *
 	 * @param fileName the file containing the filtered abbreviations
 	 */
-	public FileAbbreviationFilter(final String fileName) {
-		final var inputStream = Objects.requireNonNull(FileAbbreviationFilter.class.getClassLoader().getResourceAsStream(fileName));
+	public FileAbbreviationRemover(final String fileName) {
+		final var inputStream = Objects.requireNonNull(FileAbbreviationRemover.class.getClassLoader().getResourceAsStream(fileName));
 		try (final var lineIterator = IOUtils.lineIterator(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 			while (lineIterator.hasNext()) {
 				abbreviations.add(lineIterator.next());

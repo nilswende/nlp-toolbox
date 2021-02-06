@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 
 import de.fernuni_hagen.kn.nlp.input.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
-import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
@@ -15,7 +15,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.DEBaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.DECaseNormalizer;
-import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.FileAbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.RegexSentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.TaggedNounFilter;
@@ -35,8 +35,8 @@ public class DEFactory implements PreprocessingFactory {
 	private static final int ASV_LANGUAGE = Parameters.DE;
 
 	@Override
-	public AbbreviationFilter createAbbreviationFilter() {
-		return new FileAbbreviationFilter("abbreviations/abbrev.txt");
+	public AbbreviationRemover createAbbreviationRemover() {
+		return new FileAbbreviationRemover("abbreviations/abbrev.txt");
 	}
 
 	@Override
