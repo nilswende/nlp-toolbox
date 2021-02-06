@@ -44,7 +44,7 @@ class GraphSearcherTest {
 	private void testEquality(final Map<String, List<String>> adjacencyList) {
 		final var expected = toSigMap(adjacencyList);
 		final var actual = new TreeMap<>(expected);
-		new GraphSearcher().findBiggestSubgraph(actual);
+		GraphSearcher.findBiggestSubgraph(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -100,7 +100,7 @@ class GraphSearcherTest {
 	private void testInequality(final Set<String> expectedTerms, final Map<String, List<String>> adjacencyList) {
 		final var expected = toSigMap(adjacencyList);
 		final var actual = new TreeMap<>(expected);
-		new GraphSearcher().findBiggestSubgraph(actual);
+		GraphSearcher.findBiggestSubgraph(actual);
 		assertNotEquals(expected, actual);
 		assertEquals(expectedTerms, actual.keySet());
 	}

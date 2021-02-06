@@ -33,7 +33,7 @@ public class PageRank {
 	 */
 	public Map<String, Double> calculate(final DBReader db) {
 		final var significances = db.getSignificances(config.getWeightingFunction());
-		new GraphSearcher().findBiggestSubgraph(significances);
+		GraphSearcher.findBiggestSubgraph(significances);
 
 		final var pageRanks = initPageRanks(significances.keySet());
 		for (int i = 0; i < config.getIterations(); i++) {

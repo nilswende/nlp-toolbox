@@ -21,7 +21,7 @@ public class GraphSearcher {
 	 *
 	 * @param significances the full graph with its significance coefficients. The graph is then modified and all smaller subgraphs removed.
 	 */
-	public void findBiggestSubgraph(final Map<String, Map<String, Double>> significances) {
+	public static void findBiggestSubgraph(final Map<String, Map<String, Double>> significances) {
 		final Set<String> visited = new TreeSet<>();
 		Set<String> biggestSubgraph = Set.of();
 		while (biggestSubgraph.size() < significances.size() / 2 || visited.size() < significances.size()) {
@@ -34,7 +34,7 @@ public class GraphSearcher {
 		significances.keySet().retainAll(biggestSubgraph);
 	}
 
-	private Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
+	private static Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
 		final Set<String> terms = new TreeSet<>();
 		final Deque<String> stack = new ArrayDeque<>();
 		final var first = significances.keySet().stream().filter(t -> !exclude.contains(t)).findFirst().orElse(null);
