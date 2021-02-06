@@ -33,7 +33,17 @@ public class InMemoryDB {
 	 * @param path the document's file pah
 	 */
 	public void addDocument(final Path path) {
-		currentDoc = path.toAbsolutePath().toString();
+		currentDoc = formatPath(path);
+	}
+
+	/**
+	 * Formats a Path to a normalized String.
+	 *
+	 * @param path Path
+	 * @return String
+	 */
+	static String formatPath(final Path path) {
+		return path.toAbsolutePath().toString();
 	}
 
 	/**
@@ -101,14 +111,29 @@ public class InMemoryDB {
 		private final Map<String, Long> cooccs = new TreeMap<>();
 		private long count = 0;
 
+		/**
+		 * Returns the set of documents this term occurs in.
+		 *
+		 * @return the set of documents this term occurs in
+		 */
 		public Set<String> getDocuments() {
 			return documents;
 		}
 
+		/**
+		 * Returns the set of cooccurring terms along with the number of cooccurrences with this term.
+		 *
+		 * @return the set of cooccurring terms along with the number of cooccurrences with this term
+		 */
 		public Map<String, Long> getCooccs() {
 			return cooccs;
 		}
 
+		/**
+		 * Returns the total number of occurrences of this term.
+		 *
+		 * @return the total number of occurrences of this term
+		 */
 		public long getCount() {
 			return count;
 		}

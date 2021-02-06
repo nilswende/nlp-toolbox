@@ -20,7 +20,7 @@ import java.util.zip.GZIPOutputStream;
 class InMemorySerializer {
 
 	/**
-	 * Persists the in-memory database.
+	 * Persists the in-memory database when the JVM shuts down.
 	 *
 	 * @param path the target file
 	 * @param data the in-memory database's state

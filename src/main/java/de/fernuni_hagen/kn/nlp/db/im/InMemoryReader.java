@@ -5,10 +5,10 @@ import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Implements reading from the in-memory database.
@@ -19,7 +19,7 @@ public class InMemoryReader implements DBReader {
 
 	private final InMemoryDB db;
 
-	public InMemoryReader(InMemoryDB db) {
+	public InMemoryReader(final InMemoryDB db) {
 		this.db = db;
 	}
 
@@ -51,6 +51,7 @@ public class InMemoryReader implements DBReader {
 	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
 		final var map = new TreeMap<String, Map<String, Double>>();
 		final var data = db.getData();
+		final var kmax = db.getMaxSentencesCount();
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
 			final var cooccs = entry.getValue().getCooccs();
@@ -60,7 +61,7 @@ public class InMemoryReader implements DBReader {
 				final var dom = ki > kj ? entry.getKey() : coocc.getKey();
 				final var sub = ki > kj ? coocc.getKey() : entry.getKey();
 				if (!map.containsKey(sub) || !map.get(sub).containsKey(dom)) {
-					final var sig = function.calculate(kij, db.getMaxSentencesCount());
+					final var sig = function.calculate(kij, kmax);
 					map.computeIfAbsent(dom, k -> new TreeMap<>()).put(sub, sig);
 				}
 			}
@@ -75,14 +76,11 @@ public class InMemoryReader implements DBReader {
 	 * @return all terms in the given document
 	 */
 	public List<String> getAllTermsInDocument(final Path path) {
-		final var pathStr = path.toAbsolutePath().toString();
-		final var terms = new ArrayList<String>();
-		db.getData().forEach((term, v) -> {
-			if (v.getDocuments().contains(pathStr)) {
-				terms.add(term);
-			}
-		});
-		return terms;
+		final var pathStr = InMemoryDB.formatPath(path);
+		return db.getData().entrySet().stream()
+				.filter(e -> e.getValue().getDocuments().contains(pathStr))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 	}
 
 }
