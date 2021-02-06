@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-public interface StopWordFilter extends PreprocessingStep {
+public interface StopWordRemover extends PreprocessingStep {
 
 	/**
 	 * Removes stop words from a sentence.

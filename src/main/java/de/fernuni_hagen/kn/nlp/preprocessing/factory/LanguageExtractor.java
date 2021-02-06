@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.preprocessing;
+package de.fernuni_hagen.kn.nlp.preprocessing.factory;
 
 import java.nio.file.Path;
 import java.util.Locale;

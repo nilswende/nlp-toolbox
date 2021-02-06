@@ -7,7 +7,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
-import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.StopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.JLanILanguageExtractor;
 
@@ -34,7 +34,7 @@ public interface PreprocessingFactory {
 
 	SentenceExtractor createSentenceExtractor();
 
-	StopWordFilter createStopWordFilter();
+	StopWordRemover createStopWordRemover();
 
 	Tagger createTagger();
 

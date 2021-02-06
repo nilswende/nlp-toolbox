@@ -53,7 +53,7 @@ public class Preprocessor {
 			steps.add(PreprocessingFactory::createAbbreviationFilter);
 		}
 		if (config.removeStopWords()) {
-			steps.add(PreprocessingFactory::createStopWordFilter);
+			steps.add(PreprocessingFactory::createStopWordRemover);
 		}
 		if (config.normalizeCase()) {
 			steps.add(PreprocessingFactory::createCaseNormalizer);

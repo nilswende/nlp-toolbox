@@ -9,10 +9,10 @@ import de.fernuni_hagen.kn.nlp.preprocessing.NounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.PhraseExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.SentenceExtractor;
-import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.StopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.Tagset;
-import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.impl.ASVStopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ENBaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.ENCaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.IndexerPhraseExtractor;
@@ -70,8 +70,8 @@ public class ENFactory implements PreprocessingFactory {
 	}
 
 	@Override
-	public StopWordFilter createStopWordFilter() {
-		return new ASVStopWordFilter(LOCALE, ASV_LANGUAGE);
+	public StopWordRemover createStopWordRemover() {
+		return new ASVStopWordRemover(LOCALE, ASV_LANGUAGE);
 	}
 
 	@Override

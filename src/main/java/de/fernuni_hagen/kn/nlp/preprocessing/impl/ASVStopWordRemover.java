@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.StopWordFilter;
+import de.fernuni_hagen.kn.nlp.preprocessing.StopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.TaggedTerm;
 import te.utils.ExternalData;
 
@@ -16,7 +16,7 @@ import static de.fernuni_hagen.kn.nlp.preprocessing.Utils.cast;
  *
  * @author Nils Wende
  */
-public class ASVStopWordFilter implements StopWordFilter {
+public class ASVStopWordRemover implements StopWordRemover {
 
 	private final Locale locale;
 	private final Set<String> stopWords;
@@ -26,7 +26,7 @@ public class ASVStopWordFilter implements StopWordFilter {
 	 *
 	 * @param locale the sentence's language
 	 */
-	public ASVStopWordFilter(final Locale locale, final int asvLanguage) {
+	public ASVStopWordRemover(final Locale locale, final int asvLanguage) {
 		this.locale = locale;
 		final ExternalData ed = ExternalData.getInstance(asvLanguage);
 		final Set<String> set = cast(ed.getStopWordMap());
