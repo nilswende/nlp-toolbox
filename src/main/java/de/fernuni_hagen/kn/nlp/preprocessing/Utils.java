@@ -11,7 +11,7 @@ import java.util.Set;
 public final class Utils {
 
 	private Utils() {
-		throw new AssertionError(); // no init
+		throw new AssertionError("no init");
 	}
 
 	/**

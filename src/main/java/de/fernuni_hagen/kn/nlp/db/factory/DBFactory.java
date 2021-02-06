@@ -59,7 +59,7 @@ public abstract class DBFactory {
 	 */
 	public static synchronized void init(final Config config) {
 		if (INSTANCE != null) {
-			throw new AssertionError();
+			throw new AssertionError("init only once");
 			// else instance() may fail to return the newer instance
 			// the null check may only see the old instance
 		}

@@ -21,7 +21,7 @@ public final class FileHelper {
 	private static final List<Path> tempFiles = Collections.synchronizedList(new ArrayList<>());
 
 	private FileHelper() {
-		throw new AssertionError(); // no init
+		throw new AssertionError("no init");
 	}
 
 	public static Path createTempFile(final String suffix) {

@@ -17,7 +17,7 @@ import java.nio.file.Path;
 public final class Utils {
 
 	private Utils() {
-		throw new AssertionError(); // no init
+		throw new AssertionError("no init");
 	}
 
 	/**

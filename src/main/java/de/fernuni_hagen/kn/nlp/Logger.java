@@ -11,7 +11,7 @@ import java.time.Duration;
 public final class Logger {
 
 	private Logger() {
-		throw new AssertionError(); // no init
+		throw new AssertionError("no init");
 	}
 
 	/**
@@ -40,9 +40,14 @@ public final class Logger {
 	 * Logs the amount of CPU time the current thread has consumed.
 	 */
 	public static void logCurrentThreadCpuTime() {
-		final var d = Duration.ofNanos(ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime());
-		System.out.println(String.format("%s thread CPU time: %d m %d s %d ms",
-				Thread.currentThread().getName(), d.toMinutesPart(), d.toSecondsPart(), d.toMillisPart()));
+		final var threadMXBean = ManagementFactory.getThreadMXBean();
+		if (threadMXBean.isCurrentThreadCpuTimeSupported()) {
+			final var d = Duration.ofNanos(threadMXBean.getCurrentThreadCpuTime());
+			System.out.println(String.format("%s thread CPU time: %d m %d s %d ms",
+					Thread.currentThread().getName(), d.toMinutesPart(), d.toSecondsPart(), d.toMillisPart()));
+		} else {
+			System.out.println("ThreadMXBean.getCurrentThreadCpuTime not supported on this JVM");
+		}
 	}
 
 }
