@@ -28,7 +28,7 @@ public class Preprocessor {
 	 * Executes the linguistic preprocessing of a document.
 	 *
 	 * @param document the document to be processed
-	 * @return stream of the sentences inside the document, split into words
+	 * @return stream of the sentences inside the document
 	 */
 	public Stream<Sentence> preprocess(final Path document) {
 		final var factory = PreprocessingFactory.from(document);
