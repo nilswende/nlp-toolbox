@@ -2,10 +2,10 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Uses the HITS algorithm to find hubs and authorities in a graph.
@@ -39,7 +39,7 @@ public class HITS {
 	}
 
 	private Map<String, Double> initMap(final Set<String> terms) {
-		final var map = new TreeMap<String, Double>();
+		final var map = Maps.<String, Double>newKnownSizeMap(terms.size());
 		final Double init = 1.0;
 		terms.forEach(t -> map.put(t, init));
 		return map;
@@ -60,7 +60,7 @@ public class HITS {
 	}
 
 	private Map<String, Scores> createResultMap(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs) {
-		final var map = new TreeMap<String, Scores>();
+		final var map = Maps.<String, Scores>newKnownSizeMap(terms.size());
 		for (final String term : terms) {
 			final var scores = new Scores(auths.get(term), hubs.get(term));
 			map.put(term, scores);

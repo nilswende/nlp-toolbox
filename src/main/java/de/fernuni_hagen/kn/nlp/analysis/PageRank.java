@@ -3,10 +3,10 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.PageRankConfig;
 import de.fernuni_hagen.kn.nlp.graph.GraphSearcher;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Calculates the PageRanks for all terms in the DB.
@@ -43,7 +43,7 @@ public class PageRank {
 	}
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {
-		final var pageRanks = new TreeMap<String, Double>();
+		final var pageRanks = Maps.<String, Double>newKnownSizeMap(terms.size());
 		final Double init = invWeight;
 		terms.forEach(t -> pageRanks.put(t, init));
 		return pageRanks;

@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -30,8 +31,8 @@ public class InMemoryReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunctions function) {
-		final var map = new TreeMap<String, Map<String, Double>>();
 		final var data = db.getData();
+		final var map = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
 			final var cooccs = entry.getValue().getCooccs();
@@ -49,9 +50,9 @@ public class InMemoryReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
-		final var map = new TreeMap<String, Map<String, Double>>();
 		final var data = db.getData();
 		final var kmax = db.getMaxSentencesCount();
+		final var map = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
 			final var cooccs = entry.getValue().getCooccs();
