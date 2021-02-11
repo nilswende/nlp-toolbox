@@ -6,7 +6,6 @@ import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
 
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Formats Neo4j entities for printing.
@@ -46,7 +45,7 @@ class EntityFormatter {
 	 * @return formatted Path
 	 */
 	public static String formatPath(final Path p) {
-		return StreamSupport.stream(p.relationships().spliterator(), false)
+		return Utils.stream(p.relationships())
 				.map(EntityFormatter::formatRelationship)
 				.collect(Collectors.joining("\n"));
 	}
