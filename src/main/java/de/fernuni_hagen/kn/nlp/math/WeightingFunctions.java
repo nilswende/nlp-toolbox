@@ -7,7 +7,7 @@ import static org.apache.commons.math3.util.CombinatoricsUtils.factorialLog;
  *
  * @author Nils Wende
  */
-public enum WeightingFunctions implements WeightingFunction {
+public enum WeightingFunctions {
 	/**
 	 * Jaccard index.
 	 */
@@ -69,5 +69,16 @@ public enum WeightingFunctions implements WeightingFunction {
 		public double calculate(final long ki, final long kj, final long kij, final long k) {
 			return 1.0;
 		}
-	}
+	};
+
+	/**
+	 * Calculates the significance of {@code kij} in regard to {@code ki}, {@code kj} and {@code k}.
+	 *
+	 * @param ki  number of sentences that contain the term ti
+	 * @param kj  number of sentences that contain the term tj
+	 * @param kij number of sentences that contain both the term ti and tj
+	 * @param k   total number of sentences
+	 * @return the significance coefficient of kij
+	 */
+	public abstract double calculate(long ki, long kj, long kij, long k);
 }

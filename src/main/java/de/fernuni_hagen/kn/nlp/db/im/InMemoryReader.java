@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -29,7 +29,7 @@ public class InMemoryReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
+	public Map<String, Map<String, Double>> getSignificances(final WeightingFunctions function) {
 		final var map = new TreeMap<String, Map<String, Double>>();
 		final var data = db.getData();
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {

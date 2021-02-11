@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp.config;
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
@@ -183,7 +182,7 @@ public class Config {
 				return weight;
 			}
 
-			public WeightingFunction getWeightingFunction() {
+			public WeightingFunctions getWeightingFunction() {
 				return weightingFunction;
 			}
 		}
