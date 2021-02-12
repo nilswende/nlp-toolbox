@@ -38,6 +38,7 @@ public class Config {
 	private String inputDir;
 	private String dbDir;
 	private String db = DB_IN_MEMORY;
+	private boolean analysisOnly;
 	private boolean persistInMemoryDb;
 	private boolean keepTempFiles;
 	private int sentenceFileSizeLimitBytes;
@@ -71,6 +72,10 @@ public class Config {
 
 	public String getDb() {
 		return db;
+	}
+
+	public boolean analysisOnly() {
+		return analysisOnly;
 	}
 
 	public boolean persistInMemoryDb() {

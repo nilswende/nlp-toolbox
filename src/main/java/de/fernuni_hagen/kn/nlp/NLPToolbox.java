@@ -32,7 +32,9 @@ public class NLPToolbox {
 	}
 
 	private void run() {
-		writeAllInputToFreshDB();
+		if (!config.analysisOnly()) {
+			writeAllInputToFreshDB();
+		}
 		new Analysis(config.getAnalysisConfig(), DBFactory.instance().getReader()).analyze();
 		//new CsvExporter().export();
 		//((Neo4JReader)DBFactory.instance().getReader()).printPath("art", "version");
