@@ -34,6 +34,7 @@ public class GraphSearcher {
 		significances.keySet().retainAll(biggestSubgraph);
 	}
 
+	// uses breadth-first search
 	private static Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
 		final Set<String> terms = new TreeSet<>();
 		final Deque<String> stack = new ArrayDeque<>();

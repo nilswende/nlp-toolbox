@@ -36,7 +36,7 @@ public class InMemoryReader implements DBReader {
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
 			final var ki = entry.getValue().getCount();
 			final var cooccs = entry.getValue().getCooccs();
-			final var inner = new TreeMap<String, Double>();
+			final var inner = Maps.<String, Double>newKnownSizeMap(cooccs.size());
 			for (final Map.Entry<String, Long> coocc : cooccs.entrySet()) {
 				final var kj = data.get(coocc.getKey()).getCount();
 				final var kij = coocc.getValue();

@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nils Wende
@@ -103,6 +102,7 @@ class GraphSearcherTest {
 		GraphSearcher.findBiggestSubgraph(actual);
 		assertNotEquals(expected, actual);
 		assertEquals(expectedTerms, actual.keySet());
+		actual.values().stream().map(Map::keySet).forEach(keys -> assertTrue(expectedTerms.containsAll(keys), keys.toString()));
 	}
 
 }
