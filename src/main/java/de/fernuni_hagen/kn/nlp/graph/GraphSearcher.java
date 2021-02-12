@@ -3,7 +3,7 @@ package de.fernuni_hagen.kn.nlp.graph;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,21 +34,44 @@ public class GraphSearcher {
 		significances.keySet().retainAll(biggestSubgraph);
 	}
 
-	// uses breadth-first search
 	private static Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
-		final Set<String> terms = new TreeSet<>();
-		final Deque<String> stack = new ArrayDeque<>();
-		final var first = significances.keySet().stream().filter(t -> !exclude.contains(t)).findFirst().orElse(null);
-		terms.add(first);
-		stack.push(first);
+		final var start = significances.keySet().stream().filter(t -> !exclude.contains(t)).findFirst().orElseThrow();
+		return breadthFirstSearch(start, significances);
+	}
+
+	/**
+	 * Find all connected nodes of {@code start}.
+	 *
+	 * @param start         the start node
+	 * @param significances the full graph
+	 * @return {@code start} and all connected nodes
+	 */
+	public static Set<String> breadthFirstSearch(final String start, final Map<String, Map<String, Double>> significances) {
+		final Set<String> visited = new TreeSet<>();
+		final var stack = new ArrayDeque<String>();
+		visited.add(start);
+		stack.push(start);
 		while (!stack.isEmpty()) {
 			final var term = stack.pop();
 			final var cooccs = significances.get(term).keySet();
-			final var unvisited = CollectionUtils.removeAll(cooccs, terms);
-			terms.addAll(unvisited);
+			final var unvisited = CollectionUtils.removeAll(cooccs, visited);
+			visited.addAll(unvisited);
 			unvisited.forEach(stack::push);
 		}
-		return terms;
+		return visited;
+	}
+
+	/**
+	 * Returns if the given node is connected to all of the other given nodes.
+	 *
+	 * @param node          the node
+	 * @param nodes         the nodes whose connection we want to check
+	 * @param significances the full graph
+	 * @return true, if the nodes are connected
+	 */
+	public static boolean isConnected(final String node, final Collection<String> nodes, final Map<String, Map<String, Double>> significances) {
+		final Set<String> connected = breadthFirstSearch(node, significances);
+		return connected.containsAll(nodes);
 	}
 
 }
