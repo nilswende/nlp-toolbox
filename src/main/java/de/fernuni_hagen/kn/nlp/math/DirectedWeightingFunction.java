@@ -5,7 +5,7 @@ package de.fernuni_hagen.kn.nlp.math;
  *
  * @author Nils Wende
  */
-public enum DirectedWeightingFunctions {
+public enum DirectedWeightingFunction {
 	/**
 	 * Directed relationships.
 	 */

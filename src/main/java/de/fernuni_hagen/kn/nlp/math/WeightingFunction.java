@@ -7,7 +7,7 @@ import static org.apache.commons.math3.util.CombinatoricsUtils.factorialLog;
  *
  * @author Nils Wende
  */
-public enum WeightingFunctions {
+public enum WeightingFunction {
 	/**
 	 * Jaccard index.
 	 */

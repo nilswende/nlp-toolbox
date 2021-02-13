@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -79,7 +79,7 @@ public class Neo4JWriter implements DBWriter {
 		final var b = toLong(row.get("t2.count"));
 		var ab = toLong(row.get("r.count"));
 		ab = Math.min(ab, Math.min(a, b));
-		return Math.min(1, WeightingFunctions.DICE.calculate(a, b, ab, 0));
+		return Math.min(1, WeightingFunction.DICE.calculate(a, b, ab, 0));
 	}
 
 }

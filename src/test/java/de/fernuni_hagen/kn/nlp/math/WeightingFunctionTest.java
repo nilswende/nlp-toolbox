@@ -15,7 +15,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class WeightingFunctionsTest {
+class WeightingFunctionTest {
 
 	static final Pair<String, Integer> rechtfertigung = Pair.of("Rechtfertigung", 1);
 	static final Pair<String, Integer> profit = Pair.of("Profit", 3);
@@ -37,7 +37,7 @@ class WeightingFunctionsTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void test(final WeightingFunctions function, final List<Pair<Pair<Pair<String, Integer>, Pair<String, Integer>>, Double>> expectedTermTermMatrix) {
+	void test(final WeightingFunction function, final List<Pair<Pair<Pair<String, Integer>, Pair<String, Integer>>, Double>> expectedTermTermMatrix) {
 		final var termTermMatrix = termSatzMatrix.stream().map(p -> {
 			final var ki = p.getLeft().getLeft().getRight();
 			final var kj = p.getLeft().getRight().getRight();
@@ -57,7 +57,7 @@ class WeightingFunctionsTest {
 
 	static Stream<Arguments> test() {
 		return Stream.of(
-				arguments(WeightingFunctions.JACCARD, List.of(
+				arguments(WeightingFunction.JACCARD, List.of(
 						Pair.of(Pair.of(rechtfertigung, profit), .333),
 						Pair.of(Pair.of(profit, fuehren), .333),
 						Pair.of(Pair.of(profit, weg), .666),
@@ -66,7 +66,7 @@ class WeightingFunctionsTest {
 						Pair.of(Pair.of(fuehren, weg), .5),
 						Pair.of(Pair.of(weg, riskant), .5),
 						Pair.of(Pair.of(riskant, gross), 1.0))),
-				arguments(WeightingFunctions.DICE, List.of(
+				arguments(WeightingFunction.DICE, List.of(
 						Pair.of(Pair.of(rechtfertigung, profit), .5),
 						Pair.of(Pair.of(profit, fuehren), .5),
 						Pair.of(Pair.of(profit, weg), .8),

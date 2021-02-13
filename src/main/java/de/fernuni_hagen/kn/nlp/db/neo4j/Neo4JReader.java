@@ -1,8 +1,8 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Transaction;
@@ -47,7 +47,7 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final WeightingFunctions function) {
+	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
@@ -70,7 +70,7 @@ public class Neo4JReader implements DBReader {
 		map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 	}
 
-	private double calcSig(final Map<String, Object> row, final long k, final WeightingFunctions function) {
+	private double calcSig(final Map<String, Object> row, final long k, final WeightingFunction function) {
 		final var ki = toLong(row.get("ki"));
 		final var kj = toLong(row.get("kj"));
 		final var kij = toLong(row.get("kij"));
@@ -87,7 +87,7 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
+	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
@@ -105,7 +105,7 @@ public class Neo4JReader implements DBReader {
 		}
 	}
 
-	private double calcSig(final Map<String, Object> row, final long kmax, final DirectedWeightingFunctions function) {
+	private double calcSig(final Map<String, Object> row, final long kmax, final DirectedWeightingFunction function) {
 		final var kij = toLong(row.get("kij"));
 		return function.calculate(kij, kmax);
 	}

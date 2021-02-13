@@ -1,8 +1,8 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.nio.file.Path;
@@ -30,7 +30,7 @@ public class InMemoryReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final WeightingFunctions function) {
+	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var data = db.getData();
 		final var map = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
 		for (final Map.Entry<String, InMemoryDB.Values> entry : data.entrySet()) {
@@ -49,7 +49,7 @@ public class InMemoryReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunctions function) {
+	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunction function) {
 		final var data = db.getData();
 		final var kmax = db.getMaxSentencesCount();
 		final var map = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());

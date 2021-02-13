@@ -2,8 +2,8 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunctions;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;
@@ -169,7 +169,7 @@ public class Config {
 			private int iterations = 25;
 			private int resultLimit = Integer.MAX_VALUE;
 			private double weight = 0.85;
-			private WeightingFunctions weightingFunction = WeightingFunctions.DICE;
+			private WeightingFunction weightingFunction = WeightingFunction.DICE;
 
 			public boolean calculate() {
 				return calculate;
@@ -187,7 +187,7 @@ public class Config {
 				return weight;
 			}
 
-			public WeightingFunctions getWeightingFunction() {
+			public WeightingFunction getWeightingFunction() {
 				return weightingFunction;
 			}
 		}
@@ -199,7 +199,7 @@ public class Config {
 			private boolean calculate;
 			private int iterations = 50;
 			private int resultLimit = Integer.MAX_VALUE;
-			private DirectedWeightingFunctions directedWeightingFunction = DirectedWeightingFunctions.DIRECTED;
+			private DirectedWeightingFunction directedWeightingFunction = DirectedWeightingFunction.DIRECTED;
 
 			public boolean calculate() {
 				return calculate;
@@ -213,7 +213,7 @@ public class Config {
 				return resultLimit;
 			}
 
-			public DirectedWeightingFunctions getDirectedWeightingFunction() {
+			public DirectedWeightingFunction getDirectedWeightingFunction() {
 				return directedWeightingFunction;
 			}
 		}

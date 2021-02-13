@@ -3,7 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.GraphSearcher;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.ArrayDeque;
@@ -31,7 +31,7 @@ public class CentroidBySpreadingActivation {
 	 * @return the centroid or null, if the query is too diverse
 	 */
 	public String calculate(final List<String> query, final DBReader db) {
-		final var significances = db.getSignificances(WeightingFunctions.DICE);
+		final var significances = db.getSignificances(WeightingFunction.DICE);
 		final var cleanedQuery = cleanQuery(query, significances);
 		if (cleanedQuery == null) {
 			return null;
