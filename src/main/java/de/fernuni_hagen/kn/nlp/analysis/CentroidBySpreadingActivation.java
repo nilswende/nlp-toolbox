@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.GraphSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
@@ -75,7 +76,7 @@ public class CentroidBySpreadingActivation {
 		return subgraphQuery;
 	}
 
-	// a centroid will eventually be found, because all nodes in the query are known to be connected at this point
+	// a centroid will eventually be found, because at this point all nodes in the query are known to be connected
 	private String findCentroid(final List<String> query, final Map<String, Map<String, Double>> distances) {
 		final double maxDistance = getMaxShortestDistance(query, distances);
 		var centroid = Optional.<String>empty();
@@ -102,9 +103,17 @@ public class CentroidBySpreadingActivation {
 	}
 
 	private Optional<String> findCentroidWithinRadius(final double radius, final List<String> query, final Map<String, Map<String, Double>> distances) {
-		final var candidates = query.stream()
-				.collect(Collectors.toMap(t -> t, t -> breadthFirstSearch(t, radius, distances)));
-		return getCentroidWithMinimalDistance(candidates);
+		final var candidates = findCentroidCandidates(radius, query, distances);
+		return getCentroidWithMinimalDistance(candidates, query);
+	}
+
+	private Map<String, Map<String, Double>> findCentroidCandidates(final double radius, final List<String> query, final Map<String, Map<String, Double>> distances) {
+		final var candidates = new TreeMap<String, Map<String, Double>>();
+		query.forEach(
+				q -> breadthFirstSearch(q, radius, distances).forEach( // invert the mapping
+						(k, v) -> candidates.computeIfAbsent(k, x -> Maps.newKnownSizeMap(query.size())).put(q, v)
+				));
+		return candidates;
 	}
 
 	private Map<String, Double> breadthFirstSearch(final String start, final double radius, final Map<String, Map<String, Double>> distances) {
@@ -129,8 +138,9 @@ public class CentroidBySpreadingActivation {
 		return distancesToStart;
 	}
 
-	private Optional<String> getCentroidWithMinimalDistance(final Map<String, Map<String, Double>> candidates) {
+	private Optional<String> getCentroidWithMinimalDistance(final Map<String, Map<String, Double>> candidates, final List<String> query) {
 		return candidates.entrySet().stream()
+				.filter(e -> e.getValue().size() < query.size())
 				.min(Comparator.comparingDouble(e -> e.getValue().values().stream().mapToDouble(d -> d).sum()))
 				.map(Map.Entry::getKey);
 	}

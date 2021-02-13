@@ -35,12 +35,12 @@ public class DijkstraSearcher {
 		while (!prioQueue.isEmpty()) {
 			final Triplet currentTriplet = prioQueue.remove();
 			if (currentTriplet.getNode().equals(end)) {
-				return createWeightedPath(startTriplet, currentTriplet);
+				return WeightedPath.from(startTriplet, currentTriplet);
 			}
 			visited.add(currentTriplet.getNode());
 			queueUnvisitedNeighbors(currentTriplet, distances);
 		}
-		return new WeightedPath();
+		return WeightedPath.from();
 	}
 
 	private void queueUnvisitedNeighbors(final Triplet currentTriplet, final Map<String, Map<String, Double>> distances) {
@@ -54,22 +54,6 @@ public class DijkstraSearcher {
 
 	private boolean isUnvisited(final String node) {
 		return !visited.contains(node);
-	}
-
-	private WeightedPath createWeightedPath(final Triplet start, final Triplet end) {
-		return new WeightedPath(collectPath(start, end), streamPath(end).mapToDouble(Triplet::getDistance).sum());
-	}
-
-	private List<String> collectPath(final Triplet start, final Triplet end) {
-		final List<String> path = Stream.concat(streamPath(end), Stream.of(start))
-				.map(Triplet::getNode)
-				.collect(Collectors.toList());
-		Collections.reverse(path);
-		return path;
-	}
-
-	private Stream<Triplet> streamPath(final Triplet end) {
-		return Stream.iterate(end, t -> t.getPreviousNode() != null, Triplet::getPreviousNode);
 	}
 
 	private static class Triplet implements Comparable<Triplet> {
@@ -108,13 +92,29 @@ public class DijkstraSearcher {
 		private final List<String> path;
 		private final double weight;
 
-		WeightedPath(final List<String> path, final double weight) {
+		private WeightedPath(final List<String> path, final double weight) {
 			this.path = path;
 			this.weight = weight;
 		}
 
-		WeightedPath() {
-			this(List.of(), Double.POSITIVE_INFINITY);
+		static WeightedPath from() {
+			return new WeightedPath(List.of(), Double.POSITIVE_INFINITY);
+		}
+
+		static WeightedPath from(final Triplet start, final Triplet end) {
+			return new WeightedPath(collectPath(start, end), streamPath(end).mapToDouble(Triplet::getDistance).sum());
+		}
+
+		private static List<String> collectPath(final Triplet start, final Triplet end) {
+			final var path = Stream.concat(streamPath(end), Stream.of(start))
+					.map(Triplet::getNode)
+					.collect(Collectors.toList());
+			Collections.reverse(path);
+			return path;
+		}
+
+		private static Stream<Triplet> streamPath(final Triplet end) {
+			return Stream.iterate(end, t -> t.getPreviousNode() != null, Triplet::getPreviousNode);
 		}
 
 		public List<String> getPath() {
