@@ -33,7 +33,7 @@ class DijkstraSearcherTest {
 				arguments("a", "b", Map.of(), List.of(), INFINITY), // empty
 				arguments("a", "a", Map.of(
 						"a", Map.of()
-				), List.of(), 0), // self
+				), List.of("a"), 0), // self
 				arguments("a", "b", Map.of(
 						"a", Map.of(),
 						"b", Map.of()
@@ -41,11 +41,11 @@ class DijkstraSearcherTest {
 				arguments("a", "b", Map.of(
 						"a", Map.of("b", 1.0),
 						"b", Map.of()
-				), List.of("b"), 1), // simple edge
+				), List.of("a", "b"), 1), // simple edge
 				arguments("a", "c", Map.of(
 						"a", Map.of("b", 1.0),
 						"b", Map.of("c", 1.0)
-				), List.of("b", "c"), 2), // transitive edge / path
+				), List.of("a", "b", "c"), 2), // transitive edge / path
 				// shortest path finding
 				arguments("a", "e", Map.of(
 						"a", Map.of("b", 1.0),
@@ -53,14 +53,14 @@ class DijkstraSearcherTest {
 						"c", Map.of("e", 20.0),
 						"d", Map.of("e", 1.0),
 						"e", Map.of()
-				), List.of("b", "d", "e"), 12),
+				), List.of("a", "b", "d", "e"), 12),
 				arguments("a", "e", Map.of(
 						"a", Map.of("b", 1.0),
 						"b", Map.of("c", 10.0, "d", 1.0),
 						"c", Map.of("e", 1.0),
 						"d", Map.of("e", 20.0),
 						"e", Map.of()
-				), List.of("b", "c", "e"), 12)
+				), List.of("a", "b", "c", "e"), 12)
 		);
 	}
 

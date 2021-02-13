@@ -30,11 +30,12 @@ public class DijkstraSearcher {
 	public WeightedPath search(final String start, final String end, final Map<String, Map<String, Double>> distances) {
 		visited = new TreeSet<>();
 		prioQueue = new PriorityQueue<>();
-		prioQueue.add(new Triplet(start, 0.0, null));
+		final Triplet startTriplet = new Triplet(start, 0.0, null);
+		prioQueue.add(startTriplet);
 		while (!prioQueue.isEmpty()) {
 			final Triplet currentTriplet = prioQueue.remove();
 			if (currentTriplet.getNode().equals(end)) {
-				return createWeightedPath(currentTriplet);
+				return createWeightedPath(startTriplet, currentTriplet);
 			}
 			visited.add(currentTriplet.getNode());
 			queueUnvisitedNeighbors(currentTriplet, distances);
@@ -55,12 +56,12 @@ public class DijkstraSearcher {
 		return !visited.contains(node);
 	}
 
-	private WeightedPath createWeightedPath(final Triplet currentTriplet) {
-		return new WeightedPath(collectPath(currentTriplet), streamPath(currentTriplet).mapToDouble(Triplet::getDistance).sum());
+	private WeightedPath createWeightedPath(final Triplet start, final Triplet end) {
+		return new WeightedPath(collectPath(start, end), streamPath(end).mapToDouble(Triplet::getDistance).sum());
 	}
 
-	private List<String> collectPath(final Triplet end) {
-		final List<String> path = streamPath(end)
+	private List<String> collectPath(final Triplet start, final Triplet end) {
+		final List<String> path = Stream.concat(streamPath(end), Stream.of(start))
 				.map(Triplet::getNode)
 				.collect(Collectors.toList());
 		Collections.reverse(path);
@@ -101,7 +102,7 @@ public class DijkstraSearcher {
 	}
 
 	/**
-	 * Contains the path from (but excluding) the start node and the total weight of the path.
+	 * Contains the shortest path from the start node to the end node and the total weight of the path.
 	 */
 	public static class WeightedPath {
 		private final List<String> path;
