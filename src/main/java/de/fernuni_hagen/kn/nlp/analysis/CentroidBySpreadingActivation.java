@@ -110,7 +110,7 @@ public class CentroidBySpreadingActivation {
 	private Map<String, Map<String, Double>> findCentroidCandidates(final double radius, final List<String> query, final Map<String, Map<String, Double>> distances) {
 		final var candidates = new TreeMap<String, Map<String, Double>>();
 		query.forEach(
-				q -> breadthFirstSearch(q, radius, distances).forEach( // invert the mapping
+				q -> breadthFirstSearch(q, radius, distances).forEach( // invert the mapping (q, (k, v)) to (k, (q, v))
 						(k, v) -> candidates.computeIfAbsent(k, x -> Maps.newKnownSizeMap(query.size())).put(q, v)
 				));
 		return candidates;
@@ -134,13 +134,12 @@ public class CentroidBySpreadingActivation {
 			distancesToStart.putAll(unvisited);
 			unvisited.keySet().forEach(stack::push);
 		}
-		distancesToStart.remove(start);
 		return distancesToStart;
 	}
 
 	private Optional<String> getCentroidWithMinimalDistance(final Map<String, Map<String, Double>> candidates, final List<String> query) {
 		return candidates.entrySet().stream()
-				.filter(e -> e.getValue().size() < query.size())
+				.filter(e -> e.getValue().size() == query.size())
 				.min(Comparator.comparingDouble(e -> e.getValue().values().stream().mapToDouble(d -> d).sum()))
 				.map(Map.Entry::getKey);
 	}
