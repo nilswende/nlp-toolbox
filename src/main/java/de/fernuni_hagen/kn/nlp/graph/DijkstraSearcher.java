@@ -25,7 +25,7 @@ public class DijkstraSearcher {
 	 * @param start     start node
 	 * @param end       end node
 	 * @param distances the full graph
-	 * @return
+	 * @return the shortest path between start and end
 	 */
 	public WeightedPath search(final String start, final String end, final Map<String, Map<String, Double>> distances) {
 		visited = new TreeSet<>();
@@ -39,15 +39,16 @@ public class DijkstraSearcher {
 			visited.add(currentTriplet.getNode());
 			queueUnvisitedNeighbors(currentTriplet, distances);
 		}
-		return null;
+		return new WeightedPath();
 	}
 
 	private void queueUnvisitedNeighbors(final Triplet currentTriplet, final Map<String, Map<String, Double>> distances) {
 		final String currentNode = currentTriplet.getNode();
-		final var neighbors = distances.get(currentNode);
+		final var neighbors = distances.getOrDefault(currentNode, Map.of());
 		neighbors.entrySet().stream()
 				.filter(e -> isUnvisited(e.getKey()))
-				.forEach(e -> new Triplet(e.getKey(), e.getValue(), currentTriplet));
+				.map(e -> new Triplet(e.getKey(), e.getValue(), currentTriplet))
+				.forEach(prioQueue::add);
 	}
 
 	private boolean isUnvisited(final String node) {
@@ -99,6 +100,9 @@ public class DijkstraSearcher {
 		}
 	}
 
+	/**
+	 * Contains the path from (but excluding) the start node and the total weight of the path.
+	 */
 	public static class WeightedPath {
 		private final List<String> path;
 		private final double weight;
@@ -106,6 +110,10 @@ public class DijkstraSearcher {
 		WeightedPath(final List<String> path, final double weight) {
 			this.path = path;
 			this.weight = weight;
+		}
+
+		WeightedPath() {
+			this(List.of(), Double.POSITIVE_INFINITY);
 		}
 
 		public List<String> getPath() {
