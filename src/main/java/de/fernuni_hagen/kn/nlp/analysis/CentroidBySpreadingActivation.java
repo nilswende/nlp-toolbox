@@ -4,10 +4,10 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.GraphSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunctions;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,11 +75,11 @@ public class CentroidBySpreadingActivation {
 		return subgraphQuery;
 	}
 
+	// a centroid will eventually be found, because all nodes in the query are known to be connected at this point
 	private String findCentroid(final List<String> query, final Map<String, Map<String, Double>> distances) {
 		final double maxDistance = getMaxShortestDistance(query, distances);
-		var radius = maxDistance / 2;
 		var centroid = Optional.<String>empty();
-		while (centroid.isEmpty()) {
+		for (var radius = maxDistance / 2; centroid.isEmpty(); ) {
 			radius += maxDistance / 10;
 			centroid = findCentroidWithinRadius(radius, query, distances);
 		}
@@ -116,11 +116,12 @@ public class CentroidBySpreadingActivation {
 		while (!stack.isEmpty()) {
 			final var term = stack.pop();
 			final var termDistance = distancesToStart.get(term);
-			final var termDistances = distances.get(term);
-			final var cooccs = distances.get(term).keySet();
-			final var unvisited = CollectionUtils.removeAll(cooccs, visited).stream()
-					.collect(Collectors.toMap(t -> t, next -> termDistance + termDistances.get(next)));
+
+			final var unvisited = new HashMap<>(distances.get(term));
+			unvisited.keySet().removeAll(visited);
+			unvisited.replaceAll((k, cooccDistance) -> termDistance + cooccDistance);
 			unvisited.values().removeIf(distance -> distance > radius);
+
 			distancesToStart.putAll(unvisited);
 			unvisited.keySet().forEach(stack::push);
 		}
