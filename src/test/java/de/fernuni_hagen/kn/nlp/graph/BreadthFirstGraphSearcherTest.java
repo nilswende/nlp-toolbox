@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Nils Wende
  */
-class GraphSearcherTest {
+class BreadthFirstGraphSearcherTest {
 
 	@Test
 	void findBiggestSubgraphEmpty() {
@@ -42,8 +42,7 @@ class GraphSearcherTest {
 
 	private void testEquality(final Map<String, List<String>> adjacencyList) {
 		final var expected = toSigMap(adjacencyList);
-		final var actual = new TreeMap<>(expected);
-		GraphSearcher.findBiggestSubgraph(actual);
+		final var actual = new BreadthFirstGraphSearcher().findBiggestSubgraph(new TreeMap<>(expected));
 		assertEquals(expected, actual);
 	}
 
@@ -98,8 +97,7 @@ class GraphSearcherTest {
 
 	private void testInequality(final Set<String> expectedTerms, final Map<String, List<String>> adjacencyList) {
 		final var expected = toSigMap(adjacencyList);
-		final var actual = new TreeMap<>(expected);
-		GraphSearcher.findBiggestSubgraph(actual);
+		final var actual = new BreadthFirstGraphSearcher().findBiggestSubgraph(new TreeMap<>(expected));
 		assertNotEquals(expected, actual);
 		assertEquals(expectedTerms, actual.keySet());
 		actual.values().stream().map(Map::keySet).forEach(keys -> assertTrue(expectedTerms.containsAll(keys), keys.toString()));

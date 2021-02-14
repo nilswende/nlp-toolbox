@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.PageRankConfig;
-import de.fernuni_hagen.kn.nlp.graph.GraphSearcher;
+import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.Map;
@@ -33,7 +33,7 @@ public class PageRank {
 	 */
 	public Map<String, Double> calculate(final DBReader db) {
 		final var significances = db.getSignificances(config.getWeightingFunction());
-		GraphSearcher.findBiggestSubgraph(significances);
+		new BreadthFirstGraphSearcher().findBiggestSubgraph(significances);
 
 		final var pageRanks = initPageRanks(significances.keySet());
 		for (int i = 0; i < config.getIterations(); i++) {

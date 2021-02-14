@@ -1,27 +1,44 @@
 package de.fernuni_hagen.kn.nlp.graph;
 
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Performs various operations on a graph.
+ * Performs various search operations on a graph.
  *
  * @author Nils Wende
  */
-public class GraphSearcher {
+public interface GraphSearcher {
+
+	/**
+	 * Find all connected nodes of {@code start}.
+	 *
+	 * @param start         the start node
+	 * @param significances the full graph
+	 * @return {@code start} and all connected nodes
+	 */
+	Set<String> search(String start, Map<String, Map<String, Double>> significances);
+
+	/**
+	 * Find all connected nodes of {@code start} within a given {@code radius}.
+	 *
+	 * @param start     the start node
+	 * @param radius    the maximum distance from {@code start} to a connected node
+	 * @param distances the full graph including the weight of each edge
+	 * @return {@code start} and all connected nodes with their actual distance from {@code start}
+	 */
+	Map<String, Double> search(String start, double radius, Map<String, Map<String, Double>> distances);
 
 	/**
 	 * Find the subgraph with the most nodes.<br>
 	 * This is needed e. g. for PageRank calculations, when the complete graph has disjoint subgraphs.
 	 *
 	 * @param significances the full graph with its significance coefficients. The graph is then modified and all smaller subgraphs removed.
+	 * @return {@code significances} again
 	 */
-	public static void findBiggestSubgraph(final Map<String, Map<String, Double>> significances) {
+	default Map<String, Map<String, Double>> findBiggestSubgraph(final Map<String, Map<String, Double>> significances) {
 		final Set<String> visited = new TreeSet<>();
 		Set<String> biggestSubgraph = Set.of();
 		while (biggestSubgraph.size() < significances.size() / 2 || visited.size() < significances.size()) {
@@ -32,33 +49,12 @@ public class GraphSearcher {
 			visited.addAll(subgraph);
 		}
 		significances.keySet().retainAll(biggestSubgraph);
+		return significances;
 	}
 
-	private static Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
+	private Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
 		final var start = significances.keySet().stream().filter(t -> !exclude.contains(t)).findFirst().orElseThrow();
-		return breadthFirstSearch(start, significances);
-	}
-
-	/**
-	 * Find all connected nodes of {@code start}.
-	 *
-	 * @param start         the start node
-	 * @param significances the full graph
-	 * @return {@code start} and all connected nodes
-	 */
-	public static Set<String> breadthFirstSearch(final String start, final Map<String, Map<String, Double>> significances) {
-		final Set<String> visited = new TreeSet<>();
-		final var stack = new ArrayDeque<String>();
-		visited.add(start);
-		stack.push(start);
-		while (!stack.isEmpty()) {
-			final var term = stack.pop();
-			final var cooccs = significances.get(term).keySet();
-			final var unvisited = CollectionUtils.removeAll(cooccs, visited);
-			visited.addAll(unvisited);
-			unvisited.forEach(stack::push);
-		}
-		return visited;
+		return search(start, significances);
 	}
 
 	/**
@@ -69,8 +65,8 @@ public class GraphSearcher {
 	 * @param significances the full graph
 	 * @return true, if the nodes are connected
 	 */
-	public static boolean isConnected(final String node, final Collection<String> nodes, final Map<String, Map<String, Double>> significances) {
-		final Set<String> connected = breadthFirstSearch(node, significances);
+	default boolean isConnected(final String node, final Collection<String> nodes, final Map<String, Map<String, Double>> significances) {
+		final Set<String> connected = search(node, significances);
 		return connected.containsAll(nodes);
 	}
 
