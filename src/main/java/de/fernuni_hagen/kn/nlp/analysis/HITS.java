@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,10 +42,8 @@ public class HITS {
 		return createResultMap(terms, auths, hubs);
 	}
 
-	private Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
-		final var terms = new HashSet<>(linking.keySet());
-		linking.values().stream().map(Map::keySet).forEach(terms::addAll);
-		return terms;
+	protected Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
+		return linking.keySet();
 	}
 
 	private Map<String, Double> initMap(final Set<String> terms) {
