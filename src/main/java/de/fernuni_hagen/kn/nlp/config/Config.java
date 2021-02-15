@@ -197,12 +197,18 @@ public class Config {
 		 */
 		public static class HITSConfig {
 			private boolean calculate;
+			private boolean directed;
 			private int iterations = 50;
 			private int resultLimit = Integer.MAX_VALUE;
+			private WeightingFunction weightingFunction = WeightingFunction.DICE;
 			private DirectedWeightingFunction directedWeightingFunction = DirectedWeightingFunction.DIRECTED;
 
 			public boolean calculate() {
 				return calculate;
+			}
+
+			public boolean directed() {
+				return directed;
 			}
 
 			public int getIterations() {
@@ -211,6 +217,10 @@ public class Config {
 
 			public int getResultLimit() {
 				return resultLimit;
+			}
+
+			public WeightingFunction getWeightingFunction() {
+				return weightingFunction;
 			}
 
 			public DirectedWeightingFunction getDirectedWeightingFunction() {

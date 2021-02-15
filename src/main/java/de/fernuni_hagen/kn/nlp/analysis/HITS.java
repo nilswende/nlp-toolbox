@@ -2,10 +2,11 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
-import de.fernuni_hagen.kn.nlp.utils.Maps;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Uses the HITS algorithm to find hubs and authorities in a graph.
@@ -14,7 +15,7 @@ import java.util.Set;
  */
 public class HITS {
 
-	private final HITSConfig hitsConfig;
+	protected final HITSConfig hitsConfig;
 
 	public HITS(final HITSConfig hitsConfig) {
 		this.hitsConfig = hitsConfig;
@@ -27,55 +28,57 @@ public class HITS {
 	 * @return HITS scores
 	 */
 	public Map<String, Scores> calculate(final DBReader db) {
-		final Map<String, Map<String, Double>> significances = db.getSignificances(hitsConfig.getDirectedWeightingFunction());
-		final var terms = significances.keySet();
+		final Map<String, Map<String, Double>> linking = db.getSignificances(hitsConfig.getWeightingFunction());
+		return getStringScoresMap(linking, linking);
+	}
+
+	protected Map<String, Scores> getStringScoresMap(final Map<String, Map<String, Double>> auth2hubs, final Map<String, Map<String, Double>> hub2auths) {
+		final Set<String> terms = getTerms(auth2hubs);
 		final Map<String, Double> auths = initMap(terms);
 		final Map<String, Double> hubs = initMap(terms);
 		for (int i = 0; i < hitsConfig.getIterations(); i++) {
-			calcScore(auths, hubs, significances);
-			calcScore(hubs, auths, significances);
+			calcScore(auths, auth2hubs, hubs);
+			calcScore(hubs, hub2auths, auths);
 		}
 		return createResultMap(terms, auths, hubs);
 	}
 
-	private Map<String, Double> initMap(final Set<String> terms) {
-		final var map = Maps.<String, Double>newKnownSizeMap(terms.size());
-		final Double init = 1.0;
-		terms.forEach(t -> map.put(t, init));
-		return map;
+	private Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
+		final var terms = new HashSet<>(linking.keySet());
+		linking.values().stream().map(Map::keySet).forEach(terms::addAll);
+		return terms;
 	}
 
-	private void calcScore(final Map<String, Double> targetScore, final Map<String, Double> otherScore, final Map<String, Map<String, Double>> significances) {
+	private Map<String, Double> initMap(final Set<String> terms) {
+		return terms.stream().collect(Collectors.toMap(t -> t, t -> 1.0));
+	}
+
+	private void calcScore(final Map<String, Double> targetScore, final Map<String, Map<String, Double>> linking, final Map<String, Double> otherScore) {
 		double tempNorm = 0;
-		for (final Map.Entry<String, Map<String, Double>> cooccs : significances.entrySet()) {
-			double sum = 0;
-			for (final Map.Entry<String, Double> sigs : cooccs.getValue().entrySet()) {
-				sum += otherScore.get(sigs.getKey()) * sigs.getValue();
-			}
-			targetScore.put(cooccs.getKey(), sum);
+		for (final Map.Entry<String, Double> entry : targetScore.entrySet()) {
+			final var node = entry.getKey();
+			final var linked = linking.getOrDefault(node, Map.of());
+			final double sum = linked.keySet().stream().map(otherScore::get).mapToDouble(d -> d).sum();
+			entry.setValue(sum);
 			tempNorm += sum * sum;
 		}
-		final double norm = Math.sqrt(tempNorm);
-		targetScore.replaceAll((t, s) -> s / norm);
+		if (tempNorm != 0) {
+			final double norm = Math.sqrt(tempNorm);
+			targetScore.replaceAll((t, s) -> s / norm);
+		}
 	}
 
 	private Map<String, Scores> createResultMap(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs) {
-		final var map = Maps.<String, Scores>newKnownSizeMap(terms.size());
-		for (final String term : terms) {
-			final var scores = new Scores(auths.get(term), hubs.get(term));
-			map.put(term, scores);
-		}
-		return map;
+		return terms.stream().collect(Collectors.toMap(t -> t, t -> new Scores(auths.get(t), hubs.get(t))));
 	}
 
 	/**
 	 * DTO for the HITS scores.
 	 */
 	public static class Scores {
-
 		private final double authorityScore, hubScore;
 
-		public Scores(final double authorityScore, final double hubScore) {
+		Scores(final double authorityScore, final double hubScore) {
 			this.authorityScore = authorityScore;
 			this.hubScore = hubScore;
 		}
@@ -87,7 +90,6 @@ public class HITS {
 		public double getHubScore() {
 			return hubScore;
 		}
-
 	}
 
 }

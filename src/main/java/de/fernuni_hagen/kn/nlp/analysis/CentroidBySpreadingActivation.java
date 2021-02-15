@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -107,13 +106,10 @@ public class CentroidBySpreadingActivation {
 	}
 
 	private Map<String, Map<String, Double>> findCentroidCandidates(final double radius, final List<String> query, final Map<String, Map<String, Double>> distances) {
-		final var candidates = new TreeMap<String, Map<String, Double>>();
+		final var candidates = Maps.<String, Map<String, Double>>newKnownSizeMap(query.size());
 		final var bfs = new BreadthFirstGraphSearcher();
-		query.forEach(
-				q -> bfs.search(q, radius, distances).forEach( // invert the mapping (q, (k, v)) to (k, (q, v))
-						(k, v) -> candidates.computeIfAbsent(k, x -> Maps.newKnownSizeMap(query.size())).put(q, v)
-				));
-		return candidates;
+		query.forEach(q -> candidates.put(q, bfs.search(q, radius, distances)));
+		return Maps.invertMapping(candidates);
 	}
 
 	private Optional<String> getCentroidWithMinimalDistance(final Map<String, Map<String, Double>> candidates, final List<String> query) {
