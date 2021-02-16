@@ -18,6 +18,7 @@ public class InMemoryDB {
 	public static final String JSON_FILE = "data.json.gz";
 	private final Map<String, Values> data;
 	private String currentDoc;
+	private long sentencesCount = 0;
 
 	public InMemoryDB(final Config config) {
 		final var path = config.getInMemoryDbDir().resolve(JSON_FILE);
@@ -44,6 +45,13 @@ public class InMemoryDB {
 	 */
 	static String formatPath(final Path path) {
 		return path.toAbsolutePath().toString();
+	}
+
+	/**
+	 * Starts a new sentence to write terms from.
+	 */
+	public void addSentence() {
+		sentencesCount++;
 	}
 
 	/**
@@ -101,6 +109,15 @@ public class InMemoryDB {
 	 */
 	public long getMaxSentencesCount() {
 		return data.values().stream().mapToLong(Values::getCount).max().orElse(0L);
+	}
+
+	/**
+	 * Returns the total number of sentences.
+	 *
+	 * @return the total number of sentences
+	 */
+	public long getSentencesCount() {
+		return sentencesCount;
 	}
 
 	/**

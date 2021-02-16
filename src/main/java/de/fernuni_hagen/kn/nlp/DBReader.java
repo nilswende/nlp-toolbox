@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,9 +15,9 @@ public interface DBReader {
 	/**
 	 * Gets all term cooccurrences.
 	 *
-	 * @return a mapping from each term to each cooccurring term
+	 * @return a mapping from each term to each cooccurring term with their respective number of cooccurrences
 	 */
-	Map<String, List<String>> getCooccurrences();
+	Map<String, Map<String, Double>> getCooccurrences();
 
 	/**
 	 * Gets the significance coefficient of all term cooccurrences via the weighting function.

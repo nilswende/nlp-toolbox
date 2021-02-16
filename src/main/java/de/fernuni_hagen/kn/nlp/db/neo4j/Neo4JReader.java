@@ -7,12 +7,12 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toDouble;
 import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
 
 /**
@@ -29,17 +29,18 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, List<String>> getCooccurrences() {
+	public Map<String, Map<String, Double>> getCooccurrences() {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var matchCooccs = "MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
-					"RETURN t1.name, t2.name\n";
+					"RETURN t1.name, t2.name, c.count\n";
 			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new TreeMap<String, List<String>>();
+				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
 					final var t1 = row.get("t1.name").toString();
 					final var t2 = row.get("t2.name").toString();
-					map.computeIfAbsent(t1, t -> new ArrayList<>()).add(t2);
+					final var c = toDouble(row.get("c.count"));
+					map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, c);
 				}
 				return map;
 			}

@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -54,7 +55,7 @@ class CentroidBySpreadingActivationTest {
 	void calculate(final List<String> query, final Map<String, Map<String, Double>> significances,
 				   final String expectedCentroid) {
 		final DBReader dbReader = Mockito.mock(DBReader.class);
-		Mockito.when(dbReader.getSignificances(any(WeightingFunction.class))).thenReturn(mutable(significances));
+		Mockito.when(dbReader.getSignificances(any(WeightingFunction.class))).thenReturn(Maps.copyOf(significances));
 		final String actual = new CentroidBySpreadingActivation().calculate(query, dbReader);
 		assertEquals(expectedCentroid, actual);
 	}
@@ -85,12 +86,6 @@ class CentroidBySpreadingActivationTest {
 						"e", Map.of("a", .1, "c", .8)
 				), "d")
 		);
-	}
-
-	private static HashMap<String, Map<String, Double>> mutable(final Map<String, Map<String, Double>> immutable) {
-		final var mutable = new HashMap<>(immutable);
-		mutable.replaceAll((k, v) -> new HashMap<>(v));
-		return mutable;
 	}
 
 }

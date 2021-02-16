@@ -30,6 +30,7 @@ public class InMemoryWriter implements DBWriter {
 
 	@Override
 	public void addSentence(final List<String> distinctTerms) {
+		db.addSentence();
 		addTerms(distinctTerms);
 		addRelationships(distinctTerms);
 	}

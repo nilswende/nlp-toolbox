@@ -21,6 +21,8 @@ public final class Maps {
 	 * @param <K>  key type
 	 * @param <V>  value type
 	 * @return a new HashMap
+	 * @apiNote Should only be used when you need to explicitly create a new map and you know its size beforehand.
+	 * If you can create the map by using e. g. Collectors.toMap, do so, since it is usually clearer and more concise.
 	 */
 	public static <K, V> HashMap<K, V> newKnownSizeMap(final int size) {
 		return new HashMap<>((int) (size / 0.75) + 1);
@@ -42,6 +44,18 @@ public final class Maps {
 						(k2, v) -> inverted.computeIfAbsent(k2, x -> newKnownSizeMap(map.size())).put(k, v)
 				));
 		return inverted;
+	}
+
+	/**
+	 * Returns a mutable copy of the given map.
+	 *
+	 * @param map the map
+	 * @return the mutable copy
+	 */
+	public static Map<String, Map<String, Double>> copyOf(final Map<String, Map<String, Double>> map) {
+		final var copy = new HashMap<>(map);
+		copy.replaceAll((k, v) -> new HashMap<>(v));
+		return copy;
 	}
 
 }

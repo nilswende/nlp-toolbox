@@ -27,7 +27,7 @@ public class HITS {
 	 * @return HITS scores
 	 */
 	public Map<String, Scores> calculate(final DBReader db) {
-		final Map<String, Map<String, Double>> linking = db.getSignificances(hitsConfig.getWeightingFunction());
+		final Map<String, Map<String, Double>> linking = db.getCooccurrences();
 		return getStringScoresMap(linking, linking);
 	}
 
