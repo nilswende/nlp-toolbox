@@ -98,8 +98,12 @@ public class Neo4JReader implements DBReader {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
-					final double sig = calcSig(row, kmax, function);
-					putDominantSig(row, sig, map);
+					final var t1 = row.get("t1.name").toString();
+					final var t2 = row.get("t2.name").toString();
+					if (!map.containsKey(t2) || !map.get(t2).containsKey(t1)) {
+						final double sig = calcSig(row, kmax, function);
+						map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
+					}
 				}
 				return map;
 			}
@@ -109,15 +113,6 @@ public class Neo4JReader implements DBReader {
 	private double calcSig(final Map<String, Object> row, final long kmax, final DirectedWeightingFunction function) {
 		final var kij = toLong(row.get("kij"));
 		return function.calculate(kij, kmax);
-	}
-
-	private void putDominantSig(final Map<String, Object> row, final double sig, final Map<String, Map<String, Double>> map) {
-		final var t1 = row.get("t1.name").toString();
-		final var t2 = row.get("t2.name").toString();
-		if (map.containsKey(t2) && map.get(t2).containsKey(t1)) {
-			return;  // workaround case = appears twice
-		}
-		map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 	}
 
 	private long getMaxSentencesCount(final Transaction tx) {
