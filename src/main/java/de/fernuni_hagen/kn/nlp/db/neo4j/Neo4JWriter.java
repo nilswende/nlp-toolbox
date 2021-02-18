@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.Document;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -9,6 +8,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +41,11 @@ public class Neo4JWriter implements DBWriter {
 	}
 
 	@Override
-	public void addDocument(final Document document) {
-		final var name = DBUtils.normalizePath(document.getOriginalFile());
+	public void addDocument(final Path path) {
+		final var name = DBUtils.normalizePath(path);
 		try (final Transaction tx = graphDb.beginTx()) {
 			if (tx.findNode(Labels.DOCUMENT, "name", name) != null) {
-				throw new IllegalArgumentException("no two input documents can have the same file name");
+				System.out.println("no two input documents can have the same file name");
 			}
 			currentDocId = sequences.nextValueFor(Labels.DOCUMENT);
 			final Node doc = tx.createNode(Labels.DOCUMENT);

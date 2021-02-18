@@ -40,13 +40,6 @@ public class InMemoryReader implements DBReader {
 		return copy;
 	}
 
-	public Map<String, Map<String, Long>> getCooccurrencesAsLongs() {
-		final var data = db.getData();
-		final var copy = Maps.<String, Map<String, Long>>newKnownSizeMap(data.size());
-		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getCooccs())));
-		return copy;
-	}
-
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
@@ -83,6 +76,14 @@ public class InMemoryReader implements DBReader {
 		return cooccs;
 	}
 
+	@Override
+	public Map<String, Map<String, Long>> getTermFrequencies() {
+		final var data = db.getData();
+		final var copy = Maps.<String, Map<String, Long>>newKnownSizeMap(data.size());
+		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getDocuments())));
+		return copy;
+	}
+
 	/**
 	 * Gets all terms in the given document.
 	 *
@@ -92,7 +93,7 @@ public class InMemoryReader implements DBReader {
 	public List<String> getAllTermsInDocument(final Path path) {
 		final var pathStr = DBUtils.normalizePath(path);
 		return db.getData().entrySet().stream()
-				.filter(e -> e.getValue().getDocuments().contains(pathStr))
+				.filter(e -> e.getValue().getDocuments().containsKey(pathStr))
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toList());
 	}

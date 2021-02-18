@@ -1,9 +1,9 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import de.fernuni_hagen.kn.nlp.Document;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -27,15 +27,14 @@ public class Preprocessor {
 	/**
 	 * Executes the linguistic preprocessing of a document.
 	 *
-	 * @param document the document to be processed
+	 * @param textFile the document to be processed
 	 * @return stream of the sentences inside the document
 	 */
-	public Stream<Sentence> preprocess(final Document document) {
-		final var path = document.getTextFile();
-		final var factory = PreprocessingFactory.from(path);
+	public Stream<Sentence> preprocess(final Path textFile) {
+		final var factory = PreprocessingFactory.from(textFile);
 		final var sentencePreprocessor = extractPhrases ? new PhrasedSentencePreprocessor(preprocessingSteps, factory)
 				: new SentencePreprocessor(preprocessingSteps, factory);
-		final var sentences = factory.createSentenceExtractor().extract(path);
+		final var sentences = factory.createSentenceExtractor().extract(textFile);
 		return sentencePreprocessor.processSentences(sentences);
 	}
 

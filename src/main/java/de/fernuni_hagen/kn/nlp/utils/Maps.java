@@ -2,6 +2,8 @@ package de.fernuni_hagen.kn.nlp.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Map utilities.
@@ -55,6 +57,24 @@ public final class Maps {
 	public static Map<String, Map<String, Double>> copyOf(final Map<String, Map<String, Double>> map) {
 		final var copy = new HashMap<>(map);
 		copy.replaceAll((k, v) -> new HashMap<>(v));
+		return copy;
+	}
+
+	/**
+	 * Transforms the map containing Longs to one containing Doubles by applying the mapper function to each element.
+	 *
+	 * @param map    long map
+	 * @param mapper transformation function
+	 * @return double map
+	 */
+	public static Map<String, Map<String, Double>> toDoubleMap(final Map<String, Map<String, Long>> map, final Function<Long, Double> mapper) {
+		final var copy = Maps.<String, Map<String, Double>>newKnownSizeMap(map.size());
+		map.forEach((k, v) -> {
+			final var inner = v.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey,
+							e -> mapper.apply(e.getValue())));
+			copy.put(k, inner);
+		});
 		return copy;
 	}
 

@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.config;
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
+import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
@@ -12,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -152,6 +154,7 @@ public class Config {
 
 		private PageRankConfig pageRank = new PageRankConfig();
 		private HITSConfig hits = new HITSConfig();
+		private DocSimConfig docSim = new DocSimConfig();
 
 		public PageRankConfig getPageRankConfig() {
 			return pageRank;
@@ -159,6 +162,10 @@ public class Config {
 
 		public HITSConfig getHitsConfig() {
 			return hits;
+		}
+
+		public DocSimConfig getDocSimConfig() {
+			return docSim;
 		}
 
 		/**
@@ -225,6 +232,27 @@ public class Config {
 
 			public DirectedWeightingFunction getDirectedWeightingFunction() {
 				return directedWeightingFunction;
+			}
+		}
+
+		/**
+		 * Contains the document similarity config.
+		 */
+		public static class DocSimConfig {
+			private boolean calculate;
+			private DocSimilarityFunction similarityFunction;
+			private List<String> documents;
+
+			public boolean calculate() {
+				return calculate;
+			}
+
+			public DocSimilarityFunction getSimilarityFunction() {
+				return similarityFunction;
+			}
+
+			public List<String> getDocuments() {
+				return documents;
 			}
 		}
 

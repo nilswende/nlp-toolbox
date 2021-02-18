@@ -3,7 +3,7 @@ package de.fernuni_hagen.kn.nlp.math;
 import static org.apache.commons.math3.util.CombinatoricsUtils.factorialLog;
 
 /**
- * Concrete weighting functions.
+ * Weighting functions for undirected graphs.
  *
  * @author Nils Wende
  */

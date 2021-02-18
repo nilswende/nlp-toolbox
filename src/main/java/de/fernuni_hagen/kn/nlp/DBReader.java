@@ -35,4 +35,10 @@ public interface DBReader {
 	 */
 	Map<String, Map<String, Double>> getSignificances(DirectedWeightingFunction function);
 
+	/**
+	 * Gets all terms frequencies.
+	 *
+	 * @return a mapping from each term to each document it is contained in with their respective count
+	 */
+	Map<String, Map<String, Long>> getTermFrequencies();
 }

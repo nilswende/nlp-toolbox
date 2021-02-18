@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.analysis.HITS.Scores;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig;
+import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.PageRankConfig;
 
@@ -44,6 +45,12 @@ public class Analysis {
 			analyzeHITS(hitsConfig);
 			logDuration("HITS", start);
 		}
+		final var docSimConfig = config.getDocSimConfig();
+		if (docSimConfig.calculate()) {
+			final var start = logStart("DocSim");
+			analyzeDocSim(docSimConfig);
+			logDuration("DocSim", start);
+		}
 	}
 
 	private void analyzePageRank(final PageRankConfig pageRankConfig) {
@@ -64,6 +71,17 @@ public class Analysis {
 				.sorted(comparingByValue(comparingDouble(Scores::getHubScore).reversed()))
 				.limit(hitsConfig.getResultLimit())
 				.forEach(e -> System.out.println("Hub score of " + e.getKey() + ": " + e.getValue().getHubScore()));
+	}
+
+	private void analyzeDocSim(final DocSimConfig docSimConfig) {
+		final var similarities = new DocumentSimilarity(docSimConfig).calculate(dbReader);
+		if (similarities.isEmpty()) {
+			System.out.println("Document similarity: Too few documents specified");
+		} else {
+			similarities.forEach((d1, m) -> m.forEach((d2, s) ->
+					System.out.println(String.format("Document similarity of %s and %s: %s", d1, d2, s))
+			));
+		}
 	}
 
 }

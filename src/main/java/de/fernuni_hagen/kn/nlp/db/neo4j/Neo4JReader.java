@@ -154,4 +154,8 @@ public class Neo4JReader implements DBReader {
 		}
 	}
 
+	@Override
+	public Map<String, Map<String, Long>> getTermFrequencies() {
+		return null;//TODO
+	}
 }

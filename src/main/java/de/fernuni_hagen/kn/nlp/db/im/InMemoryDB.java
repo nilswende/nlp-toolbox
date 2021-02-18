@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import de.fernuni_hagen.kn.nlp.config.Config;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -32,8 +31,8 @@ public class InMemoryDB {
 	 * @param fileName the document's original file name
 	 */
 	public void addDocument(final String fileName) {
-		if (data.values().stream().map(Values::getDocuments).anyMatch(d -> d.contains(fileName))) {
-			throw new IllegalArgumentException("no two input documents can have the same file name");
+		if (data.values().stream().map(Values::getDocuments).anyMatch(d -> d.containsKey(fileName))) {
+			System.out.println("no two input documents can have the same file name");
 		}
 		currentDoc = fileName;
 	}
@@ -122,8 +121,8 @@ public class InMemoryDB {
 		 *
 		 * @return the set of documents this term occurs in
 		 */
-		public Set<String> getDocuments() {
-			return documents.keySet();
+		public Map<String, Long> getDocuments() {
+			return documents;
 		}
 
 		/**
