@@ -8,9 +8,9 @@ import java.util.stream.StreamSupport;
  *
  * @author Nils Wende
  */
-final class Utils {
+final class Neo4JUtils {
 
-	private Utils() {
+	private Neo4JUtils() {
 		throw new AssertionError("no init");
 	}
 

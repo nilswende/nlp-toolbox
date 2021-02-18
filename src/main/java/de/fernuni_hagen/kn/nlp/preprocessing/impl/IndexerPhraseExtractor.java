@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.fernuni_hagen.kn.nlp.preprocessing.Utils.cast;
+import static de.fernuni_hagen.kn.nlp.preprocessing.PreprocessingUtils.cast;
 
 /**
  * Extracts phrases from a text using the ASV Indexer class.

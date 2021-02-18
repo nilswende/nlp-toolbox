@@ -29,19 +29,19 @@ public final class Maps {
 	}
 
 	/**
-	 * Inverts the mapping {@code Map<K, Map<K2, V>>} to {@code Map<K2, Map<K, V>>}.
+	 * Inverts the mapping {@code Map<K1, Map<K2, V>>} to {@code Map<K2, Map<K1, V>>}.
 	 *
 	 * @param map  the map
-	 * @param <K>  first key type
+	 * @param <K1> first key type
 	 * @param <K2> second key type
 	 * @param <V>  value type
-	 * @return an inverted map
+	 * @return the inverted map
 	 */
-	public static <K, K2, V> Map<K2, Map<K, V>> invertMapping(final Map<K, Map<K2, V>> map) {
-		final var inverted = new HashMap<K2, Map<K, V>>();
+	public static <K1, K2, V> Map<K2, Map<K1, V>> invertMapping(final Map<K1, Map<K2, V>> map) {
+		final var inverted = new HashMap<K2, Map<K1, V>>();
 		map.forEach(
-				(k, m) -> m.forEach(
-						(k2, v) -> inverted.computeIfAbsent(k2, x -> newKnownSizeMap(map.size())).put(k, v)
+				(k1, m) -> m.forEach(
+						(k2, v) -> inverted.computeIfAbsent(k2, x -> newKnownSizeMap(map.size())).put(k1, v)
 				));
 		return inverted;
 	}

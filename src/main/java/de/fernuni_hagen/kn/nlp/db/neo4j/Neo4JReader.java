@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toDouble;
-import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
+import static de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JUtils.toDouble;
+import static de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JUtils.toLong;
 
 /**
  * Implements reading from the Neo4j graph database.

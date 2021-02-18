@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Nils Wende
  */
-class UtilsTest {
+class InputUtilsTest {
 
 	@ParameterizedTest
 	@MethodSource
 	void countChars(final String s) {
-		assertEquals(s.length(), Utils.countChars(new StringReader(s)));
+		assertEquals(s.length(), InputUtils.countChars(new StringReader(s)));
 	}
 
 	static List<Arguments> countChars() {

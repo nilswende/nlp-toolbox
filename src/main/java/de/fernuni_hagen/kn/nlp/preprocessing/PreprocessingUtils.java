@@ -8,9 +8,9 @@ import java.util.Set;
  *
  * @author Nils Wende
  */
-public final class Utils {
+public final class PreprocessingUtils {
 
-	private Utils() {
+	private PreprocessingUtils() {
 		throw new AssertionError("no init");
 	}
 

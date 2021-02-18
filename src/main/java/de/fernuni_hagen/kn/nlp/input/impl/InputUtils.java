@@ -10,13 +10,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Utilities.
+ * Input utilities.
  *
  * @author Nils Wende
  */
-public final class Utils {
+public final class InputUtils {
 
-	private Utils() {
+	private InputUtils() {
 		throw new AssertionError("no init");
 	}
 

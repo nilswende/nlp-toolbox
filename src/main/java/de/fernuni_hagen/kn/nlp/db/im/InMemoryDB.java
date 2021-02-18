@@ -2,11 +2,9 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.config.Config;
 
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * A simple in-memory database.
@@ -31,20 +29,13 @@ public class InMemoryDB {
 	/**
 	 * Starts a new document to write sentences from.
 	 *
-	 * @param path the document's file pah
+	 * @param fileName the document's original file name
 	 */
-	public void addDocument(final Path path) {
-		currentDoc = formatPath(path);
-	}
-
-	/**
-	 * Formats a Path to a normalized String.
-	 *
-	 * @param path Path
-	 * @return String
-	 */
-	static String formatPath(final Path path) {
-		return path.toAbsolutePath().toString();
+	public void addDocument(final String fileName) {
+		if (data.values().stream().map(Values::getDocuments).anyMatch(d -> d.contains(fileName))) {
+			throw new IllegalArgumentException("no two input documents can have the same file name");
+		}
+		currentDoc = fileName;
 	}
 
 	/**
@@ -61,8 +52,7 @@ public class InMemoryDB {
 	 */
 	public void addTerm(final String term) {
 		final var values = data.computeIfAbsent(term, t -> new Values());
-		values.count++;
-		values.getDocuments().add(currentDoc);
+		values.documents.merge(currentDoc, 1L, Long::sum);
 	}
 
 	/**
@@ -124,9 +114,8 @@ public class InMemoryDB {
 	 * All values a term in the database is mapped to.
 	 */
 	static class Values {
-		private final Set<String> documents = new TreeSet<>();
+		private final Map<String, Long> documents = new TreeMap<>();
 		private final Map<String, Long> cooccs = new TreeMap<>();
-		private long count = 0;
 
 		/**
 		 * Returns the set of documents this term occurs in.
@@ -134,7 +123,7 @@ public class InMemoryDB {
 		 * @return the set of documents this term occurs in
 		 */
 		public Set<String> getDocuments() {
-			return documents;
+			return documents.keySet();
 		}
 
 		/**
@@ -152,7 +141,7 @@ public class InMemoryDB {
 		 * @return the total number of occurrences of this term
 		 */
 		public long getCount() {
-			return count;
+			return documents.values().stream().mapToLong(l -> l).sum();
 		}
 	}
 

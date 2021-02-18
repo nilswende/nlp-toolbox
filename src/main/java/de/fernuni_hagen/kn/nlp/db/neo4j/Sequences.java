@@ -6,7 +6,7 @@ import org.neo4j.graphdb.Transaction;
 
 import java.util.Map;
 
-import static de.fernuni_hagen.kn.nlp.db.neo4j.Utils.toLong;
+import static de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JUtils.toLong;
 
 /**
  * Emulates a DB sequence by merging on nodes of a special label.

@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.input;
 
+import de.fernuni_hagen.kn.nlp.Document;
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.Config;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
@@ -28,11 +29,11 @@ public class TikaDocumentConverter implements DocumentConverter {
 	}
 
 	@Override
-	public Path convert(final Path path) {
+	public Document convert(final Path path) {
 		final var tempFile = FileHelper.createTempFile(".txt");
 		try (final var writer = Files.newBufferedWriter(tempFile, Config.DEFAULT_CHARSET)) {
 			parseInput(path, writer);
-			return tempFile;
+			return new Document(path, tempFile);
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}

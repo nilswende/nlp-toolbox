@@ -137,7 +137,7 @@ public class BufferedFileReader implements Closeable {
 	 * @return file length
 	 */
 	public long getLength() {
-		return Utils.countChars(path, Config.DEFAULT_CHARSET);
+		return InputUtils.countChars(path, Config.DEFAULT_CHARSET);
 	}
 
 	@Override

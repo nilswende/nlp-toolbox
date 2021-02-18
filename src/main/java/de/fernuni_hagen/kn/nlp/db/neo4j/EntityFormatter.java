@@ -45,7 +45,7 @@ class EntityFormatter {
 	 * @return formatted Path
 	 */
 	public static String formatPath(final Path p) {
-		return Utils.stream(p.relationships())
+		return Neo4JUtils.stream(p.relationships())
 				.map(EntityFormatter::formatRelationship)
 				.collect(Collectors.joining("\n"));
 	}

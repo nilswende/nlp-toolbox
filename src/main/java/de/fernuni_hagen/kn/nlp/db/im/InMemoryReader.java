@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
@@ -89,7 +90,7 @@ public class InMemoryReader implements DBReader {
 	 * @return all terms in the given document
 	 */
 	public List<String> getAllTermsInDocument(final Path path) {
-		final var pathStr = InMemoryDB.formatPath(path);
+		final var pathStr = DBUtils.normalizePath(path);
 		return db.getData().entrySet().stream()
 				.filter(e -> e.getValue().getDocuments().contains(pathStr))
 				.map(Map.Entry::getKey)

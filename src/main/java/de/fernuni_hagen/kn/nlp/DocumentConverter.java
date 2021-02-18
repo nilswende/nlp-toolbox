@@ -16,6 +16,6 @@ public interface DocumentConverter {
 	 * @param path file in any format
 	 * @return text file
 	 */
-	Path convert(Path path);
+	Document convert(Path path);
 
 }
