@@ -31,9 +31,7 @@ public class DocumentSimilarity {
 	 * @return the pairwise document similarities
 	 */
 	public MultiKeyMap<String, Double> calculate(final DBReader db) {
-		final var tmp = db.getTermFrequencies();
-		final var termFreqs = new MultiKeyMap<String, Double>();
-		tmp.forEach((t, m) -> m.forEach((d, f) -> termFreqs.put(t, d, f.doubleValue())));
+		final var termFreqs = db.getTermFrequencies();
 		replaceDocuments(termFreqs);
 		final var normalizedTermFreqs = getNormalizedTermFrequencies(termFreqs);
 		final var termWeights = config.useInverseDocFrequency() ? getTermWeights(normalizedTermFreqs) : normalizedTermFreqs;

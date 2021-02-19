@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public interface DBReader {
 	/**
 	 * Gets all terms frequencies.
 	 *
-	 * @return a mapping from each term to each document it is contained in with their respective count
+	 * @return a mapping from each term and document it is contained in to their respective count
 	 */
-	Map<String, Map<String, Long>> getTermFrequencies();
+	MultiKeyMap<String, Double> getTermFrequencies();
 }

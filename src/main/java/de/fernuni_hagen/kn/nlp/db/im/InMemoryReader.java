@@ -5,9 +5,9 @@ import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -77,11 +77,10 @@ public class InMemoryReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Long>> getTermFrequencies() {
-		final var data = db.getData();
-		final var copy = Maps.<String, Map<String, Long>>newKnownSizeMap(data.size());
-		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getDocuments())));
-		return copy;
+	public MultiKeyMap<String, Double> getTermFrequencies() {
+		final var map = new MultiKeyMap<String, Double>();
+		db.getData().forEach((k, m) -> m.getDocuments().forEach((d, v) -> map.put(k, d, v.doubleValue())));
+		return map;
 	}
 
 	/**

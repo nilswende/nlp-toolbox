@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.db.neo4j;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Transaction;
@@ -155,7 +156,8 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Long>> getTermFrequencies() {
-		return null;//TODO
+	public MultiKeyMap<String, Double> getTermFrequencies() {
+		final var map = new MultiKeyMap<String, Double>();
+		return map;//TODO
 	}
 }

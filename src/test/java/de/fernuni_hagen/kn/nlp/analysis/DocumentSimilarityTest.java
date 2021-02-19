@@ -3,7 +3,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
-import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Nils Wende
@@ -29,17 +29,21 @@ class DocumentSimilarityTest {
 	}
 
 	private DBReader mockDbReader() {
-		final var map = Map.of(
-				"Vertrag", Map.of("1", 3L),
-				"riskant", Map.of("2", 1L),
-				"Weg", Map.of("2", 1L, "3", 1L),
-				"groß", Map.of("2", 1L),
-				"Profit", Map.of("2", 1L, "3", 1L, "4", 2L),
-				"führen", Map.of("3", 1L),
-				"Rechtfertigung", Map.of("4", 1L)
-		);
+		final var map = new MultiKeyMap<String, Double>();
+		map.putAll(Map.of(
+				new MultiKey<>("Vertrag", "1"), 3.0,
+				new MultiKey<>("riskant", "2"), 1.0,
+				new MultiKey<>("Weg", "2"), 1.0,
+				new MultiKey<>("Weg", "3"), 1.0,
+				new MultiKey<>("groß", "2"), 1.0,
+				new MultiKey<>("Profit", "2"), 1.0,
+				new MultiKey<>("Profit", "3"), 1.0,
+				new MultiKey<>("Profit", "4"), 2.0,
+				new MultiKey<>("führen", "3"), 1.0,
+				new MultiKey<>("Rechtfertigung", "4"), 1.0
+		));
 		final DBReader dbReader = Mockito.mock(DBReader.class);
-		Mockito.when(dbReader.getTermFrequencies()).thenReturn(Maps.copyOf(map));
+		Mockito.when(dbReader.getTermFrequencies()).thenReturn(map);
 		return dbReader;
 	}
 
@@ -94,7 +98,8 @@ class DocumentSimilarityTest {
 		assertEqual(actual, expected);
 	}
 
-	private void assertEqual(MultiKeyMap<String, Double> actual, MultiKeyMap<String, Double> expected) {
+	private void assertEqual(final MultiKeyMap<String, Double> actual, final MultiKeyMap<String, Double> expected) {
+		assertTrue(expected.size() >= actual.size(), "actual contains too many entries");
 		expected.forEach((k, s) -> {
 					final var d1 = k.getKey(0);
 					final var d2 = k.getKey(1);
