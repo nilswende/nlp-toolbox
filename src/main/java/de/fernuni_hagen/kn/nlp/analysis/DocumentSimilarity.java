@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
  */
 public class DocumentSimilarity {
 
+	private static final int TERM = 0;
+	private static final int DOCUMENT = 1;
+
 	private final DocSimConfig config;
 	private List<String> documents;
 
@@ -42,18 +45,18 @@ public class DocumentSimilarity {
 
 	private void replaceDocuments(final MultiKeyMap<String, Double> termFreqs) {
 		if (CollectionUtils.isEmpty(config.getDocuments())) {
-			documents = termFreqs.keySet().stream().map(k -> k.getKey(1)).distinct().collect(Collectors.toList());
+			documents = termFreqs.keySet().stream().map(k -> k.getKey(DOCUMENT)).distinct().collect(Collectors.toList());
 		} else {
-			termFreqs.keySet().removeIf(k -> !documents.contains(k.getKey(1)));
+			termFreqs.keySet().removeIf(k -> !documents.contains(k.getKey(DOCUMENT)));
 		}
 	}
 
 	private MultiKeyMap<String, Double> getNormalizedTermFrequencies(final MultiKeyMap<String, Double> termFreqs) {
 		final var termSums = termFreqs.entrySet().stream()
 				.collect(Collectors.groupingBy(
-						e -> e.getKey().getKey(1),
+						e -> e.getKey().getKey(DOCUMENT),
 						Collectors.summingDouble(Map.Entry::getValue)));
-		termFreqs.replaceAll((k, f) -> f / termSums.get(k.getKey(1)));
+		termFreqs.replaceAll((k, f) -> f / termSums.get(k.getKey(DOCUMENT)));
 		return termFreqs;
 	}
 
@@ -61,9 +64,9 @@ public class DocumentSimilarity {
 		final var docCount = (double) documents.size();
 		final var docSums = normalizedTermFreqs.entrySet().stream()
 				.collect(Collectors.groupingBy(
-						e -> e.getKey().getKey(0),
+						e -> e.getKey().getKey(TERM),
 						Collectors.counting()));
-		normalizedTermFreqs.replaceAll((k, nf) -> nf * Math.log10(docCount / docSums.get(k.getKey(0))));
+		normalizedTermFreqs.replaceAll((k, nf) -> nf * Math.log10(docCount / docSums.get(k.getKey(TERM))));
 		return normalizedTermFreqs;
 	}
 
@@ -78,9 +81,9 @@ public class DocumentSimilarity {
 	private Map<String, Map<String, Double>> getDocumentVectors(final MultiKeyMap<String, Double> reducedTermWeights) {
 		return reducedTermWeights.entrySet().stream()
 				.collect(Collectors.groupingBy(
-						e -> e.getKey().getKey(1),
+						e -> e.getKey().getKey(DOCUMENT),
 						Collectors.mapping(e -> e,
-								Collectors.toMap(e -> e.getKey().getKey(0), Map.Entry::getValue))));
+								Collectors.toMap(e -> e.getKey().getKey(TERM), Map.Entry::getValue))));
 	}
 
 	private MultiKeyMap<String, Double> getSimilarities(final Map<String, Map<String, Double>> documentVectors) {
