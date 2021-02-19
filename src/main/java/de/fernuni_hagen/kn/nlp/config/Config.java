@@ -242,7 +242,7 @@ public class Config {
 			private boolean calculate;
 			private boolean useInverseDocFrequency;
 			private double weightThreshold;
-			private DocSimilarityFunction similarityFunction;
+			private DocSimilarityFunction similarityFunction = DocSimilarityFunction.COSINE;
 			private List<String> documents;
 
 			public boolean calculate() {

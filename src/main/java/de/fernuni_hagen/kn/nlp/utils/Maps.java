@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,10 +52,13 @@ public final class Maps {
 	/**
 	 * Returns a mutable copy of the given map.
 	 *
-	 * @param map the map
+	 * @param map  the map
+	 * @param <K1> first key type
+	 * @param <K2> second key type
+	 * @param <V>  value type
 	 * @return the mutable copy
 	 */
-	public static Map<String, Map<String, Double>> copyOf(final Map<String, Map<String, Double>> map) {
+	public static <K1, K2, V> Map<K1, Map<K2, V>> copyOf(final Map<K1, Map<K2, V>> map) {
 		final var copy = new HashMap<>(map);
 		copy.replaceAll((k, v) -> new HashMap<>(v));
 		return copy;
@@ -68,11 +72,23 @@ public final class Maps {
 	 * @return double map
 	 */
 	public static Map<String, Map<String, Double>> toDoubleMap(final Map<String, Map<String, Long>> map, final Function<Long, Double> mapper) {
+		return toDoubleMap(map, m -> Double.NaN, (x, l) -> mapper.apply(l));
+	}
+
+	/**
+	 * Transforms the map containing Longs to one containing Doubles by applying the mapper functions to each element.
+	 *
+	 * @param map         long map
+	 * @param mapMapper   creates a value from the inner map
+	 * @param valueMapper creates a value from each long and its inner map value
+	 * @return double map
+	 */
+	public static Map<String, Map<String, Double>> toDoubleMap(final Map<String, Map<String, Long>> map, final Function<Map<String, Long>, Double> mapMapper, final BiFunction<Double, Long, Double> valueMapper) {
 		final var copy = Maps.<String, Map<String, Double>>newKnownSizeMap(map.size());
 		map.forEach((k, v) -> {
 			final var inner = v.entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getKey,
-							e -> mapper.apply(e.getValue())));
+							e -> valueMapper.apply(mapMapper.apply(v), e.getValue())));
 			copy.put(k, inner);
 		});
 		return copy;

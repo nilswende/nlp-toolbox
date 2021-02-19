@@ -28,7 +28,7 @@ public enum DocSimilarityFunction {
 					.sum();
 			final var divisor1 = sumWeight(d1);
 			final var divisor2 = sumWeight(d2);
-			return dividend / divisor1 * divisor2;
+			return dividend / (divisor1 * divisor2);
 		}
 	};
 

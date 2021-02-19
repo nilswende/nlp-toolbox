@@ -1,7 +1,5 @@
 package de.fernuni_hagen.kn.nlp.math;
 
-import static org.apache.commons.math3.util.CombinatoricsUtils.factorialLog;
-
 /**
  * Weighting functions for undirected graphs.
  *
@@ -32,7 +30,7 @@ public enum WeightingFunction {
 	MUTUAL_INFORMATION {
 		@Override
 		public double calculate(final long ki, final long kj, final long kij, final long k) {
-			return Math.log((k * kij) / (double) (ki * kj));
+			return Math.log10((k * kij) / (double) (ki * kj));
 		}
 	},
 	/**
@@ -48,7 +46,7 @@ public enum WeightingFunction {
 		}
 
 		private double nLogN(final double n) {
-			return n <= 0 ? 0 : n * Math.log(n);
+			return n <= 0 ? 0 : n * Math.log10(n);
 		}
 	},
 	/**
@@ -58,7 +56,7 @@ public enum WeightingFunction {
 		@Override
 		public double calculate(final long ki, final long kj, final long kij, final long k) {
 			final var div = (ki * kj) / (double) k;
-			return (factorialLog((int) kij) - kij * Math.log(div) + div) / Math.log(k);
+			return (factorialLog10((int) kij) - kij * Math.log10(div) + div) / Math.log10(k);
 		}
 	},
 	/**
@@ -81,4 +79,13 @@ public enum WeightingFunction {
 	 * @return the significance coefficient of kij
 	 */
 	public abstract double calculate(long ki, long kj, long kij, long k);
+
+	private static double factorialLog10(final int n) {
+		double logSum = 0;
+		for (int i = 2; i <= n; i++) {
+			logSum += Math.log10(i);
+		}
+		return logSum;
+	}
+
 }
