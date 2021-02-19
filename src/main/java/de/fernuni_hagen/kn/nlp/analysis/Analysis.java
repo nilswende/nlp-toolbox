@@ -76,10 +76,10 @@ public class Analysis {
 	private void analyzeDocSim(final DocSimConfig docSimConfig) {
 		final var similarities = new DocumentSimilarity(docSimConfig).calculate(dbReader);
 		if (similarities.isEmpty()) {
-			System.out.println("Document similarity: Too few documents specified");
+			System.out.println("Document similarity: Too few documents");
 		} else {
 			similarities.forEach((d1, m) -> m.forEach((d2, s) ->
-					System.out.println(String.format("Document similarity of %s and %s: %s", d1, d2, s))
+					System.out.println(String.format("Document similarity of '%s' and '%s': %s", d1, d2, s))
 			));
 		}
 	}

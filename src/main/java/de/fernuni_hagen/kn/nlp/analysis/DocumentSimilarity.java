@@ -3,9 +3,12 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Calculates the similarity of given documents.
@@ -15,9 +18,11 @@ import java.util.TreeMap;
 public class DocumentSimilarity {
 
 	private final DocSimConfig config;
+	private List<String> documents;
 
 	public DocumentSimilarity(final DocSimConfig config) {
 		this.config = config;
+		documents = config.getDocuments();
 	}
 
 	/**
@@ -28,10 +33,18 @@ public class DocumentSimilarity {
 	 */
 	public Map<String, Map<String, Double>> calculate(final DBReader db) {
 		final var termFreqs = db.getTermFrequencies();
-		final Map<String, Map<String, Double>> normalizedTermFreqs = getNormalizedTermFrequencies(termFreqs);
-		final var termWeights = getTermWeights(normalizedTermFreqs);
-		final var documentVectors = Maps.invertMapping(termWeights);
+		replaceDocuments(termFreqs);
+		final var normalizedTermFreqs = getNormalizedTermFrequencies(termFreqs);
+		final var termWeights = config.useInverseDocFrequency() ? getTermWeights(normalizedTermFreqs) : normalizedTermFreqs;
+		final var reducedTermWeights = getReducedTermWeights(termWeights);
+		final var documentVectors = Maps.invertMapping(reducedTermWeights);
 		return getSimilarities(documentVectors);
+	}
+
+	private void replaceDocuments(Map<String, Map<String, Long>> termFreqs) {
+		if (CollectionUtils.isEmpty(config.getDocuments())) {
+			documents = termFreqs.values().stream().flatMap(m -> m.keySet().stream()).distinct().collect(Collectors.toList());
+		}
 	}
 
 	private Map<String, Map<String, Double>> getNormalizedTermFrequencies(final Map<String, Map<String, Long>> termFreqs) {
@@ -40,16 +53,24 @@ public class DocumentSimilarity {
 	}
 
 	private Map<String, Map<String, Double>> getTermWeights(final Map<String, Map<String, Double>> normalizedTermFreqs) {
-		final var docCount = normalizedTermFreqs.values().stream().flatMap(m -> m.keySet().stream()).distinct().count();
+		final var docCount = (double) documents.size();
 		normalizedTermFreqs.forEach((t, m) -> {
-			final var idf = Math.log(docCount / (double) m.size());
+			final var idf = Math.log(docCount / m.size());
 			m.replaceAll((d, nf) -> nf * idf);
 		});
 		return normalizedTermFreqs;
 	}
 
+	private Map<String, Map<String, Double>> getReducedTermWeights(final Map<String, Map<String, Double>> termWeights) {
+		final var threshold = config.getWeightThreshold();
+		if (threshold > 0) {
+			termWeights.forEach((t, m) -> m.values().removeIf(w -> w < threshold));
+			termWeights.values().removeIf(Map::isEmpty);
+		}
+		return termWeights;
+	}
+
 	private Map<String, Map<String, Double>> getSimilarities(final Map<String, Map<String, Double>> documentVectors) {
-		final var documents = config.getDocuments();
 		final var map = new TreeMap<String, Map<String, Double>>();
 		for (int i = 0; i < documents.size(); i++) {
 			final var d1 = documents.get(i);

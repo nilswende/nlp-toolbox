@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.math;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Document similarity functions.
@@ -31,7 +32,7 @@ public enum DocSimilarityFunction {
 		}
 	};
 
-	private static HashSet<String> getAllKeys(final Map<String, Double> d1, final Map<String, Double> d2) {
+	private static Set<String> getAllKeys(final Map<String, Double> d1, final Map<String, Double> d2) {
 		final var keys = new HashSet<>(d1.keySet());
 		keys.addAll(d2.keySet());
 		return keys;

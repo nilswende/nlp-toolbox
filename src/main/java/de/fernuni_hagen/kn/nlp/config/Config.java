@@ -240,11 +240,21 @@ public class Config {
 		 */
 		public static class DocSimConfig {
 			private boolean calculate;
+			private boolean useInverseDocFrequency;
+			private double weightThreshold;
 			private DocSimilarityFunction similarityFunction;
 			private List<String> documents;
 
 			public boolean calculate() {
 				return calculate;
+			}
+
+			public boolean useInverseDocFrequency() {
+				return useInverseDocFrequency;
+			}
+
+			public double getWeightThreshold() {
+				return weightThreshold;
 			}
 
 			public DocSimilarityFunction getSimilarityFunction() {
