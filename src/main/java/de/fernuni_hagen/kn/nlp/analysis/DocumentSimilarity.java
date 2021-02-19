@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static de.fernuni_hagen.kn.nlp.utils.Maps.invertMapping;
-import static de.fernuni_hagen.kn.nlp.utils.Maps.toDoubleMap;
+import static de.fernuni_hagen.kn.nlp.utils.Maps.transform;
 
 /**
  * Calculates the similarity of given documents.
@@ -54,7 +54,7 @@ public class DocumentSimilarity {
 
 	private Map<String, Map<String, Double>> getNormalizedTermFrequencies(final Map<String, Map<String, Long>> term2doc) {
 		return invertMapping(
-				toDoubleMap(
+				transform(
 						invertMapping(term2doc),
 						terms -> terms.values().stream().mapToDouble(d -> d).sum(),
 						(sum, l) -> l / sum)

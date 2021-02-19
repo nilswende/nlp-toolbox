@@ -67,24 +67,29 @@ public final class Maps {
 	/**
 	 * Transforms the map containing Longs to one containing Doubles by applying the mapper function to each element.
 	 *
-	 * @param map    long map
+	 * @param map    Long map
 	 * @param mapper transformation function
-	 * @return double map
+	 * @return Double map
 	 */
-	public static Map<String, Map<String, Double>> toDoubleMap(final Map<String, Map<String, Long>> map, final Function<Long, Double> mapper) {
-		return toDoubleMap(map, m -> Double.NaN, (x, l) -> mapper.apply(l));
+	public static <K> Map<K, Map<K, Double>> transform(
+			final Map<K, Map<K, Long>> map,
+			final Function<Long, Double> mapper) {
+		return transform(map, m -> Double.NaN, (x, l) -> mapper.apply(l));
 	}
 
 	/**
-	 * Transforms the map containing Longs to one containing Doubles by applying the mapper functions to each element.
+	 * Transforms the map containing V1 to one containing V2 by applying the mapper functions to each element.
 	 *
-	 * @param map         long map
-	 * @param mapMapper   creates a value from the inner map
-	 * @param valueMapper creates a value from each long and its inner map value
-	 * @return double map
+	 * @param map         V1 map
+	 * @param mapMapper   creates a V2 value from the inner map
+	 * @param valueMapper creates a V2 value from each V1 and its inner map value
+	 * @return V2 map
 	 */
-	public static Map<String, Map<String, Double>> toDoubleMap(final Map<String, Map<String, Long>> map, final Function<Map<String, Long>, Double> mapMapper, final BiFunction<Double, Long, Double> valueMapper) {
-		final var copy = Maps.<String, Map<String, Double>>newKnownSizeMap(map.size());
+	public static <K, V1, V2> Map<K, Map<K, V2>> transform(
+			final Map<K, Map<K, V1>> map,
+			final Function<Map<K, V1>, V2> mapMapper,
+			final BiFunction<V2, V1, V2> valueMapper) {
+		final var copy = Maps.<K, Map<K, V2>>newKnownSizeMap(map.size());
 		map.forEach((k, v) -> {
 			final var inner = v.entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getKey,
