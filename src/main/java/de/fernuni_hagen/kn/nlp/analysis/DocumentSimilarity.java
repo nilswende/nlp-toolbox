@@ -2,12 +2,12 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import static de.fernuni_hagen.kn.nlp.utils.Maps.invertMapping;
 import static de.fernuni_hagen.kn.nlp.utils.Maps.transform;
@@ -45,7 +45,7 @@ public class DocumentSimilarity {
 
 	private void replaceDocuments(final Map<String, Map<String, Long>> term2doc) {
 		if (CollectionUtils.isEmpty(config.getDocuments())) {
-			documents = term2doc.values().stream().flatMap(docs -> docs.keySet().stream()).distinct().collect(Collectors.toList());
+			documents = Maps.getInnerKeys(term2doc);
 		} else {
 			term2doc.forEach((t, docs) -> docs.keySet().removeIf(d -> !documents.contains(d)));
 			term2doc.values().removeIf(Map::isEmpty);
