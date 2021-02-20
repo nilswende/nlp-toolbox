@@ -43,7 +43,7 @@ public final class Maps {
 	 * @return the inverted map
 	 */
 	public static <K1, K2, V> Map<K2, Map<K1, V>> invertMapping(final Map<K1, Map<K2, V>> map) {
-		final var inverted = Maps.<K2, Map<K1, V>>newKnownSizeMap(getInnerKeyCount(map));
+		final var inverted = new HashMap<K2, Map<K1, V>>();
 		map.forEach(
 				(k1, m) -> m.forEach(
 						(k2, v) -> inverted.computeIfAbsent(k2, x -> newKnownSizeMap(map.size())).put(k1, v)
