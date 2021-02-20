@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class CentroidBySpreadingActivation {
+class CentroidBySpreadingActivation {
 
 	/**
 	 * Finds the centroid of the given query set.

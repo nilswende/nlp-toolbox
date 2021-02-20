@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * @author Nils Wende
  */
-public class DirectedHITS extends HITS {
+class DirectedHITS extends HITS {
 
 	public DirectedHITS(final HITSConfig hitsConfig) {
 		super(hitsConfig);

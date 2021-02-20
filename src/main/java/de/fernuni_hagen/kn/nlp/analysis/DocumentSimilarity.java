@@ -17,7 +17,7 @@ import static de.fernuni_hagen.kn.nlp.utils.Maps.transform;
  *
  * @author Nils Wende
  */
-public class DocumentSimilarity {
+class DocumentSimilarity {
 
 	private final DocSimConfig config;
 	private List<String> documents;
