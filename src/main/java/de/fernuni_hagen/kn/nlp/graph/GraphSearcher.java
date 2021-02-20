@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.graph;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,7 +20,7 @@ public interface GraphSearcher {
 	 * @param significances the full graph
 	 * @return {@code start} and all connected nodes
 	 */
-	Set<String> search(String start, Map<String, Map<String, Double>> significances);
+	Set<String> search(String start, Map<String, List<String>> significances);
 
 	/**
 	 * Find all connected nodes of {@code start} within a given {@code radius}.
@@ -38,7 +39,7 @@ public interface GraphSearcher {
 	 * @param significances the full graph with its significance coefficients. The graph is then modified and all smaller subgraphs removed.
 	 * @return {@code significances} again
 	 */
-	default Map<String, Map<String, Double>> findBiggestSubgraph(final Map<String, Map<String, Double>> significances) {
+	default Map<String, List<String>> findBiggestSubgraph(final Map<String, List<String>> significances) {
 		final Set<String> visited = new TreeSet<>();
 		Set<String> biggestSubgraph = Set.of();
 		while (biggestSubgraph.size() < significances.size() / 2 || visited.size() < significances.size()) {
@@ -52,7 +53,7 @@ public interface GraphSearcher {
 		return significances;
 	}
 
-	private Set<String> findSubgraph(final Set<String> exclude, final Map<String, Map<String, Double>> significances) {
+	private Set<String> findSubgraph(final Set<String> exclude, final Map<String, List<String>> significances) {
 		final var start = significances.keySet().stream().filter(t -> !exclude.contains(t)).findFirst().orElseThrow();
 		return search(start, significances);
 	}
@@ -65,7 +66,7 @@ public interface GraphSearcher {
 	 * @param significances the full graph
 	 * @return true, if the nodes are connected
 	 */
-	default boolean isConnected(final String node, final Collection<String> nodes, final Map<String, Map<String, Double>> significances) {
+	default boolean isConnected(final String node, final Collection<String> nodes, final Map<String, List<String>> significances) {
 		final Set<String> connected = search(node, significances);
 		return connected.containsAll(nodes);
 	}
