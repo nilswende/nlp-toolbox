@@ -78,9 +78,10 @@ public class Analysis {
 		if (similarities.isEmpty()) {
 			System.out.println("Document similarity: Too few documents");
 		} else {
-			similarities.forEach((d1, m) -> m.forEach((d2, s) ->
-					System.out.println(String.format("Document similarity of '%s' and '%s': %s", d1, d2, s))
-			));
+			similarities.forEach((k, s) ->
+					System.out.println(String.format("Document similarity of '%s' and '%s': %s",
+							k.getKey(0), k.getKey(1), s))
+			);
 		}
 	}
 
