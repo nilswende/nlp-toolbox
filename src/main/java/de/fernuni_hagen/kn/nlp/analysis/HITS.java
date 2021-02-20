@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class HITS {
+class HITS {
 
 	protected final HITSConfig hitsConfig;
 
@@ -27,7 +27,7 @@ public class HITS {
 	 * @return HITS scores
 	 */
 	public Map<String, Scores> calculate(final DBReader db) {
-		final Map<String, Map<String, Double>> linking = db.getCooccurrences();
+		final Map<String, Map<String, Double>> linking = db.getSignificances(hitsConfig.getWeightingFunction());
 		return getStringScoresMap(linking, linking);
 	}
 
@@ -55,7 +55,7 @@ public class HITS {
 		for (final Map.Entry<String, Double> entry : targetScore.entrySet()) {
 			final var node = entry.getKey();
 			final var linked = linking.getOrDefault(node, Map.of());
-			final double sum = linked.keySet().stream().map(otherScore::get).mapToDouble(d -> d).sum();
+			final double sum = sumOtherScore(linked, otherScore);
 			entry.setValue(sum);
 			tempNorm += sum * sum;
 		}
@@ -63,6 +63,12 @@ public class HITS {
 			final double norm = Math.sqrt(tempNorm);
 			targetScore.replaceAll((t, s) -> s / norm);
 		}
+	}
+
+	private double sumOtherScore(final Map<String, Double> linked, final Map<String, Double> otherScore) {
+		return linked.entrySet().stream()
+				.mapToDouble(e -> otherScore.get(e.getKey()) * e.getValue())
+				.sum();
 	}
 
 	private Map<String, Scores> createResultMap(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs) {
