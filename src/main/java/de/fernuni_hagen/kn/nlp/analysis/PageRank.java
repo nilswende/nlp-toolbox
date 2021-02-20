@@ -54,8 +54,8 @@ public class PageRank {
 	}
 
 	private double sumAdjacentPageRanks(final Map<String, Double> pageRanks, final Map<String, Double> v, final Map<String, Map<String, Double>> significances) {
-		return v.entrySet().stream()
-				.mapToDouble(e -> (pageRanks.get(e.getKey()) * e.getValue()) / significances.get(e.getKey()).size())
+		return v.keySet().stream()
+				.mapToDouble(coocc -> pageRanks.get(coocc) / significances.get(coocc).size())
 				.sum();
 	}
 

@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -27,7 +26,7 @@ class CentroidBySpreadingActivationTest {
 	void clean(final List<String> query, final Map<String, Map<String, Double>> significances,
 			   final String expectedCentroid) {
 		final DBReader dbReader = Mockito.mock(DBReader.class);
-		Mockito.when(dbReader.getSignificances(any(WeightingFunction.class))).thenReturn(new HashMap<>(significances));
+		Mockito.when(dbReader.getSignificances(any(WeightingFunction.class))).thenReturn(Maps.copyOf(significances));
 		final String actual = new CentroidBySpreadingActivation().calculate(query, dbReader);
 		assertEquals(expectedCentroid, actual);
 	}
