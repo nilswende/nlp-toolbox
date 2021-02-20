@@ -41,8 +41,18 @@ class BreadthFirstGraphSearcherTest {
 	}
 
 	private void testEquality(final Map<String, List<String>> adjacencyList) {
-		final var actual = new BreadthFirstGraphSearcher().findBiggestSubgraph(new TreeMap<>(adjacencyList));
-		assertEquals(adjacencyList, actual);
+		final var expected = toSigMap(adjacencyList);
+		final var actual = new BreadthFirstGraphSearcher().findBiggestSubgraph(new TreeMap<>(expected));
+		assertEquals(expected, actual);
+	}
+
+	private Map<String, Map<String, Double>> toSigMap(final Map<String, List<String>> adjacencyList) {
+		final var sigs = new TreeMap<String, Map<String, Double>>();
+		adjacencyList.forEach(
+				(k, v) -> v.forEach(
+						c -> sigs.computeIfAbsent(k, x -> new TreeMap<>()).put(c, 0.0)
+				));
+		return sigs;
 	}
 
 	@Test
@@ -86,10 +96,11 @@ class BreadthFirstGraphSearcherTest {
 	}
 
 	private void testInequality(final Set<String> expectedTerms, final Map<String, List<String>> adjacencyList) {
-		final var actual = new BreadthFirstGraphSearcher().findBiggestSubgraph(new TreeMap<>(adjacencyList));
-		assertNotEquals(adjacencyList, actual);
+		final var expected = toSigMap(adjacencyList);
+		final var actual = new BreadthFirstGraphSearcher().findBiggestSubgraph(new TreeMap<>(expected));
+		assertNotEquals(expected, actual);
 		assertEquals(expectedTerms, actual.keySet());
-		actual.values().forEach(keys -> assertTrue(expectedTerms.containsAll(keys), keys.toString()));
+		actual.values().stream().map(Map::keySet).forEach(keys -> assertTrue(expectedTerms.containsAll(keys), keys.toString()));
 	}
 
 }

@@ -3,8 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
-import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.apache.commons.collections4.map.MultiKeyMap;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -29,21 +28,17 @@ class DocumentSimilarityTest {
 	}
 
 	private DBReader mockDbReader() {
-		final var map = new MultiKeyMap<String, Double>();
-		map.putAll(Map.of(
-				new MultiKey<>("Vertrag", "1"), 3.0,
-				new MultiKey<>("riskant", "2"), 1.0,
-				new MultiKey<>("Weg", "2"), 1.0,
-				new MultiKey<>("Weg", "3"), 1.0,
-				new MultiKey<>("groß", "2"), 1.0,
-				new MultiKey<>("Profit", "2"), 1.0,
-				new MultiKey<>("Profit", "3"), 1.0,
-				new MultiKey<>("Profit", "4"), 2.0,
-				new MultiKey<>("führen", "3"), 1.0,
-				new MultiKey<>("Rechtfertigung", "4"), 1.0
-		));
+		final var map = Map.of(
+				"Vertrag", Map.of("1", 3L),
+				"riskant", Map.of("2", 1L),
+				"Weg", Map.of("2", 1L, "3", 1L),
+				"groß", Map.of("2", 1L),
+				"Profit", Map.of("2", 1L, "3", 1L, "4", 2L),
+				"führen", Map.of("3", 1L),
+				"Rechtfertigung", Map.of("4", 1L)
+		);
 		final DBReader dbReader = Mockito.mock(DBReader.class);
-		Mockito.when(dbReader.getTermFrequencies()).thenReturn(map);
+		Mockito.when(dbReader.getTermFrequencies()).thenReturn(Maps.copyOf(map));
 		return dbReader;
 	}
 
@@ -57,27 +52,18 @@ class DocumentSimilarityTest {
 		return config;
 	}
 
-	private void assertFullCalculation(final MultiKeyMap<String, Double> actual) {
-		final var expected = new MultiKeyMap<String, Double>();
-		expected.putAll(Map.ofEntries(
-				Map.entry(new MultiKey<>("1", "2"), .0),
-				Map.entry(new MultiKey<>("1", "3"), .0),
-				Map.entry(new MultiKey<>("1", "4"), .0),
-				Map.entry(new MultiKey<>("2", "1"), .0),
-				Map.entry(new MultiKey<>("2", "3"), .169),
-				Map.entry(new MultiKey<>("2", "4"), .052),
-				Map.entry(new MultiKey<>("3", "1"), .0),
-				Map.entry(new MultiKey<>("3", "2"), .169),
-				Map.entry(new MultiKey<>("3", "4"), .07),
-				Map.entry(new MultiKey<>("4", "1"), .0),
-				Map.entry(new MultiKey<>("4", "2"), .052),
-				Map.entry(new MultiKey<>("4", "3"), .07)
-		));
-		assertEqual(actual, expected);
+	private void assertFullCalculation(final Map<String, Map<String, Double>> actual) {
+		final var expected = Map.of(
+				"1", Map.of("2", .0, "3", .0, "4", .0),
+				"2", Map.of("1", .0, "3", .169, "4", .052),
+				"3", Map.of("1", .0, "2", .169, "4", .07),
+				"4", Map.of("1", .0, "2", .052, "3", .07)
+		);
+		assertEqual(expected, actual);
 	}
 
-	private double getActualSim(final String d1, final String d2, final MultiKeyMap<String, Double> actual) {
-		return actual.containsKey(d1, d2) ? actual.get(d1, d2) : actual.get(d2, d1);
+	private double getActualSim(final String d1, final String d2, final Map<String, Map<String, Double>> actual) {
+		return actual.containsKey(d1) && actual.get(d1).containsKey(d2) ? actual.get(d1).get(d2) : actual.get(d2).get(d1);
 	}
 
 	@Test
@@ -86,26 +72,19 @@ class DocumentSimilarityTest {
 		final DocSimConfig config = mockConfig("1", "2", "3");
 
 		final var actual = new DocumentSimilarity(config).calculate(dbReader);
-		final var expected = new MultiKeyMap<String, Double>();
-		expected.putAll(Map.of(
-				new MultiKey<>("1", "2"), .0,
-				new MultiKey<>("1", "3"), .0,
-				new MultiKey<>("2", "1"), .0,
-				new MultiKey<>("2", "3"), .160,
-				new MultiKey<>("3", "1"), .0,
-				new MultiKey<>("3", "2"), .160
-		));
-		assertEqual(actual, expected);
+		final var expected = Map.of(
+				"1", Map.of("2", .0, "3", .0),
+				"2", Map.of("1", .0, "3", .160),
+				"3", Map.of("1", .0, "2", .160)
+		);
+		assertEqual(expected, actual);
 	}
 
-	private void assertEqual(final MultiKeyMap<String, Double> actual, final MultiKeyMap<String, Double> expected) {
+	private void assertEqual(Map<String, Map<String, Double>> expected, Map<String, Map<String, Double>> actual) {
 		assertTrue(expected.size() >= actual.size(), "actual contains too many entries");
-		expected.forEach((k, s) -> {
-					final var d1 = k.getKey(0);
-					final var d2 = k.getKey(1);
-					assertEquals(s, getActualSim(d1, d2, actual), .0015, "d1=" + d1 + ", d2=" + d2);
-				}
-		);
+		expected.forEach((d1, m) -> m.forEach((d2, s) ->
+				assertEquals(s, getActualSim(d1, d2, actual), .0015, "d1=" + d1 + ", d2=" + d2)
+		));
 	}
 
 	@Test

@@ -4,7 +4,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -18,7 +17,7 @@ import java.util.TreeSet;
 public class BreadthFirstGraphSearcher implements GraphSearcher {
 
 	@Override
-	public Set<String> search(final String start, final Map<String, List<String>> significances) {
+	public Set<String> search(final String start, final Map<String, Map<String, Double>> significances) {
 		final Set<String> visited = new TreeSet<>();
 		final var stack = new ArrayDeque<String>();
 		visited.add(start);
@@ -26,7 +25,7 @@ public class BreadthFirstGraphSearcher implements GraphSearcher {
 		while (!stack.isEmpty()) {
 			final var term = stack.pop();
 
-			final var cooccs = significances.get(term);
+			final var cooccs = significances.get(term).keySet();
 			final var unvisited = CollectionUtils.removeAll(cooccs, visited);
 
 			visited.addAll(unvisited);

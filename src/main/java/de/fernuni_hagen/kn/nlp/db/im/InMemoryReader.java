@@ -4,11 +4,13 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
-import org.apache.commons.collections4.map.MultiKeyMap;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -25,53 +27,61 @@ public class InMemoryReader implements DBReader {
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getCooccurrences() {
-		final var map = new MultiKeyMap<String, Double>();
-		db.getData().forEach((t, m) -> m.getCooccs().forEach((c, v) -> map.put(t, c, v.doubleValue())));
-		return map;
+	public Map<String, Map<String, Double>> getCooccurrences() {
+		final var data = db.getData();
+		final var copy = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
+		data.forEach((k, v) -> {
+			final var cooccs = v.getCooccs()
+					.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey,
+							e -> e.getValue().doubleValue()));
+			copy.put(k, cooccs);
+		});
+		return copy;
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getSignificances(final WeightingFunction function) {
+	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
 		final var data = db.getData();
-		final var map = new MultiKeyMap<String, Double>();
-		data.forEach((ti, m) -> {
-			final var ki = m.getCount();
-			m.getCooccs().forEach((tj, kij) -> {
+		final var cooccs = getCooccurrences();
+		cooccs.forEach((ti, m) -> {
+			final var ki = data.get(ti).getCount();
+			m.replaceAll((tj, v) -> {
 				final var kj = data.get(tj).getCount();
-				final var sig = function.calculate(ki, kj, kij, k);
-				map.put(ti, tj, sig);
+				final var kij = v.longValue();
+				return function.calculate(ki, kj, kij, k);
 			});
 		});
-		return map;
+		return cooccs;
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getSignificances(final DirectedWeightingFunction function) {
+	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunction function) {
 		final var kmax = db.getMaxSentencesCount();
 		final var data = db.getData();
-		final var map = new MultiKeyMap<String, Double>();
+		final var cooccs = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
 		data.forEach((ti, m) -> {
 			final var ki = m.getCount();
 			m.getCooccs().forEach((tj, kij) -> {
 				final var kj = data.get(tj).getCount();
 				final var dom = ki > kj ? ti : tj;
 				final var sub = ki > kj ? tj : ti;
-				if (!map.containsKey(sub, dom)) {
+				if (!cooccs.containsKey(sub) || !cooccs.get(sub).containsKey(dom)) {
 					final var sig = function.calculate(kij, kmax);
-					map.put(dom, sub, sig);
+					cooccs.computeIfAbsent(dom, x -> new TreeMap<>()).put(sub, sig);
 				}
 			});
 		});
-		return map;
+		return cooccs;
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getTermFrequencies() {
-		final var map = new MultiKeyMap<String, Double>();
-		db.getData().forEach((t, m) -> m.getDocuments().forEach((d, v) -> map.put(t, d, v.doubleValue())));
-		return map;
+	public Map<String, Map<String, Long>> getTermFrequencies() {
+		final var data = db.getData();
+		final var copy = Maps.<String, Map<String, Long>>newKnownSizeMap(data.size());
+		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getDocuments())));
+		return copy;
 	}
 
 	/**

@@ -3,13 +3,13 @@ package de.fernuni_hagen.kn.nlp.db.neo4j;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
-import org.apache.commons.collections4.map.MultiKeyMap;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JUtils.toDouble;
@@ -29,18 +29,18 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getCooccurrences() {
+	public Map<String, Map<String, Double>> getCooccurrences() {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var matchCooccs = "MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
 					"RETURN t1.name, t2.name, c.count\n";
 			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new MultiKeyMap<String, Double>();
+				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
 					final var t1 = row.get("t1.name").toString();
 					final var t2 = row.get("t2.name").toString();
 					final var c = toDouble(row.get("c.count"));
-					map.put(t1, t2, c);
+					map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, c);
 				}
 				return map;
 			}
@@ -48,16 +48,16 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getSignificances(final WeightingFunction function) {
+	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
 					"RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new MultiKeyMap<String, Double>();
+				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
-					final var sig = calcSig(row, k, function);
+					final double sig = calcSig(row, k, function);
 					putSig(row, sig, map);
 				}
 				return map;
@@ -65,10 +65,10 @@ public class Neo4JReader implements DBReader {
 		}
 	}
 
-	private void putSig(final Map<String, Object> row, final double sig, final MultiKeyMap<String, Double> map) {
+	private void putSig(final Map<String, Object> row, final double sig, final Map<String, Map<String, Double>> map) {
 		final var t1 = row.get("t1.name").toString();
 		final var t2 = row.get("t2.name").toString();
-		map.put(t1, t2, sig);
+		map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 	}
 
 	private double calcSig(final Map<String, Object> row, final long k, final WeightingFunction function) {
@@ -88,21 +88,21 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getSignificances(final DirectedWeightingFunction function) {
+	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
 					" WHERE (c.count / t1.count) >= (c.count / t2.count)\n" +
 					"RETURN t1.name, t2.name, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new MultiKeyMap<String, Double>();
+				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
 					final var t1 = row.get("t1.name").toString();
 					final var t2 = row.get("t2.name").toString();
-					if (!map.containsKey(t2, t1)) {
-						final var sig = calcSig(row, kmax, function);
-						map.put(t1, t2, sig);
+					if (!map.containsKey(t2) || !map.get(t2).containsKey(t1)) {
+						final double sig = calcSig(row, kmax, function);
+						map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 					}
 				}
 				return map;
@@ -155,8 +155,7 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public MultiKeyMap<String, Double> getTermFrequencies() {
-		final var map = new MultiKeyMap<String, Double>();
-		return map;//TODO
+	public Map<String, Map<String, Long>> getTermFrequencies() {
+		return null;//TODO
 	}
 }

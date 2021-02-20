@@ -2,12 +2,15 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
+
+import static de.fernuni_hagen.kn.nlp.utils.Maps.invertMapping;
+import static de.fernuni_hagen.kn.nlp.utils.Maps.transform;
 
 /**
  * Calculates the similarity of given documents.
@@ -15,9 +18,6 @@ import java.util.stream.Collectors;
  * @author Nils Wende
  */
 public class DocumentSimilarity {
-
-	private static final int TERM = 0;
-	private static final int DOCUMENT = 1;
 
 	private final DocSimConfig config;
 	private List<String> documents;
@@ -33,68 +33,61 @@ public class DocumentSimilarity {
 	 * @param db DB
 	 * @return the pairwise document similarities
 	 */
-	public MultiKeyMap<String, Double> calculate(final DBReader db) {
+	public Map<String, Map<String, Double>> calculate(final DBReader db) {
 		final var termFreqs = db.getTermFrequencies();
 		replaceDocuments(termFreqs);
 		final var normalizedTermFreqs = getNormalizedTermFrequencies(termFreqs);
 		final var termWeights = config.useInverseDocFrequency() ? getTermWeights(normalizedTermFreqs) : normalizedTermFreqs;
 		final var reducedTermWeights = getReducedTermWeights(termWeights);
-		final var documentVectors = getDocumentVectors(reducedTermWeights);
+		final var documentVectors = invertMapping(reducedTermWeights);
 		return getSimilarities(documentVectors);
 	}
 
-	private void replaceDocuments(final MultiKeyMap<String, Double> termFreqs) {
+	private void replaceDocuments(final Map<String, Map<String, Long>> term2doc) {
 		if (CollectionUtils.isEmpty(config.getDocuments())) {
-			documents = termFreqs.keySet().stream().map(k -> k.getKey(DOCUMENT)).distinct().collect(Collectors.toList());
+			documents = Maps.getInnerKeys(term2doc);
 		} else {
-			termFreqs.keySet().removeIf(k -> !documents.contains(k.getKey(DOCUMENT)));
+			term2doc.forEach((t, docs) -> docs.keySet().removeIf(d -> !documents.contains(d)));
+			term2doc.values().removeIf(Map::isEmpty);
 		}
 	}
 
-	private MultiKeyMap<String, Double> getNormalizedTermFrequencies(final MultiKeyMap<String, Double> termFreqs) {
-		final var termSums = termFreqs.entrySet().stream()
-				.collect(Collectors.groupingBy(
-						e -> e.getKey().getKey(DOCUMENT),
-						Collectors.summingDouble(Map.Entry::getValue)));
-		termFreqs.replaceAll((k, f) -> f / termSums.get(k.getKey(DOCUMENT)));
-		return termFreqs;
+	private Map<String, Map<String, Double>> getNormalizedTermFrequencies(final Map<String, Map<String, Long>> term2doc) {
+		return invertMapping(
+				transform(
+						invertMapping(term2doc),
+						terms -> terms.values().stream().mapToDouble(d -> d).sum(),
+						(sum, l) -> l / sum)
+		);
 	}
 
-	private MultiKeyMap<String, Double> getTermWeights(final MultiKeyMap<String, Double> normalizedTermFreqs) {
+	private Map<String, Map<String, Double>> getTermWeights(final Map<String, Map<String, Double>> term2doc) {
 		final var docCount = (double) documents.size();
-		final var docSums = normalizedTermFreqs.entrySet().stream()
-				.collect(Collectors.groupingBy(
-						e -> e.getKey().getKey(TERM),
-						Collectors.counting()));
-		normalizedTermFreqs.replaceAll((k, nf) -> nf * Math.log10(docCount / docSums.get(k.getKey(TERM))));
-		return normalizedTermFreqs;
+		term2doc.forEach((t, docs) -> {
+			final var idf = Math.log10(docCount / docs.size());
+			docs.replaceAll((d, nf) -> nf * idf);
+		});
+		return term2doc;
 	}
 
-	private MultiKeyMap<String, Double> getReducedTermWeights(final MultiKeyMap<String, Double> termWeights) {
+	private Map<String, Map<String, Double>> getReducedTermWeights(final Map<String, Map<String, Double>> term2doc) {
 		final var threshold = config.getWeightThreshold();
 		if (threshold > 0) {
-			termWeights.values().removeIf(w -> w < threshold);
+			term2doc.forEach((t, docs) -> docs.values().removeIf(w -> w < threshold));
+			term2doc.values().removeIf(Map::isEmpty);
 		}
-		return termWeights;
+		return term2doc;
 	}
 
-	private Map<String, Map<String, Double>> getDocumentVectors(final MultiKeyMap<String, Double> reducedTermWeights) {
-		return reducedTermWeights.entrySet().stream()
-				.collect(Collectors.groupingBy(
-						e -> e.getKey().getKey(DOCUMENT),
-						Collectors.mapping(e -> e,
-								Collectors.toMap(e -> e.getKey().getKey(TERM), Map.Entry::getValue))));
-	}
-
-	private MultiKeyMap<String, Double> getSimilarities(final Map<String, Map<String, Double>> documentVectors) {
+	private Map<String, Map<String, Double>> getSimilarities(final Map<String, Map<String, Double>> doc2term) {
 		final var similarityFunction = config.getSimilarityFunction();
-		final var map = new MultiKeyMap<String, Double>();
+		final var map = new TreeMap<String, Map<String, Double>>();
 		for (int i = 0; i < documents.size(); i++) {
 			final var d1 = documents.get(i);
 			for (int j = i + 1; j < documents.size(); j++) {
 				final var d2 = documents.get(j);
-				final var sim = similarityFunction.calculate(documentVectors.get(d1), documentVectors.get(d2));
-				map.put(d1, d2, sim);
+				final var sim = similarityFunction.calculate(doc2term.get(d1), doc2term.get(d2));
+				map.computeIfAbsent(d1, k -> new TreeMap<>()).put(d2, sim);
 			}
 		}
 		return map;
