@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class PageRank {
+class PageRank {
 
 	private final PageRankConfig config;
 	private final double weight;
@@ -47,15 +47,15 @@ public class PageRank {
 	}
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
-		significances.forEach((t1, v) -> {
-			final double pr = invWeight + weight * sumAdjacentPageRanks(pageRanks, v, significances);
+		significances.forEach((t1, adjacent) -> {
+			final double pr = invWeight + weight * sumAdjacentPageRanks(pageRanks, adjacent, significances);
 			pageRanks.put(t1, pr);
 		});
 	}
 
-	private double sumAdjacentPageRanks(final Map<String, Double> pageRanks, final Map<String, Double> v, final Map<String, Map<String, Double>> significances) {
-		return v.keySet().stream()
-				.mapToDouble(coocc -> pageRanks.get(coocc) / significances.get(coocc).size())
+	private double sumAdjacentPageRanks(final Map<String, Double> pageRanks, final Map<String, Double> adjacent, final Map<String, Map<String, Double>> significances) {
+		return adjacent.entrySet().stream()
+				.mapToDouble(e -> (pageRanks.get(e.getKey()) * e.getValue()) / significances.get(e.getKey()).size())
 				.sum();
 	}
 

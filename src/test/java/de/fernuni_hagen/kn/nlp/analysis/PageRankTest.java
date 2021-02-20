@@ -19,7 +19,7 @@ class PageRankTest {
 
 	@Test
 	void calculate() {
-		final PageRankConfig config = mockConfig();
+		final var config = mockConfig();
 		final var dbReader = mockDbReader();
 		final var actual = new PageRank(config).calculate(dbReader);
 		assertEqualSize(dbReader, actual);
@@ -30,10 +30,10 @@ class PageRankTest {
 
 	private DBReader mockDbReader() {
 		final var map = Map.of(
-				"a", Map.of("b", .0, "c", .0),
-				"b", Map.of("a", .0, "c", .0),
-				"c", Map.of("a", .0, "b", .0, "d", .0),
-				"d", Map.of("c", .0)
+				"a", Map.of("b", 1.0, "c", 1.0),
+				"b", Map.of("a", 1.0, "c", 1.0),
+				"c", Map.of("a", 1.0, "b", 1.0, "d", 1.0),
+				"d", Map.of("c", 1.0)
 		);
 		final DBReader dbReader = Mockito.mock(DBReader.class);
 		Mockito.when(dbReader.getSignificances(ArgumentMatchers.any(WeightingFunction.class))).thenReturn(Maps.copyOf(map));
@@ -46,7 +46,7 @@ class PageRankTest {
 		Mockito.when(config.getIterations()).thenReturn(25);
 		Mockito.when(config.getResultLimit()).thenReturn(Integer.MAX_VALUE);
 		Mockito.when(config.getWeight()).thenReturn(.85);
-		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.DICE);
+		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.NONE);
 		return config;
 	}
 
