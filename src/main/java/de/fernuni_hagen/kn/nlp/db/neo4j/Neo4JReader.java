@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
@@ -51,13 +50,14 @@ public class Neo4JReader implements DBReader {
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
+			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
 					"RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
-					final double sig = calcSig(row, k, function);
+					final double sig = calcSig(row, k, kmax, function);
 					putSig(row, sig, map);
 				}
 				return map;
@@ -71,11 +71,11 @@ public class Neo4JReader implements DBReader {
 		map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 	}
 
-	private double calcSig(final Map<String, Object> row, final long k, final WeightingFunction function) {
+	private double calcSig(final Map<String, Object> row, final long k, final long kmax, final WeightingFunction function) {
 		final var ki = toLong(row.get("ki"));
 		final var kj = toLong(row.get("kj"));
 		final var kij = toLong(row.get("kij"));
-		return function.calculate(ki, kj, kij, k);
+		return function.calculate(ki, kj, kij, k, kmax);
 	}
 
 	private long countSentences(final Transaction tx) {
@@ -88,12 +88,13 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunction function) {
+	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
+			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
 					" WHERE (c.count / t1.count) >= (c.count / t2.count)\n" +
-					"RETURN t1.name, t2.name, c.count as kij\n";
+					"RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -101,18 +102,13 @@ public class Neo4JReader implements DBReader {
 					final var t1 = row.get("t1.name").toString();
 					final var t2 = row.get("t2.name").toString();
 					if (!map.containsKey(t2) || !map.get(t2).containsKey(t1)) {
-						final double sig = calcSig(row, kmax, function);
+						final double sig = calcSig(row, k, kmax, function);
 						map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 					}
 				}
 				return map;
 			}
 		}
-	}
-
-	private double calcSig(final Map<String, Object> row, final long kmax, final DirectedWeightingFunction function) {
-		final var kij = toLong(row.get("kij"));
-		return function.calculate(kij, kmax);
 	}
 
 	private long getMaxSentencesCount(final Transaction tx) {

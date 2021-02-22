@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
@@ -208,7 +207,6 @@ public class Config {
 			private int iterations = 50;
 			private int resultLimit = Integer.MAX_VALUE;
 			private WeightingFunction weightingFunction = WeightingFunction.DICE;
-			private DirectedWeightingFunction directedWeightingFunction = DirectedWeightingFunction.DIRECTED;
 
 			public boolean calculate() {
 				return calculate;
@@ -228,10 +226,6 @@ public class Config {
 
 			public WeightingFunction getWeightingFunction() {
 				return weightingFunction;
-			}
-
-			public DirectedWeightingFunction getDirectedWeightingFunction() {
-				return directedWeightingFunction;
 			}
 		}
 

@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp;
 
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.util.Map;
@@ -28,12 +27,13 @@ public interface DBReader {
 	Map<String, Map<String, Double>> getSignificances(WeightingFunction function);
 
 	/**
-	 * Gets the significance coefficient of all term cooccurrences via the directed weighting function.
+	 * Gets the significance coefficient of all term cooccurrences via the weighting function.
+	 * The direction of each term association is decided by the higher term occurrence.
 	 *
-	 * @param function the directed weighting function
+	 * @param function the weighting function
 	 * @return a mapping from each term to each cooccurring term with their respective significance coefficient
 	 */
-	Map<String, Map<String, Double>> getSignificances(DirectedWeightingFunction function);
+	Map<String, Map<String, Double>> getDirectedSignificances(WeightingFunction function);
 
 	/**
 	 * Gets all terms frequencies.

@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,6 @@ class HITSTest {
 		Mockito.when(config.getIterations()).thenReturn(50);
 		Mockito.when(config.getResultLimit()).thenReturn(Integer.MAX_VALUE);
 		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.NONE);
-		Mockito.when(config.getDirectedWeightingFunction()).thenReturn(DirectedWeightingFunction.NONE);
 		return config;
 	}
 

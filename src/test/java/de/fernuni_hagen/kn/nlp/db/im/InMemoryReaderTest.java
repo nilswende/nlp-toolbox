@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.db.DBTest;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +37,7 @@ class InMemoryReaderTest extends DBTest {
 		final var input = List.of("art", "competition", "game", "year");
 		writer.addSentence(input);
 
-		final var significances = reader.getSignificances(DirectedWeightingFunction.NONE);
+		final var significances = reader.getSignificances(WeightingFunction.NONE);
 		assertOneDirectedRelationshipBetweenTwoNodes(significances);
 	}
 

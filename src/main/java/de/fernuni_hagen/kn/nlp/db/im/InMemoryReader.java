@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
-import de.fernuni_hagen.kn.nlp.math.DirectedWeightingFunction;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
@@ -43,6 +42,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
+		final var kmax = db.getMaxSentencesCount();
 		final var data = db.getData();
 		final var cooccs = getCooccurrences();
 		cooccs.forEach((ti, m) -> {
@@ -50,14 +50,15 @@ public class InMemoryReader implements DBReader {
 			m.replaceAll((tj, v) -> {
 				final var kj = data.get(tj).getCount();
 				final var kij = v.longValue();
-				return function.calculate(ki, kj, kij, k);
+				return function.calculate(ki, kj, kij, k, kmax);
 			});
 		});
 		return cooccs;
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getSignificances(final DirectedWeightingFunction function) {
+	public Map<String, Map<String, Double>> getDirectedSignificances(WeightingFunction function) {
+		final var k = db.getSentencesCount();
 		final var kmax = db.getMaxSentencesCount();
 		final var data = db.getData();
 		final var cooccs = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
@@ -68,7 +69,7 @@ public class InMemoryReader implements DBReader {
 				final var dom = ki > kj ? ti : tj;
 				final var sub = ki > kj ? tj : ti;
 				if (!cooccs.containsKey(sub) || !cooccs.get(sub).containsKey(dom)) {
-					final var sig = function.calculate(kij, kmax);
+					final var sig = function.calculate(ki, kj, kij, k, kmax);
 					cooccs.computeIfAbsent(dom, x -> new TreeMap<>()).put(sub, sig);
 				}
 			});

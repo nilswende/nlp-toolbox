@@ -42,7 +42,7 @@ class WeightingFunctionTest {
 			final var ki = p.getLeft().getLeft().getRight();
 			final var kj = p.getLeft().getRight().getRight();
 			final var kij = p.getRight();
-			final var sig = function.calculate(ki, kj, kij, k);
+			final var sig = function.calculate(ki, kj, kij, k, 0);
 			return Pair.of(p.getLeft(), sig);
 		}).collect(Collectors.toList());
 
