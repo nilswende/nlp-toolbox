@@ -1,12 +1,12 @@
 package de.fernuni_hagen.kn.nlp.utils;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Map utilities.
@@ -52,35 +52,31 @@ public final class Maps {
 	}
 
 	/**
-	 * Returns the distinct count of all inner map keys.
+	 * Returns all map keys.
 	 *
-	 * @param map  the map
-	 * @param <K1> first key type
-	 * @param <K2> second key type
-	 * @param <V>  value type
-	 * @return inner key count
+	 * @param <K> key type
+	 * @param <V> value type
+	 * @param map the map
+	 * @return all outer and inner keys
 	 */
-	public static <K1, K2, V> int getInnerKeyCount(final Map<K1, Map<K2, V>> map) {
-		return (int) streamInnerKeys(map).count();
+	public static <K, V> Set<K> getKeys(final Map<K, Map<K, V>> map) {
+		final var terms = new HashSet<>(map.keySet());
+		map.values().stream().map(Map::keySet).forEach(terms::addAll);
+		return terms;
 	}
 
 	/**
 	 * Returns all inner map keys.
 	 *
-	 * @param map  the map
-	 * @param <K1> first key type
-	 * @param <K2> second key type
-	 * @param <V>  value type
-	 * @return inner keys
+	 * @param <K> inner key type
+	 * @param <V> value type
+	 * @param map the map
+	 * @return all inner keys
 	 */
-	public static <K1, K2, V> List<K2> getInnerKeys(final Map<K1, Map<K2, V>> map) {
-		return streamInnerKeys(map).collect(Collectors.toList());
-	}
-
-	private static <K1, K2, V> Stream<K2> streamInnerKeys(final Map<K1, Map<K2, V>> map) {
-		return map.values().stream()
-				.flatMap(inner -> inner.keySet().stream())
-				.distinct();
+	public static <K, V> Set<K> getInnerKeys(final Map<?, Map<K, V>> map) {
+		final var terms = new HashSet<K>();
+		map.values().stream().map(Map::keySet).forEach(terms::addAll);
+		return terms;
 	}
 
 	/**

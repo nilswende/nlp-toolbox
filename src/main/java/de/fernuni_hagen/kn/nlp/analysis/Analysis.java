@@ -62,7 +62,7 @@ public class Analysis {
 	}
 
 	private void analyzeHITS(final HITSConfig hitsConfig) {
-		final var hits = (hitsConfig.directed() ? new DirectedHITS(hitsConfig) : new HITS(hitsConfig)).calculate(dbReader);
+		final var hits = HITS.from(hitsConfig).calculate(dbReader);
 		hits.entrySet().stream()
 				.sorted(comparingByValue(comparingDouble(Scores::getAuthorityScore).reversed()))
 				.limit(hitsConfig.getResultLimit())

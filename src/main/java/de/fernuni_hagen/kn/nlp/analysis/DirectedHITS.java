@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,9 +33,7 @@ class DirectedHITS extends HITS {
 
 	@Override
 	protected Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
-		final var terms = new HashSet<>(linking.keySet());
-		linking.values().stream().map(Map::keySet).forEach(terms::addAll);
-		return terms;
+		return Maps.getKeys(linking);
 	}
 
 }

@@ -5,6 +5,7 @@ import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -45,7 +46,7 @@ class DocumentSimilarity {
 
 	private void replaceDocuments(final Map<String, Map<String, Long>> term2doc) {
 		if (CollectionUtils.isEmpty(config.getDocuments())) {
-			documents = Maps.getInnerKeys(term2doc);
+			documents = new ArrayList<>(Maps.getInnerKeys(term2doc));
 		} else {
 			term2doc.forEach((t, docs) -> docs.keySet().removeIf(d -> !documents.contains(d)));
 			term2doc.values().removeIf(Map::isEmpty);

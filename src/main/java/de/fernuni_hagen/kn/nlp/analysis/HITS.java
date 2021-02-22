@@ -76,6 +76,16 @@ class HITS {
 	}
 
 	/**
+	 * Creates a new HITS instance from the given config.
+	 *
+	 * @param config HITSConfig
+	 * @return a new HITS instance
+	 */
+	public static HITS from(final HITSConfig config) {
+		return config.directed() ? new DirectedHITS(config) : new HITS(config);
+	}
+
+	/**
 	 * DTO for the HITS scores.
 	 */
 	public static class Scores {
