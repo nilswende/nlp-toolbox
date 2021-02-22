@@ -26,7 +26,7 @@ class DirectedHITS extends HITS {
 	 */
 	@Override
 	public Map<String, Scores> calculate(final DBReader db) {
-		final var hub2auths = db.getSignificances(hitsConfig.getDirectedWeightingFunction());
+		final var hub2auths = db.getSignificances(hitsConfig.getWeightingFunction());
 		final var auth2hubs = Maps.invertMapping(hub2auths);
 		return getStringScoresMap(auth2hubs, hub2auths);
 	}

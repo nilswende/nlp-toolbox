@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static de.fernuni_hagen.kn.nlp.utils.Maps.invertMapping;
-import static de.fernuni_hagen.kn.nlp.utils.Maps.transform;
+import static de.fernuni_hagen.kn.nlp.utils.Maps.*;
 
 /**
  * Calculates the similarity of given documents.
@@ -55,7 +54,7 @@ class DocumentSimilarity {
 
 	private Map<String, Map<String, Double>> getNormalizedTermFrequencies(final Map<String, Map<String, Long>> term2doc) {
 		return invertMapping(
-				transform(
+				transformCopy(
 						invertMapping(term2doc),
 						terms -> terms.values().stream().mapToDouble(d -> d).sum(),
 						(sum, l) -> l / sum)
@@ -64,11 +63,9 @@ class DocumentSimilarity {
 
 	private Map<String, Map<String, Double>> getTermWeights(final Map<String, Map<String, Double>> term2doc) {
 		final var docCount = (double) documents.size();
-		term2doc.forEach((t, docs) -> {
-			final var idf = Math.log10(docCount / docs.size());
-			docs.replaceAll((d, nf) -> nf * idf);
-		});
-		return term2doc;
+		return transform(term2doc,
+				docs -> Math.log10(docCount / docs.size()),
+				(idf, nf) -> nf * idf);
 	}
 
 	private Map<String, Map<String, Double>> getReducedTermWeights(final Map<String, Map<String, Double>> term2doc) {

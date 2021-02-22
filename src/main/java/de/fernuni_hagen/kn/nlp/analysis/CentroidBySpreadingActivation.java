@@ -106,7 +106,7 @@ class CentroidBySpreadingActivation {
 	}
 
 	private Map<String, Map<String, Double>> findCentroidCandidates(final double radius, final List<String> query, final Map<String, Map<String, Double>> distances) {
-		final var candidates = Maps.<String, Map<String, Double>>newKnownSizeMap(query.size());
+		final var candidates = Maps.<String, Map<String, Double>>newHashMap(query.size());
 		final var bfs = new BreadthFirstGraphSearcher();
 		query.forEach(q -> candidates.put(q, bfs.search(q, radius, distances)));
 		return Maps.invertMapping(candidates);

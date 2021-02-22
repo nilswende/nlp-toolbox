@@ -48,7 +48,7 @@ class HITSTest {
 	private HITSConfig mockConfig() {
 		final var config = Mockito.mock(HITSConfig.class);
 		Mockito.when(config.calculate()).thenReturn(true);
-		Mockito.when(config.directed()).thenReturn(true);
+		Mockito.when(config.directed()).thenReturn(false);
 		Mockito.when(config.getIterations()).thenReturn(50);
 		Mockito.when(config.getResultLimit()).thenReturn(Integer.MAX_VALUE);
 		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.NONE);

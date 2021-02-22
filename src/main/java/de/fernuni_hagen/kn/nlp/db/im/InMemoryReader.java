@@ -28,7 +28,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getCooccurrences() {
 		final var data = db.getData();
-		final var copy = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
+		final var copy = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((k, v) -> {
 			final var cooccs = v.getCooccs()
 					.entrySet().stream()
@@ -61,7 +61,7 @@ public class InMemoryReader implements DBReader {
 		final var k = db.getSentencesCount();
 		final var kmax = db.getMaxSentencesCount();
 		final var data = db.getData();
-		final var cooccs = Maps.<String, Map<String, Double>>newKnownSizeMap(data.size());
+		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((ti, m) -> {
 			final var ki = m.getCount();
 			m.getCooccs().forEach((tj, kij) -> {
@@ -80,7 +80,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Long>> getTermFrequencies() {
 		final var data = db.getData();
-		final var copy = Maps.<String, Map<String, Long>>newKnownSizeMap(data.size());
+		final var copy = Maps.<String, Map<String, Long>>newHashMap(data.size());
 		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getDocuments())));
 		return copy;
 	}
