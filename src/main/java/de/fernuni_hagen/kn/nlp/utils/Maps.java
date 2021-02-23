@@ -34,24 +34,6 @@ public final class Maps {
 	}
 
 	/**
-	 * Inverts the mapping {@code Map<K1, Map<K2, V>>} to {@code Map<K2, Map<K1, V>>}.
-	 *
-	 * @param map  the map
-	 * @param <K1> first key type
-	 * @param <K2> second key type
-	 * @param <V>  value type
-	 * @return the inverted map
-	 */
-	public static <K1, K2, V> Map<K2, Map<K1, V>> invertMapping(final Map<K1, Map<K2, V>> map) {
-		final var inverted = new HashMap<K2, Map<K1, V>>();
-		map.forEach(
-				(k1, m) -> m.forEach(
-						(k2, v) -> inverted.computeIfAbsent(k2, x -> newHashMap(map.size())).put(k1, v)
-				));
-		return inverted;
-	}
-
-	/**
 	 * Returns all map keys.
 	 *
 	 * @param <K> key type
@@ -95,7 +77,38 @@ public final class Maps {
 	}
 
 	/**
-	 * Transforms the map containing Longs to one containing Doubles by applying the mapper function to each element.
+	 * Inverts the mapping {@code Map<K1, Map<K2, V>>} to {@code Map<K2, Map<K1, V>>}.
+	 *
+	 * @param map  the map
+	 * @param <K1> first key type
+	 * @param <K2> second key type
+	 * @param <V>  value type
+	 * @return the inverted map
+	 */
+	public static <K1, K2, V> Map<K2, Map<K1, V>> invertMapping(final Map<K1, Map<K2, V>> map) {
+		final var inverted = new HashMap<K2, Map<K1, V>>();
+		map.forEach(
+				(k1, m) -> m.forEach(
+						(k2, v) -> inverted.computeIfAbsent(k2, x -> newHashMap(map.size())).put(k1, v)
+				));
+		return inverted;
+	}
+
+	/**
+	 * Inverts the values of the map.
+	 *
+	 * @param map  the map with each value != 0
+	 * @param <K1> first key type
+	 * @param <K2> second key type
+	 * @return the same map now containing the multiplicative inverse of its former values
+	 */
+	public static <K1, K2> Map<K1, Map<K2, Double>> invertValues(final Map<K1, Map<K2, Double>> map) {
+		map.forEach((k1, m) -> m.replaceAll((k2, v) -> 1 / v));
+		return map;
+	}
+
+	/**
+	 * Transforms the values of the map by applying the mapper function to each element.
 	 *
 	 * @param map         the map
 	 * @param mapMapper   creates a value from the inner map
@@ -117,7 +130,7 @@ public final class Maps {
 	}
 
 	/**
-	 * Transforms the map containing Longs to one containing Doubles by applying the mapper function to each element.
+	 * Transforms the map containing Longs to a new map containing Doubles by applying the mapper function to each element.
 	 *
 	 * @param map    Long map
 	 * @param mapper transformation function

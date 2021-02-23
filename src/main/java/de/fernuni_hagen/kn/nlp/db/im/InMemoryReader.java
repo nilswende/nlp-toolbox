@@ -2,6 +2,8 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
+import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
+import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
@@ -57,7 +59,7 @@ public class InMemoryReader implements DBReader {
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> getDirectedSignificances(WeightingFunction function) {
+	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
 		final var kmax = db.getMaxSentencesCount();
 		final var data = db.getData();
@@ -83,6 +85,12 @@ public class InMemoryReader implements DBReader {
 		final var copy = Maps.<String, Map<String, Long>>newHashMap(data.size());
 		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getDocuments())));
 		return copy;
+	}
+
+	@Override
+	public WeightedPath getShortestPath(final String start, final String end, final WeightingFunction function) {
+		final var distances = Maps.invertValues(getSignificances(function));
+		return new DijkstraSearcher().search(start, end, distances);
 	}
 
 	/**

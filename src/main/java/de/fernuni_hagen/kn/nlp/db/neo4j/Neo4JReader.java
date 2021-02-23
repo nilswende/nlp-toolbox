@@ -1,9 +1,15 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import org.neo4j.graphalgo.CostEvaluator;
+import org.neo4j.graphalgo.GraphAlgoFactory;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
+import org.neo4j.graphdb.PathExpanders;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.List;
@@ -154,4 +160,38 @@ public class Neo4JReader implements DBReader {
 	public Map<String, Map<String, Long>> getTermFrequencies() {
 		return null;//TODO
 	}
+
+	@Override
+	public WeightedPath getShortestPath(final String start, final String end, final WeightingFunction function) {
+		try (final Transaction tx = graphDb.beginTx()) {
+			final var k = countSentences(tx);
+			final var kmax = getMaxSentencesCount(tx);
+			final var evaluator = new SignificanceEvaluator(k, kmax, function);
+			final var pathFinder = GraphAlgoFactory.dijkstra(PathExpanders.forType(RelationshipTypes.COOCCURS), evaluator, 1);
+			final var path = pathFinder.findSinglePath(tx.findNode(Labels.TERM, "name", start), tx.findNode(Labels.TERM, "name", end));
+			final var nodes = Neo4JUtils.stream(path.nodes()).map(n -> n.getProperty("name").toString()).collect(Collectors.toList());
+			return new WeightedPath(nodes, path.weight());
+		}
+	}
+
+	private static class SignificanceEvaluator implements CostEvaluator<Double> {
+		private final long k;
+		private final long kmax;
+		private final WeightingFunction function;
+
+		SignificanceEvaluator(final long k, final long kmax, final WeightingFunction function) {
+			this.k = k;
+			this.kmax = kmax;
+			this.function = function;
+		}
+
+		@Override
+		public Double getCost(final Relationship relationship, final Direction direction) {
+			final var ki = toLong(relationship.getStartNode().getProperty("count"));
+			final var kj = toLong(relationship.getEndNode().getProperty("count"));
+			final var kij = toLong(relationship.getProperty("count"));
+			return 1 / function.calculate(ki, kj, kij, k, kmax);
+		}
+	}
+
 }

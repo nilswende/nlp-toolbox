@@ -35,12 +35,12 @@ public class DijkstraSearcher {
 		while (!prioQueue.isEmpty()) {
 			final Triplet currentTriplet = prioQueue.remove();
 			if (currentTriplet.getNode().equals(end)) {
-				return WeightedPath.from(startTriplet, currentTriplet);
+				return Triplet.toPath(startTriplet, currentTriplet);
 			}
 			visited.add(currentTriplet.getNode());
 			queueUnvisitedNeighbors(currentTriplet, distances);
 		}
-		return WeightedPath.from();
+		return new WeightedPath();
 	}
 
 	private void queueUnvisitedNeighbors(final Triplet currentTriplet, final Map<String, Map<String, Double>> distances) {
@@ -72,36 +72,7 @@ public class DijkstraSearcher {
 			return distance.compareTo(o.distance);
 		}
 
-		public String getNode() {
-			return node;
-		}
-
-		public Double getDistance() {
-			return distance;
-		}
-
-		public Triplet getPreviousNode() {
-			return previousNode;
-		}
-	}
-
-	/**
-	 * Contains the shortest path from the start node to the end node and the total weight of the path.
-	 */
-	public static class WeightedPath {
-		private final List<String> path;
-		private final double weight;
-
-		private WeightedPath(final List<String> path, final double weight) {
-			this.path = path;
-			this.weight = weight;
-		}
-
-		static WeightedPath from() {
-			return new WeightedPath(List.of(), Double.POSITIVE_INFINITY);
-		}
-
-		static WeightedPath from(final Triplet start, final Triplet end) {
+		static WeightedPath toPath(final Triplet start, final Triplet end) {
 			return new WeightedPath(collectPath(start, end), streamPath(end).mapToDouble(Triplet::getDistance).sum());
 		}
 
@@ -117,12 +88,16 @@ public class DijkstraSearcher {
 			return Stream.iterate(end, t -> t.getPreviousNode() != null, Triplet::getPreviousNode);
 		}
 
-		public List<String> getPath() {
-			return path;
+		public String getNode() {
+			return node;
 		}
 
-		public double getWeight() {
-			return weight;
+		public Double getDistance() {
+			return distance;
+		}
+
+		public Triplet getPreviousNode() {
+			return previousNode;
 		}
 	}
 

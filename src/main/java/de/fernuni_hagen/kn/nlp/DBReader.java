@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp;
 
+import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.util.Map;
@@ -41,4 +42,15 @@ public interface DBReader {
 	 * @return a mapping from each term to each document it is contained in with their respective count
 	 */
 	Map<String, Map<String, Long>> getTermFrequencies();
+
+	/**
+	 * Gets the shortest path between the two nodes.
+	 *
+	 * @param start    start node
+	 * @param end      end node
+	 * @param function the weighting function
+	 * @return a weighted path
+	 */
+	WeightedPath getShortestPath(String start, String end, WeightingFunction function);
+
 }
