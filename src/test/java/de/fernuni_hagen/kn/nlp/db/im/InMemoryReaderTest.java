@@ -37,7 +37,7 @@ class InMemoryReaderTest extends DBTest {
 		final var input = List.of("art", "competition", "game", "year");
 		writer.addSentence(input);
 
-		final var significances = reader.getSignificances(WeightingFunction.NONE);
+		final var significances = reader.getDirectedSignificances(WeightingFunction.NONE);
 		assertOneDirectedRelationshipBetweenTwoNodes(significances);
 	}
 
