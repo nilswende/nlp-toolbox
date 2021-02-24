@@ -162,9 +162,10 @@ public final class Maps {
 			final BiFunction<V2, V1, V2> valueMapper) {
 		final var copy = Maps.<K1, Map<K2, V2>>newHashMap(map.size());
 		map.forEach((k, v) -> {
+			final var v2 = mapMapper.apply(v);
 			final var inner = v.entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getKey,
-							e -> valueMapper.apply(mapMapper.apply(v), e.getValue())));
+							e -> valueMapper.apply(v2, e.getValue())));
 			copy.put(k, inner);
 		});
 		return copy;
