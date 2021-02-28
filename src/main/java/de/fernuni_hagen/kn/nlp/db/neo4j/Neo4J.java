@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -19,7 +19,7 @@ public class Neo4J {
 	private static final String DEFAULT_DATABASE_NAME = "neo4j";
 	private final GraphDatabaseService graphDb;
 
-	public Neo4J(final Config config) {
+	public Neo4J(final AppConfig config) {
 		final var managementService = new DatabaseManagementServiceBuilder(config.getNeo4JDbDir())
 //				.setConfig(BoltConnector.enabled, true)
 //				.setConfig(BoltConnector.listen_address, new SocketAddress("localhost", 7687))

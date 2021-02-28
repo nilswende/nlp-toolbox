@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,7 +17,7 @@ public class InMemoryDB {
 	private String currentDoc;
 	private long sentencesCount = 0;
 
-	public InMemoryDB(final Config config) {
+	public InMemoryDB(final AppConfig config) {
 		final var path = config.getInMemoryDbDir().resolve(JSON_FILE);
 		data = InMemoryDeserializer.deserialize(path);
 		if (config.persistInMemoryDb()) {

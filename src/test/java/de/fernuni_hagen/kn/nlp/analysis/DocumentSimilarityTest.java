@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
+import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Test;

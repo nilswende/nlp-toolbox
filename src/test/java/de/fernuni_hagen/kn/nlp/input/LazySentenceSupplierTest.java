@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.input;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.junit.jupiter.api.AfterAll;
@@ -37,7 +37,7 @@ class LazySentenceSupplierTest {
 	void get(final List<String> sentences) {
 		final String input = String.join("", sentences);
 		try {
-			Files.writeString(tempFile, input, Config.DEFAULT_CHARSET);
+			Files.writeString(tempFile, input, AppConfig.DEFAULT_CHARSET);
 			final var strings = new ArrayList<String>();
 			try (final var sentenceSupplier = new LazySentenceSupplier(tempFile, Locale.ENGLISH)) {
 				for (char[] s; (s = sentenceSupplier.get()) != null; ) {

@@ -2,10 +2,9 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.analysis.HITS.Scores;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.PageRankConfig;
+import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
+import de.fernuni_hagen.kn.nlp.config.HITSConfig;
+import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
 
 import java.util.Comparator;
 
@@ -21,11 +20,9 @@ import static java.util.Map.Entry.comparingByValue;
  */
 public class Analysis {
 
-	private final AnalysisConfig config;
 	private final DBReader dbReader;
 
-	public Analysis(final AnalysisConfig config, final DBReader dbReader) {
-		this.config = config;
+	public Analysis(final DBReader dbReader) {
 		this.dbReader = dbReader;
 	}
 
@@ -33,19 +30,19 @@ public class Analysis {
 	 * Analyzes the cooccurrence graph in the database.
 	 */
 	public void analyze() {
-		final var pageRankConfig = config.getPageRankConfig();
+		final PageRankConfig pageRankConfig = null;
 		if (pageRankConfig.calculate()) {
 			final var start = logStart("PageRank");
 			analyzePageRank(pageRankConfig);
 			logDuration("PageRank", start);
 		}
-		final var hitsConfig = config.getHitsConfig();
+		final HITSConfig hitsConfig = null;
 		if (hitsConfig.calculate()) {
 			final var start = logStart("HITS");
 			analyzeHITS(hitsConfig);
 			logDuration("HITS", start);
 		}
-		final var docSimConfig = config.getDocSimConfig();
+		final DocSimConfig docSimConfig = null;
 		if (docSimConfig.calculate()) {
 			final var start = logStart("DocSim");
 			analyzeDocSim(docSimConfig);

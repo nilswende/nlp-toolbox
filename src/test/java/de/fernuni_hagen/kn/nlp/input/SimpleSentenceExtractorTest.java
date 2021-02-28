@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.input;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.impl.RegexWhitespaceRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.impl.JLanILanguageExtractor;
@@ -36,7 +36,7 @@ class SimpleSentenceExtractorTest {
 	@MethodSource
 	void extract(final List<String> sentences) throws IOException {
 		final String input = String.join(" ", sentences);
-		Files.writeString(tempFile, input, Config.DEFAULT_CHARSET);
+		Files.writeString(tempFile, input, AppConfig.DEFAULT_CHARSET);
 		final var languageExtractor = new JLanILanguageExtractor();
 		final var extractor = new SimpleSentenceExtractor(languageExtractor.extract(tempFile), new RegexWhitespaceRemover());
 		final var strings = extractor.extract(tempFile).collect(Collectors.toList());

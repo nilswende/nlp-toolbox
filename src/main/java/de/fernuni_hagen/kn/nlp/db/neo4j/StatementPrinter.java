@@ -16,7 +16,7 @@ public class StatementPrinter {
 
 	static {
 		/*try {
-			stream = new PrintStream("stmtLog.txt", Config.DEFAULT_CHARSET);
+			stream = new PrintStream("stmtLog.txt", AppConfig.DEFAULT_CHARSET);
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}*/

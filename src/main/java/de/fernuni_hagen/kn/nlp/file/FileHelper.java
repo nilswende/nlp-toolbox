@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.file;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public final class FileHelper {
 	}
 
 	public static Reader newFileReader(final Path path) throws IOException {
-		return Files.newBufferedReader(path, Config.DEFAULT_CHARSET);
+		return Files.newBufferedReader(path, AppConfig.DEFAULT_CHARSET);
 	}
 
 }

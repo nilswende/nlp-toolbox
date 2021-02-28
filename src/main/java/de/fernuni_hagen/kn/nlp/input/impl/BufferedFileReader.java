@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.input.impl;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
@@ -137,7 +137,7 @@ public class BufferedFileReader implements Closeable {
 	 * @return file length
 	 */
 	public long getLength() {
-		return InputUtils.countChars(path, Config.DEFAULT_CHARSET);
+		return InputUtils.countChars(path, AppConfig.DEFAULT_CHARSET);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.PageRankConfig;
+import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 
 import java.util.Map;

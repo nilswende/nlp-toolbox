@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.db.factory;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryDB;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryReader;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryWriter;
@@ -16,7 +16,7 @@ class InMemoryDBFactory extends DBFactory {
 
 	private final InMemoryDB db;
 
-	InMemoryDBFactory(final Config config) {
+	InMemoryDBFactory(final AppConfig config) {
 		this.db = new InMemoryDB(config);
 	}
 

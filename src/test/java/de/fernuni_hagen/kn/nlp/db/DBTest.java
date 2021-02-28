@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.db;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.mockito.Mockito;
@@ -20,8 +20,8 @@ public abstract class DBTest {
 	protected DBWriter writer = DBFactory.instance().getWriter();
 
 	static {
-		final var mock = Mockito.mock(Config.class);
-		Mockito.when(mock.getDb()).thenReturn(Config.DB_IN_MEMORY);
+		final var mock = Mockito.mock(AppConfig.class);
+		Mockito.when(mock.getDb()).thenReturn(AppConfig.DB_IN_MEMORY);
 		Mockito.when(mock.getInMemoryDbDir()).thenReturn(Path.of(""));
 		DBFactory.init(mock);
 	}

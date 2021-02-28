@@ -1,16 +1,14 @@
 package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.analysis.Analysis;
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.config.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
 import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,28 +22,34 @@ import static de.fernuni_hagen.kn.nlp.Logger.*;
  */
 public class NLPToolbox {
 
-	private final Config config;
+	private final AppConfig config;
 
-	public NLPToolbox(final String configFile) {
-		config = Config.fromJson(configFile);
-		DBFactory.init(config);
+	public NLPToolbox(final JsonConfigParser configParser) {
+		this.config = configParser.getAppConfig();
+		DBFactory.init(this.config);
 	}
 
 	private void run() {
 		if (!config.analysisOnly()) {
-			writeAllInputToFreshDB();
+			clearDatabase();
+			preprocess();
 		}
-		new Analysis(config.getAnalysisConfig(), DBFactory.instance().getReader()).analyze();
+		new Analysis(DBFactory.instance().getReader()).analyze();
 		//new CsvExporter().export();
 		//((Neo4JReader)DBFactory.instance().getReader()).printPath("art", "version");
 	}
 
-	private void writeAllInputToFreshDB() {
+	private void clearDatabase() {
+		final var db = DBFactory.instance().getWriter();
+		db.deleteAll();
+	}
+
+	private void preprocess() {
 		final var start = logStart("writeDB");
 		final var db = DBFactory.instance().getWriter();
 		db.deleteAll();
-		final var documentConverter = new TikaDocumentConverter(config);
-		final var preprocessor = Preprocessor.from(config);
+		final var documentConverter = new TikaDocumentConverter(null);
+		final var preprocessor = Preprocessor.from(null);
 		try (final var paths = Files.walk(config.getInputDir())) {
 			paths.filter(p -> Files.isRegularFile(p))
 					.peek(db::addDocument)
@@ -55,7 +59,7 @@ public class NLPToolbox {
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		} finally {
-			if (!config.keepTempFiles()) {
+			if (!false) {
 				FileHelper.deleteTempFiles();
 			}
 			logDuration("writeDB", start);
@@ -64,22 +68,8 @@ public class NLPToolbox {
 
 	public static void main(final String[] args) {
 		ExternalResourcesExtractor.extractExternalResources();
-		final var configFile = parseCLI(args);
-		new NLPToolbox(configFile).run();
+		new NLPToolbox(new JsonConfigParser(args)).run();
 		logCurrentThreadCpuTime();
-	}
-
-	private static String parseCLI(final String[] args) {
-		final var options = new Options();
-		final String configFile = "configFile";
-		options.addOption(configFile, true, "path to the config file, default: " + Config.getDefaultConfigFilePath());
-		final var parser = new DefaultParser();
-		try {
-			final var cli = parser.parse(options, args);
-			return cli.getOptionValue(configFile);
-		} catch (final ParseException e) {
-			throw new UncheckedException(e);
-		}
 	}
 
 }

@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.HITSConfig;
+import de.fernuni_hagen.kn.nlp.config.HITSConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.Map;

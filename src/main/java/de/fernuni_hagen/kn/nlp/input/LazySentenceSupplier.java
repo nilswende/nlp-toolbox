@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.input;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileCharacterIterator;
 import de.fernuni_hagen.kn.nlp.input.impl.BufferedFileReader;
 
@@ -30,8 +30,8 @@ class LazySentenceSupplier implements Closeable {
 	 * @param locale   the file's language
 	 */
 	public LazySentenceSupplier(final Path textFile, final Locale locale) {
-		fileReader = new BufferedFileReader(textFile, Config.DEFAULT_CHARSET);
-		iter = new BufferedFileCharacterIterator(new BufferedFileReader(textFile, Config.DEFAULT_CHARSET));
+		fileReader = new BufferedFileReader(textFile, AppConfig.DEFAULT_CHARSET);
+		iter = new BufferedFileCharacterIterator(new BufferedFileReader(textFile, AppConfig.DEFAULT_CHARSET));
 		boundary = BreakIterator.getSentenceInstance(findBestMatch(locale));
 		boundary.setText(iter);
 		start = boundary.first();

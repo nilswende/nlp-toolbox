@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.Config.AnalysisConfig.DocSimConfig;
+import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;

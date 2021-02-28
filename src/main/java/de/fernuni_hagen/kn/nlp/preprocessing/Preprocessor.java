@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.PreprocessingConfig;
 import de.fernuni_hagen.kn.nlp.preprocessing.factory.PreprocessingFactory;
 
 import java.nio.file.Path;
@@ -41,10 +41,10 @@ public class Preprocessor {
 	/**
 	 * Creates a new preprocessor from the given config.
 	 *
-	 * @param config Config
+	 * @param config AppConfig
 	 * @return a new preprocessor
 	 */
-	public static Preprocessor from(final Config config) {
+	public static Preprocessor from(final PreprocessingConfig config) {
 		final var steps = new ArrayList<Function<PreprocessingFactory, PreprocessingStep>>();
 		if (config.filterNouns()) {
 			steps.add(PreprocessingFactory::createNounFilter);

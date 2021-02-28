@@ -1,7 +1,8 @@
 package de.fernuni_hagen.kn.nlp.input;
 
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.config.PreprocessingConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.tika.metadata.Metadata;
@@ -21,16 +22,16 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
-	private final Config config;
+	private final PreprocessingConfig config;
 
-	public TikaDocumentConverter(final Config config) {
+	public TikaDocumentConverter(final PreprocessingConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public Path convert(final Path path) {
 		final var tempFile = FileHelper.createTempFile(".txt");
-		try (final var writer = Files.newBufferedWriter(tempFile, Config.DEFAULT_CHARSET)) {
+		try (final var writer = Files.newBufferedWriter(tempFile, AppConfig.DEFAULT_CHARSET)) {
 			parseInput(path, writer);
 			return tempFile;
 		} catch (final IOException e) {

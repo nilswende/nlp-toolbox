@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.db.factory;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.config.Config;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 
 /**
  * Defines a factory for the database (Abstract Factory Pattern).<br>
@@ -55,9 +55,9 @@ public abstract class DBFactory {
 	/**
 	 * Initializes the singleton instance with the given config.
 	 *
-	 * @param config Config
+	 * @param config AppConfig
 	 */
-	public static synchronized void init(final Config config) {
+	public static synchronized void init(final AppConfig config) {
 		if (INSTANCE != null) {
 			throw new AssertionError("init only once");
 			// else instance() may fail to return the newer instance
@@ -66,11 +66,11 @@ public abstract class DBFactory {
 		INSTANCE = initFactory(config);
 	}
 
-	private static DBFactory initFactory(final Config config) {
+	private static DBFactory initFactory(final AppConfig config) {
 		final var db = config.getDb();
-		if (Config.DB_IN_MEMORY.equalsIgnoreCase(db)) {
+		if (AppConfig.DB_IN_MEMORY.equalsIgnoreCase(db)) {
 			return new InMemoryDBFactory(config);
-		} else if (Config.DB_NEO4J.equalsIgnoreCase(db)) {
+		} else if (AppConfig.DB_NEO4J.equalsIgnoreCase(db)) {
 			return new Neo4JDBFactory(config);
 		}
 		throw new IllegalArgumentException("Unsupported DB: " + db);
