@@ -8,8 +8,14 @@ import java.util.Arrays;
  * @author Nils Wende
  */
 public enum UseCase {
-	PAGERANK(PageRankConfig.class),
-	HITS(HITSConfig.class);
+	CLEAR_DATABASE(ClearDatabaseConfig.class),
+	PREPROCESSING(PreprocessingConfig.class),
+	BOOLEAN_RETRIEVAL(BooleanRetrievalConfig.class),
+	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivationConfig.class),
+	DOCUMENT_SIMILARITY(DocSimConfig.class),
+	HITS(HITSConfig.class),
+	PAGE_RANK(PageRankConfig.class),
+	TERM_SIMILARITY(TermSimConfig.class);
 
 	private final Class<? extends UseCaseConfig> configClass;
 
@@ -26,7 +32,7 @@ public enum UseCase {
 	 */
 	public static UseCase fromIgnoreCase(final String name) {
 		return Arrays.stream(values())
-				.filter(v -> v.name().equalsIgnoreCase(name))
+				.filter(v -> v.name().equalsIgnoreCase(name) || v.name().replace("_", "").equalsIgnoreCase(name))
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No use case with name " + name + " found"));
 	}

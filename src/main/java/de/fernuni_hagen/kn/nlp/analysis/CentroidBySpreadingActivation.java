@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.config.CentroidBySpreadingActivationConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -19,16 +20,21 @@ import java.util.stream.Collectors;
  */
 class CentroidBySpreadingActivation {
 
+	private final CentroidBySpreadingActivationConfig config;
+
+	CentroidBySpreadingActivation(final CentroidBySpreadingActivationConfig config) {
+		this.config = config;
+	}
+
 	/**
-	 * Finds the centroid of the given query set.
+	 * Finds the centroid of the given query set (most frequent terms).
 	 *
-	 * @param query query set (most frequent terms)
-	 * @param db    DB
+	 * @param db DB
 	 * @return the centroid or null, if the query is too diverse
 	 */
-	public String calculate(final List<String> query, final DBReader db) {
+	public String calculate(final DBReader db) {
 		final var significances = db.getSignificances(WeightingFunction.DICE);
-		final var cleanedQuery = cleanQuery(query, significances);
+		final var cleanedQuery = cleanQuery(config.getQuery(), significances);
 		if (cleanedQuery == null) {
 			return null;
 		}

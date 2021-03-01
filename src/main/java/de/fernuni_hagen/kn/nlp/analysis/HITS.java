@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-class HITS {
+public class HITS {
 
 	protected final HITSConfig hitsConfig;
 

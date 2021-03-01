@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.config.BooleanRetrievalConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Nils Wende
@@ -27,22 +29,31 @@ class BooleanRetrievalTest {
 		return dbReader;
 	}
 
+	private BooleanRetrievalConfig mockConfig(final String... query) {
+		final BooleanRetrievalConfig config = Mockito.mock(BooleanRetrievalConfig.class);
+		Mockito.when(config.getQuery()).thenReturn(List.of(query));
+		return config;
+	}
+
 	@Test
 	void and() {
-		final var actual = new BooleanRetrieval().and(List.of("t1", "t2"), dbReader);
-		Assertions.assertEquals(List.of("d1"), actual);
+		final var config = mockConfig("t1", "t2");
+		final var actual = new BooleanRetrieval(config).and(dbReader);
+		Assertions.assertEquals(Set.of("d1"), actual);
 	}
 
 	@Test
 	void or() {
-		final var actual = new BooleanRetrieval().or(List.of("t1", "t2"), dbReader);
+		final var config = mockConfig("t1", "t2");
+		final var actual = new BooleanRetrieval(config).or(dbReader);
 		Assertions.assertEquals(2L, actual.get("d1"));
 		Assertions.assertEquals(1L, actual.get("d2"));
 	}
 
 	@Test
 	void not() {
-		final var actual = new BooleanRetrieval().not(List.of("t1"), dbReader);
-		Assertions.assertEquals(List.of("d2"), actual);
+		final var config = mockConfig("t1");
+		final var actual = new BooleanRetrieval(config).not(dbReader);
+		Assertions.assertEquals(Set.of("d2"), actual);
 	}
 }

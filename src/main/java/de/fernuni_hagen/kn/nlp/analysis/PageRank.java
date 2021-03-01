@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-class PageRank {
+public class PageRank {
 
 	private final PageRankConfig config;
 	private final double weight;
