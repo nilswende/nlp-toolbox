@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.BooleanRetrievalConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,36 +23,37 @@ class BooleanRetrievalTest {
 				"t2", Map.of("d1", 1L, "d2", 1L),
 				"t3", Map.of("d2", 1L)
 		);
-		final DBReader dbReader = Mockito.mock(DBReader.class);
+		final var dbReader = Mockito.mock(DBReader.class);
 		Mockito.when(dbReader.getTermFrequencies()).thenReturn(Maps.copyOf(map));
 		return dbReader;
 	}
 
-	private BooleanRetrievalConfig mockConfig(final String... query) {
-		final BooleanRetrievalConfig config = Mockito.mock(BooleanRetrievalConfig.class);
-		Mockito.when(config.getQuery()).thenReturn(List.of(query));
-		return config;
+	private BooleanRetrieval mock(List<String> query) {
+		final var booleanRetrieval = new BooleanRetrieval();
+		booleanRetrieval.setQuery(query);
+		return booleanRetrieval;
 	}
 
 	@Test
 	void and() {
-		final var config = mockConfig("t1", "t2");
-		final var actual = new BooleanRetrieval(config).and(dbReader);
+		final BooleanRetrieval booleanRetrieval = mock(List.of("t1", "t2"));
+		final var actual = booleanRetrieval.and(dbReader);
 		Assertions.assertEquals(Set.of("d1"), actual);
 	}
 
 	@Test
 	void or() {
-		final var config = mockConfig("t1", "t2");
-		final var actual = new BooleanRetrieval(config).or(dbReader);
+		final var query = List.of("t1", "t2");
+		final BooleanRetrieval booleanRetrieval = mock(query);
+		final var actual = booleanRetrieval.or(dbReader);
 		Assertions.assertEquals(2L, actual.get("d1"));
 		Assertions.assertEquals(1L, actual.get("d2"));
 	}
 
 	@Test
 	void not() {
-		final var config = mockConfig("t1");
-		final var actual = new BooleanRetrieval(config).not(dbReader);
+		final BooleanRetrieval booleanRetrieval = mock(List.of("t1"));
+		final var actual = booleanRetrieval.not(dbReader);
 		Assertions.assertEquals(Set.of("d2"), actual);
 	}
 }

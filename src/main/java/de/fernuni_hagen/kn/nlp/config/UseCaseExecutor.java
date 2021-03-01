@@ -1,52 +1,54 @@
-package de.fernuni_hagen.kn.nlp.analysis;
+package de.fernuni_hagen.kn.nlp.config;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.analysis.HITS.Scores;
-import de.fernuni_hagen.kn.nlp.config.HITSConfig;
-import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
+import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
+import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
+import de.fernuni_hagen.kn.nlp.analysis.DocumentSimilarity;
+import de.fernuni_hagen.kn.nlp.analysis.HITS;
+import de.fernuni_hagen.kn.nlp.analysis.PageRank;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Comparator;
+import java.util.List;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logDuration;
-import static de.fernuni_hagen.kn.nlp.Logger.logStart;
 import static java.util.Comparator.comparingDouble;
 import static java.util.Map.Entry.comparingByValue;
 
 /**
- * Analyzes the cooccurrence graph in the database.
- *
  * @author Nils Wende
  */
-public class Analysis {
+public class UseCaseExecutor {
 
+	private final List<Class<? extends UseCases>> useCases = List.of(BooleanRetrieval.class, CentroidBySpreadingActivation.class);
 	private final DBReader dbReader;
+	private final DBWriter dbWriter;
 
-	public Analysis(final DBReader dbReader) {
+	/*
+	JsonUseCaseFactory erzeugt UseCases aus JSON
+	config direkt in UseCase-Klassen ohne Zwischenschicht
+	Factory auftrennen für App und usecases, evtl aber gemeinsam implementieren
+	
+	 */
+
+	public UseCaseExecutor(final DBReader dbReader, final DBWriter dbWriter) {
 		this.dbReader = dbReader;
+		this.dbWriter = dbWriter;
 	}
 
-	/**
-	 * Analyzes the cooccurrence graph in the database.
-	 */
-	public void analyze() {
-		final PageRankConfig pageRankConfig = null;
-		if (pageRankConfig.calculate()) {
-			final var start = logStart("PageRank");
-			analyzePageRank(pageRankConfig);
-			logDuration("PageRank", start);
+	public void execute(final List<Pair<UseCase, UseCaseConfig>> useCases) {
+		for (final Pair<UseCase, UseCaseConfig> useCase : useCases) {
+			switch (useCase.getLeft()) {
+				case CLEAR_DATABASE:
+					dbWriter.deleteAll();
+					break;
+				case HITS:
+			}
 		}
-		final HITSConfig hitsConfig = null;
-		if (hitsConfig.calculate()) {
-			final var start = logStart("HITS");
-			analyzeHITS(hitsConfig);
-			logDuration("HITS", start);
-		}
-		final DocSimConfig docSimConfig = null;
-		if (docSimConfig.calculate()) {
-			final var start = logStart("DocSim");
-			analyzeDocSim(docSimConfig);
-			logDuration("DocSim", start);
-		}
+	}
+
+	private void execute(final Pair<UseCase, UseCaseConfig> useCase) {
+
 	}
 
 	private void analyzePageRank(final PageRankConfig pageRankConfig) {
@@ -60,11 +62,11 @@ public class Analysis {
 	private void analyzeHITS(final HITSConfig hitsConfig) {
 		final var hits = HITS.from(hitsConfig).calculate(dbReader);
 		hits.entrySet().stream()
-				.sorted(comparingByValue(comparingDouble(Scores::getAuthorityScore).reversed()))
+				.sorted(comparingByValue(comparingDouble(HITS.Scores::getAuthorityScore).reversed()))
 				.limit(hitsConfig.getResultLimit())
 				.forEach(e -> System.out.println("Authority score of " + e.getKey() + ": " + e.getValue().getAuthorityScore()));
 		hits.entrySet().stream()
-				.sorted(comparingByValue(comparingDouble(Scores::getHubScore).reversed()))
+				.sorted(comparingByValue(comparingDouble(HITS.Scores::getHubScore).reversed()))
 				.limit(hitsConfig.getResultLimit())
 				.forEach(e -> System.out.println("Hub score of " + e.getKey() + ": " + e.getValue().getHubScore()));
 	}

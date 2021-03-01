@@ -1,5 +1,8 @@
 package de.fernuni_hagen.kn.nlp.config;
 
+import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
+import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
+
 import java.util.Arrays;
 
 /**
@@ -10,8 +13,8 @@ import java.util.Arrays;
 public enum UseCase {
 	CLEAR_DATABASE(ClearDatabaseConfig.class),
 	PREPROCESSING(PreprocessingConfig.class),
-	BOOLEAN_RETRIEVAL(BooleanRetrievalConfig.class),
-	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivationConfig.class),
+	BOOLEAN_RETRIEVAL(BooleanRetrieval.class),
+	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivation.class),
 	DOCUMENT_SIMILARITY(DocSimConfig.class),
 	HITS(HITSConfig.class),
 	PAGE_RANK(PageRankConfig.class),

@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.HITSConfig;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,11 +15,10 @@ import java.util.stream.Collectors;
  */
 public class HITS {
 
-	protected final HITSConfig hitsConfig;
-
-	public HITS(final HITSConfig hitsConfig) {
-		this.hitsConfig = hitsConfig;
-	}
+	private boolean directed;
+	private int iterations;
+	private int resultLimit;
+	private WeightingFunction weightingFunction;
 
 	/**
 	 * Uses the HITS algorithm to find hubs and authorities in a graph.
@@ -105,4 +105,19 @@ public class HITS {
 		}
 	}
 
+	public void setDirected(boolean directed) {
+		this.directed = directed;
+	}
+
+	public void setIterations(int iterations) {
+		this.iterations = iterations;
+	}
+
+	public void setResultLimit(int resultLimit) {
+		this.resultLimit = resultLimit;
+	}
+
+	public void setWeightingFunction(WeightingFunction weightingFunction) {
+		this.weightingFunction = weightingFunction;
+	}
 }

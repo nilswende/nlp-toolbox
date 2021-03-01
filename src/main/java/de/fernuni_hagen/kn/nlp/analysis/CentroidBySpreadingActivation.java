@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.CentroidBySpreadingActivationConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCases;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -18,13 +18,10 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-class CentroidBySpreadingActivation {
+public class CentroidBySpreadingActivation implements UseCases {
 
-	private final CentroidBySpreadingActivationConfig config;
-
-	CentroidBySpreadingActivation(final CentroidBySpreadingActivationConfig config) {
-		this.config = config;
-	}
+	private WeightingFunction weightingFunction = WeightingFunction.DICE;
+	private List<String> query;
 
 	/**
 	 * Finds the centroid of the given query set (most frequent terms).
@@ -33,8 +30,8 @@ class CentroidBySpreadingActivation {
 	 * @return the centroid or null, if the query is too diverse
 	 */
 	public String calculate(final DBReader db) {
-		final var significances = db.getSignificances(WeightingFunction.DICE);
-		final var cleanedQuery = cleanQuery(config.getQuery(), significances);
+		final var significances = db.getSignificances(weightingFunction);
+		final var cleanedQuery = cleanQuery(query, significances);
 		if (cleanedQuery == null) {
 			return null;
 		}
@@ -125,4 +122,11 @@ class CentroidBySpreadingActivation {
 				.map(Map.Entry::getKey);
 	}
 
+	public void setWeightingFunction(final WeightingFunction weightingFunction) {
+		this.weightingFunction = weightingFunction;
+	}
+
+	public void setQuery(final List<String> query) {
+		this.query = query;
+	}
 }
