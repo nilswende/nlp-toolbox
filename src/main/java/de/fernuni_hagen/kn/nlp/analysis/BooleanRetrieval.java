@@ -1,10 +1,9 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.UseCases;
+import de.fernuni_hagen.kn.nlp.config.BooleanRetrievalConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,9 +13,13 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class BooleanRetrieval implements UseCases {
+public class BooleanRetrieval {
 
-	private List<String> query;
+	private final BooleanRetrievalConfig config;
+
+	public BooleanRetrieval(final BooleanRetrievalConfig config) {
+		this.config = config;
+	}
 
 	/**
 	 * Uses boolean retrieval to find all documents that contain all of the query terms (AND retrieval).
@@ -26,7 +29,7 @@ public class BooleanRetrieval implements UseCases {
 	 */
 	public Set<String> and(final DBReader db) {
 		return or(db).entrySet().stream()
-				.filter(e -> e.getValue() == query.size())
+				.filter(e -> e.getValue() == config.getQuery().size())
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 	}
@@ -39,7 +42,7 @@ public class BooleanRetrieval implements UseCases {
 	 */
 	public Map<String, Long> or(final DBReader db) {
 		final var term2doc = db.getTermFrequencies();
-		return query.stream()
+		return config.getQuery().stream()
 				.flatMap(t -> term2doc.getOrDefault(t, Map.of()).keySet().stream())
 				.collect(Collectors.toMap(doc -> doc, doc -> 1L, Long::sum));
 	}
@@ -53,12 +56,9 @@ public class BooleanRetrieval implements UseCases {
 	public Set<String> not(final DBReader db) {
 		final var doc2term = Maps.invertMapping(db.getTermFrequencies());
 		return doc2term.entrySet().stream()
-				.filter(e -> query.stream().noneMatch(t -> e.getValue().containsKey(t)))
+				.filter(e -> config.getQuery().stream().noneMatch(t -> e.getValue().containsKey(t)))
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 	}
 
-	public void setQuery(List<String> query) {
-		this.query = query;
-	}
 }

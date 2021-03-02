@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.analysis.HITS.Scores;
+import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.config.HITSConfig;
 import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
 
