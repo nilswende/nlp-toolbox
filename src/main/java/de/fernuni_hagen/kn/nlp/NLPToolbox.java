@@ -6,8 +6,8 @@ import de.fernuni_hagen.kn.nlp.config.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.input.TikaDocumentConverter;
-import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Preprocessor;
+import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;

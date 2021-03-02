@@ -1,7 +1,5 @@
 package de.fernuni_hagen.kn.nlp;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.Sentence;
-
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
