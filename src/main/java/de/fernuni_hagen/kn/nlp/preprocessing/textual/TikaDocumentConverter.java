@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
-import de.fernuni_hagen.kn.nlp.config.PreprocessingConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.tika.metadata.Metadata;
@@ -22,10 +21,10 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
-	private final PreprocessingConfig config;
+	private final int sentenceFileSizeLimitBytes;
 
-	public TikaDocumentConverter(final PreprocessingConfig config) {
-		this.config = config;
+	public TikaDocumentConverter(final int sentenceFileSizeLimitBytes) {
+		this.sentenceFileSizeLimitBytes = sentenceFileSizeLimitBytes;
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class TikaDocumentConverter implements DocumentConverter {
 	private void parseInput(final Path path, final Writer writer) {
 		try (final var inputStream = Files.newInputStream(path)) {
 			final var parser = new AutoDetectParser();
-			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
+			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes));
 			final var metadata = new Metadata();
 			parser.parse(inputStream, contentHandler, metadata);
 		} catch (final Exception e) {

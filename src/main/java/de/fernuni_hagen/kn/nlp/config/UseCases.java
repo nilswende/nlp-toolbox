@@ -7,6 +7,7 @@ import de.fernuni_hagen.kn.nlp.analysis.HITS;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
 import de.fernuni_hagen.kn.nlp.analysis.TermSimilarity;
 import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Preprocessor;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public enum UseCases {
 	CLEAR_DATABASE(ClearDatabase.Config.class),
-	PREPROCESSING(PreprocessingConfig.class),
+	PREPROCESSING(Preprocessor.Config.class),
 	BOOLEAN_RETRIEVAL(BooleanRetrieval.Config.class),
 	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivation.Config.class),
 	DOCUMENT_SIMILARITY(DocumentSimilarity.Config.class),

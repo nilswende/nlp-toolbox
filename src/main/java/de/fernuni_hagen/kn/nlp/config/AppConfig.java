@@ -14,7 +14,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class AppConfig {
 
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-	private static final String DEFAULT_BASE_DIR = "data";
+	public static final String DEFAULT_BASE_DIR = "data";
 	private static final String DEFAULT_CONFIG_DIR = "config";
 	private static final String DEFAULT_CONFIG_FILENAME = "config.json";
 	public static final String DB_IN_MEMORY = "im";
