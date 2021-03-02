@@ -1,9 +1,10 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.BooleanRetrievalConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,10 +16,21 @@ import java.util.stream.Collectors;
  */
 public class BooleanRetrieval {
 
-	private final BooleanRetrievalConfig config;
+	private final Config config;
 
-	public BooleanRetrieval(final BooleanRetrievalConfig config) {
+	public BooleanRetrieval(final Config config) {
 		this.config = config;
+	}
+
+	/**
+	 * BooleanRetrieval config.
+	 */
+	public static class Config extends UseCaseConfig {
+		private List<String> query;
+
+		public List<String> getQuery() {
+			return query;
+		}
 	}
 
 	/**

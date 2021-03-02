@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ class DocumentSimilarityTest {
 	@Test
 	void calculate() {
 		final DBReader dbReader = mockDbReader();
-		final DocSimConfig config = mockConfig("1", "2", "3", "4");
+		final var config = mockConfig("1", "2", "3", "4");
 
 		final var actual = new DocumentSimilarity(config).calculate(dbReader);
 		assertFullCalculation(actual);
@@ -42,8 +41,8 @@ class DocumentSimilarityTest {
 		return dbReader;
 	}
 
-	private DocSimConfig mockConfig(final String... docs) {
-		final DocSimConfig config = Mockito.mock(DocSimConfig.class);
+	private DocumentSimilarity.Config mockConfig(final String... docs) {
+		final DocumentSimilarity.Config config = Mockito.mock(DocumentSimilarity.Config.class);
 		Mockito.when(config.calculate()).thenReturn(true);
 		Mockito.when(config.getDocuments()).thenReturn(List.of(docs));
 		Mockito.when(config.getWeightThreshold()).thenReturn(0.001);
@@ -69,7 +68,7 @@ class DocumentSimilarityTest {
 	@Test
 	void calculateSubsetDocs() {
 		final DBReader dbReader = mockDbReader();
-		final DocSimConfig config = mockConfig("1", "2", "3");
+		final var config = mockConfig("1", "2", "3");
 
 		final var actual = new DocumentSimilarity(config).calculate(dbReader);
 		final var expected = Map.of(
@@ -90,7 +89,7 @@ class DocumentSimilarityTest {
 	@Test
 	void calculateStandardDocs() {
 		final DBReader dbReader = mockDbReader();
-		final DocSimConfig config = mockConfig();
+		final var config = mockConfig();
 
 		final var actual = new DocumentSimilarity(config).calculate(dbReader);
 		assertFullCalculation(actual);

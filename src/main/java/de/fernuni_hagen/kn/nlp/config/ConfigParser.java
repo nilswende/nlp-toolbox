@@ -20,7 +20,7 @@ public abstract class ConfigParser {
 	protected static final String USE_CASE_OPT = "u";
 
 	protected final AppConfig appConfig;
-	protected final List<Pair<UseCase, UseCaseConfig>> useCaseConfigs;
+	protected final List<Pair<UseCases, UseCaseConfig>> useCaseConfigs;
 
 	/**
 	 * Parses the specified configs from the given command-line arguments.
@@ -58,13 +58,13 @@ public abstract class ConfigParser {
 	 * @param useCaseValues the specified, non-null use cases
 	 * @return all parsed use cases
 	 */
-	protected abstract List<Pair<UseCase, UseCaseConfig>> createUseCaseConfigs(List<String> useCaseValues);
+	protected abstract List<Pair<UseCases, UseCaseConfig>> createUseCaseConfigs(List<String> useCaseValues);
 
 	public AppConfig getAppConfig() {
 		return appConfig;
 	}
 
-	public List<Pair<UseCase, UseCaseConfig>> getUseCaseConfigs() {
+	public List<Pair<UseCases, UseCaseConfig>> getUseCaseConfigs() {
 		return useCaseConfigs;
 	}
 

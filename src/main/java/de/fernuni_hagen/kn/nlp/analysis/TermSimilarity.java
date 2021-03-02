@@ -1,7 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.TermSimConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.apache.commons.collections4.SetUtils;
 
 import java.util.Comparator;
@@ -16,10 +17,36 @@ import java.util.stream.Collectors;
  */
 public class TermSimilarity {
 
-	private final TermSimConfig config;
+	private final Config config;
 
-	public TermSimilarity(final TermSimConfig config) {
+	public TermSimilarity(final Config config) {
 		this.config = config;
+	}
+
+	/**
+	 * TermSimilarity config.
+	 */
+	public static class Config extends UseCaseConfig {
+		private int compareFirstN;
+		private WeightingFunction weightingFunction;
+		private String term1;
+		private String term2;
+
+		public int getCompareFirstN() {
+			return compareFirstN;
+		}
+
+		public WeightingFunction getWeightingFunction() {
+			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		}
+
+		public String getTerm1() {
+			return term1;
+		}
+
+		public String getTerm2() {
+			return term2;
+		}
 	}
 
 	/**

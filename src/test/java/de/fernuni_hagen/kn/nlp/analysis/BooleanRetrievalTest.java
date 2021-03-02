@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.BooleanRetrievalConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,8 +28,8 @@ class BooleanRetrievalTest {
 		return dbReader;
 	}
 
-	private BooleanRetrievalConfig mockConfig(final String... query) {
-		final BooleanRetrievalConfig config = Mockito.mock(BooleanRetrievalConfig.class);
+	private BooleanRetrieval.Config mockConfig(final String... query) {
+		final BooleanRetrieval.Config config = Mockito.mock(BooleanRetrieval.Config.class);
 		Mockito.when(config.getQuery()).thenReturn(List.of(query));
 		return config;
 	}

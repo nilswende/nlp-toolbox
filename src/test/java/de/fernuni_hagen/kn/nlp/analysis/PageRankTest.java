@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,8 @@ class PageRankTest {
 		return dbReader;
 	}
 
-	private PageRankConfig mockConfig() {
-		final var config = Mockito.mock(PageRankConfig.class);
+	private PageRank.Config mockConfig() {
+		final var config = Mockito.mock(PageRank.Config.class);
 		Mockito.when(config.calculate()).thenReturn(true);
 		Mockito.when(config.getIterations()).thenReturn(25);
 		Mockito.when(config.getResultLimit()).thenReturn(Integer.MAX_VALUE);

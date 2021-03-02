@@ -2,9 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.analysis.HITS.Scores;
-import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
-import de.fernuni_hagen.kn.nlp.config.HITSConfig;
-import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
 
 import java.util.Comparator;
 
@@ -30,19 +27,19 @@ public class Analysis {
 	 * Analyzes the cooccurrence graph in the database.
 	 */
 	public void analyze() {
-		final PageRankConfig pageRankConfig = null;
+		final PageRank.Config pageRankConfig = null;
 		if (pageRankConfig.calculate()) {
 			final var start = logStart("PageRank");
 			analyzePageRank(pageRankConfig);
 			logDuration("PageRank", start);
 		}
-		final HITSConfig hitsConfig = null;
+		final HITS.Config hitsConfig = null;
 		if (hitsConfig.calculate()) {
 			final var start = logStart("HITS");
 			analyzeHITS(hitsConfig);
 			logDuration("HITS", start);
 		}
-		final DocSimConfig docSimConfig = null;
+		final DocumentSimilarity.Config docSimConfig = null;
 		if (docSimConfig.calculate()) {
 			final var start = logStart("DocSim");
 			analyzeDocSim(docSimConfig);
@@ -50,7 +47,7 @@ public class Analysis {
 		}
 	}
 
-	private void analyzePageRank(final PageRankConfig pageRankConfig) {
+	private void analyzePageRank(final PageRank.Config pageRankConfig) {
 		final var pageRanks = new PageRank(pageRankConfig).calculate(dbReader);
 		pageRanks.entrySet().stream()
 				.sorted(comparingByValue(Comparator.reverseOrder()))
@@ -58,7 +55,7 @@ public class Analysis {
 				.forEach(e -> System.out.println("PageRank of " + e.getKey() + ": " + e.getValue()));
 	}
 
-	private void analyzeHITS(final HITSConfig hitsConfig) {
+	private void analyzeHITS(final HITS.Config hitsConfig) {
 		final var hits = HITS.from(hitsConfig).calculate(dbReader);
 		hits.entrySet().stream()
 				.sorted(comparingByValue(comparingDouble(Scores::getAuthorityScore).reversed()))
@@ -70,8 +67,8 @@ public class Analysis {
 				.forEach(e -> System.out.println("Hub score of " + e.getKey() + ": " + e.getValue().getHubScore()));
 	}
 
-	private void analyzeDocSim(final DocSimConfig docSimConfig) {
-		final var similarities = new DocumentSimilarity(docSimConfig).calculate(dbReader);
+	private void analyzeDocSim(final DocumentSimilarity.Config config) {
+		final var similarities = new DocumentSimilarity(config).calculate(dbReader);
 		if (similarities.isEmpty()) {
 			System.out.println("Document similarity: Too few documents");
 		} else {

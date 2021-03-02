@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.CentroidBySpreadingActivationConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +21,8 @@ import static org.mockito.ArgumentMatchers.any;
  */
 class CentroidBySpreadingActivationTest {
 
-	private CentroidBySpreadingActivationConfig mockConfig(final String... query) {
-		final CentroidBySpreadingActivationConfig config = Mockito.mock(CentroidBySpreadingActivationConfig.class);
+	private CentroidBySpreadingActivation.Config mockConfig(final String... query) {
+		final CentroidBySpreadingActivation.Config config = Mockito.mock(CentroidBySpreadingActivation.Config.class);
 		Mockito.when(config.getQuery()).thenReturn(List.of(query));
 		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.NONE);
 		return config;

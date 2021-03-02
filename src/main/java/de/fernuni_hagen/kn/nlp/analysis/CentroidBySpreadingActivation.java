@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.CentroidBySpreadingActivationConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -18,12 +18,28 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-class CentroidBySpreadingActivation {
+public class CentroidBySpreadingActivation {
 
-	private final CentroidBySpreadingActivationConfig config;
+	private final Config config;
 
-	CentroidBySpreadingActivation(final CentroidBySpreadingActivationConfig config) {
+	CentroidBySpreadingActivation(final Config config) {
 		this.config = config;
+	}
+
+	/**
+	 * CentroidBySpreadingActivation config.
+	 */
+	public static class Config extends UseCaseConfig {
+		private WeightingFunction weightingFunction;
+		private List<String> query;
+
+		public WeightingFunction getWeightingFunction() {
+			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		}
+
+		public List<String> getQuery() {
+			return query;
+		}
 	}
 
 	/**

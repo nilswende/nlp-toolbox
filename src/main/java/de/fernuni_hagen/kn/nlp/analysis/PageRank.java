@@ -1,8 +1,9 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.PageRankConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.util.Map;
 import java.util.Set;
@@ -15,14 +16,45 @@ import java.util.stream.Collectors;
  */
 public class PageRank {
 
-	private final PageRankConfig config;
+	private final Config config;
 	private final double weight;
 	private final double invWeight;
 
-	public PageRank(final PageRankConfig config) {
+	public PageRank(final Config config) {
 		this.config = config;
 		weight = config.getWeight();
 		invWeight = 1 - weight;
+	}
+
+	/**
+	 * PageRank config.
+	 */
+	public static class Config extends UseCaseConfig {
+		private boolean calculate;
+		private int iterations;
+		private int resultLimit;
+		private double weight;
+		private WeightingFunction weightingFunction;
+
+		public boolean calculate() {
+			return calculate;
+		}
+
+		public int getIterations() {
+			return iterations == 0 ? 25 : iterations;
+		}
+
+		public int getResultLimit() {
+			return resultLimit == 0 ? Integer.MAX_VALUE : resultLimit;
+		}
+
+		public double getWeight() {
+			return weight == 0 ? 0.85 : weight;
+		}
+
+		public WeightingFunction getWeightingFunction() {
+			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		}
 	}
 
 	/**

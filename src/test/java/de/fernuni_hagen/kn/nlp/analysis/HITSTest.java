@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.HITSConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.junit.jupiter.api.Test;
@@ -45,8 +44,8 @@ class HITSTest {
 		return dbReader;
 	}
 
-	private HITSConfig mockConfig() {
-		final var config = Mockito.mock(HITSConfig.class);
+	private HITS.Config mockConfig() {
+		final var config = Mockito.mock(HITS.Config.class);
 		Mockito.when(config.calculate()).thenReturn(true);
 		Mockito.when(config.directed()).thenReturn(false);
 		Mockito.when(config.getIterations()).thenReturn(50);

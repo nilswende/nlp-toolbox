@@ -5,7 +5,7 @@ package de.fernuni_hagen.kn.nlp.config;
  *
  * @author Nils Wende
  */
-abstract class UseCaseConfig {
+public abstract class UseCaseConfig {
 
 	protected String name;
 

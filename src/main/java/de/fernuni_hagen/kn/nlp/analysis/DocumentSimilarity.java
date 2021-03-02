@@ -1,7 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.DocSimConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
+import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -18,12 +19,43 @@ import static de.fernuni_hagen.kn.nlp.utils.Maps.*;
  */
 public class DocumentSimilarity {
 
-	private final DocSimConfig config;
+	private final Config config;
 	private List<String> documents;
 
-	public DocumentSimilarity(final DocSimConfig config) {
+	public DocumentSimilarity(final Config config) {
 		this.config = config;
 		documents = config.getDocuments();
+	}
+
+	/**
+	 * DocumentSimilarity config.
+	 */
+	public static class Config extends UseCaseConfig {
+		private boolean calculate;
+		private boolean useInverseDocFrequency;
+		private double weightThreshold;
+		private DocSimilarityFunction similarityFunction;
+		private List<String> documents;
+
+		public boolean calculate() {
+			return calculate;
+		}
+
+		public boolean useInverseDocFrequency() {
+			return useInverseDocFrequency;
+		}
+
+		public double getWeightThreshold() {
+			return weightThreshold;
+		}
+
+		public DocSimilarityFunction getSimilarityFunction() {
+			return similarityFunction == null ? DocSimilarityFunction.COSINE : similarityFunction;
+		}
+
+		public List<String> getDocuments() {
+			return documents;
+		}
 	}
 
 	/**

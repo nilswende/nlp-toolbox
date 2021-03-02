@@ -1,7 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.config.HITSConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
+import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,10 +15,41 @@ import java.util.stream.Collectors;
  */
 public class HITS {
 
-	protected final HITSConfig hitsConfig;
+	protected final Config config;
 
-	public HITS(final HITSConfig hitsConfig) {
-		this.hitsConfig = hitsConfig;
+	public HITS(final Config config) {
+		this.config = config;
+	}
+
+	/**
+	 * HITS config.
+	 */
+	public static class Config extends UseCaseConfig {
+		private boolean calculate;
+		private boolean directed;
+		private int iterations;
+		private int resultLimit;
+		private WeightingFunction weightingFunction;
+
+		public boolean calculate() {
+			return calculate;
+		}
+
+		public boolean directed() {
+			return directed;
+		}
+
+		public int getIterations() {
+			return iterations == 0 ? 50 : iterations;
+		}
+
+		public int getResultLimit() {
+			return resultLimit == 0 ? Integer.MAX_VALUE : resultLimit;
+		}
+
+		public WeightingFunction getWeightingFunction() {
+			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		}
 	}
 
 	/**
@@ -27,7 +59,7 @@ public class HITS {
 	 * @return HITS scores
 	 */
 	public Map<String, Scores> calculate(final DBReader db) {
-		final Map<String, Map<String, Double>> linking = db.getSignificances(hitsConfig.getWeightingFunction());
+		final Map<String, Map<String, Double>> linking = db.getSignificances(config.getWeightingFunction());
 		return getStringScoresMap(linking, linking);
 	}
 
@@ -35,7 +67,7 @@ public class HITS {
 		final Set<String> terms = getTerms(auth2hubs);
 		final Map<String, Double> auths = initMap(terms);
 		final Map<String, Double> hubs = initMap(terms);
-		for (int i = 0; i < hitsConfig.getIterations(); i++) {
+		for (int i = 0; i < config.getIterations(); i++) {
 			calcScore(auths, auth2hubs, hubs);
 			calcScore(hubs, hub2auths, auths);
 		}
@@ -78,10 +110,10 @@ public class HITS {
 	/**
 	 * Creates a new HITS instance from the given config.
 	 *
-	 * @param config HITSConfig
+	 * @param config HITS.Config
 	 * @return a new HITS instance
 	 */
-	public static HITS from(final HITSConfig config) {
+	public static HITS from(final Config config) {
 		return config.directed() ? new DirectedHITS(config) : new HITS(config);
 	}
 

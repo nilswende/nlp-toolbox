@@ -57,7 +57,7 @@ public class JsonConfigParser extends ConfigParser {
 	}
 
 	@Override
-	protected List<Pair<UseCase, UseCaseConfig>> createUseCaseConfigs(final List<String> useCaseValues) {
+	protected List<Pair<UseCases, UseCaseConfig>> createUseCaseConfigs(final List<String> useCaseValues) {
 		final var allJson = useCaseValues.stream()
 				.map(this::getJson)
 				.collect(Collectors.toList());
@@ -95,13 +95,13 @@ public class JsonConfigParser extends ConfigParser {
 		return arg.endsWith("}");
 	}
 
-	private List<Pair<UseCase, UseCaseConfig>> getUseCases(final List<String> args) {
-		final var useCases = new ArrayList<Pair<UseCase, UseCaseConfig>>();
+	private List<Pair<UseCases, UseCaseConfig>> getUseCases(final List<String> args) {
+		final var useCases = new ArrayList<Pair<UseCases, UseCaseConfig>>();
 		for (final String arg : args) {
 			final var matcher = NAME_PATTERN.matcher(arg);
 			if (matcher.find()) {
 				final var name = matcher.group(1);
-				final var useCase = UseCase.fromIgnoreCase(name);
+				final var useCase = UseCases.fromIgnoreCase(name);
 				final var config = GSON.fromJson(arg, useCase.getConfigClass());
 				useCases.add(Pair.of(useCase, config));
 			}
