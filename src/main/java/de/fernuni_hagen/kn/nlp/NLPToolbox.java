@@ -1,10 +1,14 @@
 package de.fernuni_hagen.kn.nlp;
 
-import de.fernuni_hagen.kn.nlp.analysis.Analysis;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.config.ConfigParser;
 import de.fernuni_hagen.kn.nlp.config.JsonConfigParser;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
+import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
+
+import java.util.List;
 
 import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 
@@ -15,15 +19,19 @@ import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
  */
 public class NLPToolbox {
 
-	private final AppConfig config;
+	private final AppConfig appConfig;
+	private final List<UseCaseConfig> useCaseConfigs;
 
-	public NLPToolbox(final JsonConfigParser configParser) {
-		this.config = configParser.getAppConfig();
-		DBFactory.init(this.config);
+	public NLPToolbox(final ConfigParser configParser) {
+		this.appConfig = configParser.getAppConfig();
+		useCaseConfigs = configParser.getUseCaseConfigs();
+		DBFactory.init(this.appConfig);
 	}
 
 	private void run() {
-		new Analysis(DBFactory.instance().getReader()).analyze();
+		final var dbReader = DBFactory.instance().getReader();
+		final var dbWriter = DBFactory.instance().getWriter();
+		useCaseConfigs.stream().map(UseCase::from).forEach(u -> u.execute(dbReader, dbWriter));
 		//new CsvExporter().export();
 		//((Neo4JReader)DBFactory.instance().getReader()).printPath("art", "version");
 	}

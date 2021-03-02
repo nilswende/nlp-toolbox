@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
@@ -13,12 +15,18 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class HITS {
+public class HITS implements UseCase {
 
 	protected final Config config;
 
 	public HITS(final Config config) {
 		this.config = config;
+	}
+
+	@Override
+	public void execute(DBReader dbReader, DBWriter dbWriter) {
+		final var scores = calculate(dbReader);
+		print(scores);
 	}
 
 	/**

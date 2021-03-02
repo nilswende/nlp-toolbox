@@ -52,8 +52,4 @@ public enum UseCases {
 		return configClass;
 	}
 
-	public Class<?> getUseCaseClass() {
-		return configClass.getDeclaringClass();
-	}
-
 }

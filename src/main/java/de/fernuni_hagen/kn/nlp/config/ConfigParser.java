@@ -5,7 +5,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public abstract class ConfigParser {
 	protected static final String USE_CASE_OPT = "u";
 
 	protected final AppConfig appConfig;
-	protected final List<Pair<UseCases, UseCaseConfig>> useCaseConfigs;
+	protected final List<UseCaseConfig> useCaseConfigs;
 
 	/**
 	 * Parses the specified configs from the given command-line arguments.
@@ -53,18 +52,18 @@ public abstract class ConfigParser {
 	protected abstract AppConfig createAppConfig(String appValue);
 
 	/**
-	 * Returns all parsed use cases.
+	 * Returns all parsed use case configs.
 	 *
 	 * @param useCaseValues the specified, non-null use cases
-	 * @return all parsed use cases
+	 * @return all parsed use case configs
 	 */
-	protected abstract List<Pair<UseCases, UseCaseConfig>> createUseCaseConfigs(List<String> useCaseValues);
+	protected abstract List<UseCaseConfig> createUseCaseConfigs(List<String> useCaseValues);
 
 	public AppConfig getAppConfig() {
 		return appConfig;
 	}
 
-	public List<Pair<UseCases, UseCaseConfig>> getUseCaseConfigs() {
+	public List<UseCaseConfig> getUseCaseConfigs() {
 		return useCaseConfigs;
 	}
 

@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.apache.commons.collections4.SetUtils;
@@ -15,12 +17,18 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class TermSimilarity {
+public class TermSimilarity implements UseCase {
 
 	private final Config config;
 
 	public TermSimilarity(final Config config) {
 		this.config = config;
+	}
+
+	@Override
+	public void execute(DBReader dbReader, DBWriter dbWriter) {
+		final var sim = calculate(dbReader);
+		print(sim);
 	}
 
 	/**

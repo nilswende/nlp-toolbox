@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
@@ -14,12 +16,18 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class BooleanRetrieval {
+public class BooleanRetrieval implements UseCase {
 
 	private final Config config;
 
 	public BooleanRetrieval(final Config config) {
 		this.config = config;
+	}
+
+	@Override
+	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
+		final var or = or(dbReader);
+		print(or);
 	}
 
 	/**

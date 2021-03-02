@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.db;
 
+import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 
 /**
@@ -8,15 +10,11 @@ import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
  *
  * @author Nils Wende
  */
-public class ClearDatabase {
+public class ClearDatabase implements UseCase {
 
-	/**
-	 * Clears the database.
-	 *
-	 * @param db DB
-	 */
-	public void clearDatabase(final DBWriter db) {
-		db.deleteAll();
+	@Override
+	public void execute(DBReader dbReader, DBWriter dbWriter) {
+		dbWriter.deleteAll();
 	}
 
 	/**

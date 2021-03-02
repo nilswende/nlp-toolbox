@@ -1,8 +1,10 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
+import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.Sentence;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
@@ -25,7 +27,7 @@ import static de.fernuni_hagen.kn.nlp.Logger.logStart;
  *
  * @author Nils Wende
  */
-public class Preprocessor {
+public class Preprocessor implements UseCase {
 
 	private final Config config;
 
@@ -36,6 +38,11 @@ public class Preprocessor {
 	 */
 	public Preprocessor(final Config config) {
 		this.config = config;
+	}
+
+	@Override
+	public void execute(DBReader dbReader, DBWriter dbWriter) {
+		preprocess(dbWriter);
 	}
 
 	/**

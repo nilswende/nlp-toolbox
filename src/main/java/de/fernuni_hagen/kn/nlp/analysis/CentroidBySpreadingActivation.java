@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
@@ -18,12 +20,18 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class CentroidBySpreadingActivation {
+public class CentroidBySpreadingActivation implements UseCase {
 
 	private final Config config;
 
 	CentroidBySpreadingActivation(final Config config) {
 		this.config = config;
+	}
+
+	@Override
+	public void execute(DBReader dbReader, DBWriter dbWriter) {
+		final var centroid = calculate(dbReader);
+		print(centroid);
 	}
 
 	/**

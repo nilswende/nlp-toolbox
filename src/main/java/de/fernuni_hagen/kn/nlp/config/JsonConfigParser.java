@@ -5,7 +5,6 @@ import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +56,7 @@ public class JsonConfigParser extends ConfigParser {
 	}
 
 	@Override
-	protected List<Pair<UseCases, UseCaseConfig>> createUseCaseConfigs(final List<String> useCaseValues) {
+	protected List<UseCaseConfig> createUseCaseConfigs(final List<String> useCaseValues) {
 		final var allJson = useCaseValues.stream()
 				.map(this::getJson)
 				.collect(Collectors.toList());
@@ -95,15 +94,15 @@ public class JsonConfigParser extends ConfigParser {
 		return arg.endsWith("}");
 	}
 
-	private List<Pair<UseCases, UseCaseConfig>> getUseCases(final List<String> args) {
-		final var useCases = new ArrayList<Pair<UseCases, UseCaseConfig>>();
+	private List<UseCaseConfig> getUseCases(final List<String> args) {
+		final var useCases = new ArrayList<UseCaseConfig>();
 		for (final String arg : args) {
 			final var matcher = NAME_PATTERN.matcher(arg);
 			if (matcher.find()) {
 				final var name = matcher.group(1);
 				final var useCase = UseCases.fromIgnoreCase(name);
 				final var config = GSON.fromJson(arg, useCase.getConfigClass());
-				useCases.add(Pair.of(useCase, config));
+				useCases.add(config);
 			}
 		}
 		return useCases;

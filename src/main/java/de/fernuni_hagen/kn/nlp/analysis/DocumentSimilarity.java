@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,7 +19,7 @@ import static de.fernuni_hagen.kn.nlp.utils.Maps.*;
  *
  * @author Nils Wende
  */
-public class DocumentSimilarity {
+public class DocumentSimilarity implements UseCase {
 
 	private final Config config;
 	private List<String> documents;
@@ -25,6 +27,12 @@ public class DocumentSimilarity {
 	public DocumentSimilarity(final Config config) {
 		this.config = config;
 		documents = config.getDocuments();
+	}
+
+	@Override
+	public void execute(DBReader dbReader, DBWriter dbWriter) {
+		final var sim = calculate(dbReader);
+		print(sim);
 	}
 
 	/**
