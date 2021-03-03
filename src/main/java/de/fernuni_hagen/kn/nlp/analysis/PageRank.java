@@ -27,12 +27,6 @@ public class PageRank extends UseCase {
 		invWeight = 1 - weight;
 	}
 
-	@Override
-	public void execute(final DBReader dbReader) {
-		final var pageRanks = calculate(dbReader);
-		printNameAnd(pageRanks);
-	}
-
 	/**
 	 * PageRank config.
 	 */
@@ -62,6 +56,12 @@ public class PageRank extends UseCase {
 		public WeightingFunction getWeightingFunction() {
 			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
 		}
+	}
+
+	@Override
+	public void execute(final DBReader dbReader) {
+		final var pageRanks = calculate(dbReader);
+		printNameAnd(pageRanks);
 	}
 
 	/**

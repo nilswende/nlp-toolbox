@@ -24,12 +24,6 @@ public class TermSimilarity extends UseCase {
 		this.config = config;
 	}
 
-	@Override
-	public void execute(final DBReader dbReader) {
-		final var sim = calculate(dbReader);
-		printfNameAnd("Similarity between '%s' and '%s': %s", config.getTerm1(), config.getTerm2(), sim);
-	}
-
 	/**
 	 * TermSimilarity config.
 	 */
@@ -54,6 +48,12 @@ public class TermSimilarity extends UseCase {
 		public String getTerm2() {
 			return term2;
 		}
+	}
+
+	@Override
+	public void execute(final DBReader dbReader) {
+		final var sim = calculate(dbReader);
+		printfNameAnd("Similarity between '%s' and '%s': %s", config.getTerm1(), config.getTerm2(), sim);
 	}
 
 	/**

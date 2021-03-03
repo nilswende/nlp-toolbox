@@ -39,11 +39,6 @@ public class Preprocessor extends UseCase {
 		this.config = config;
 	}
 
-	@Override
-	public void execute(DBWriter dbWriter) {
-		preprocess(dbWriter);
-	}
-
 	/**
 	 * Preprocessor config.
 	 */
@@ -100,7 +95,8 @@ public class Preprocessor extends UseCase {
 	 *
 	 * @param db DB
 	 */
-	public void preprocess(final DBWriter db) {
+	@Override
+	public void execute(final DBWriter db) {
 		final var start = logStart("preprocess");
 		final var documentConverter = new TikaDocumentConverter(config.getSentenceFileSizeLimitBytes());
 		try (final var paths = Files.walk(config.getInputDir())) {

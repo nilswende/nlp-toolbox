@@ -27,12 +27,6 @@ public class CentroidBySpreadingActivation extends UseCase {
 		this.config = config;
 	}
 
-	@Override
-	public void execute(final DBReader dbReader) {
-		final var centroid = calculate(dbReader);
-		printNameAnd(centroid);
-	}
-
 	/**
 	 * CentroidBySpreadingActivation config.
 	 */
@@ -47,6 +41,12 @@ public class CentroidBySpreadingActivation extends UseCase {
 		public List<String> getQuery() {
 			return query;
 		}
+	}
+
+	@Override
+	public void execute(final DBReader dbReader) {
+		final var centroid = calculate(dbReader);
+		printNameAnd(centroid);
 	}
 
 	/**

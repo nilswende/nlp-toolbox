@@ -22,12 +22,6 @@ public class HITS extends UseCase {
 		this.config = config;
 	}
 
-	@Override
-	public void execute(final DBReader dbReader) {
-		final var scores = calculate(dbReader);
-		printNameAnd(scores);
-	}
-
 	/**
 	 * HITS config.
 	 */
@@ -57,6 +51,12 @@ public class HITS extends UseCase {
 		public WeightingFunction getWeightingFunction() {
 			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
 		}
+	}
+
+	@Override
+	public void execute(final DBReader dbReader) {
+		final var scores = calculate(dbReader);
+		printNameAnd(scores);
 	}
 
 	/**

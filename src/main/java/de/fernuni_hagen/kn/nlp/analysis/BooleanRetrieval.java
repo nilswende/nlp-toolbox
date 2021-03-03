@@ -23,21 +23,6 @@ public class BooleanRetrieval extends UseCase {
 		this.config = config;
 	}
 
-	@Override
-	public void execute(final DBReader dbReader) {
-		final Object result;
-		if (config.getExpression().equalsIgnoreCase("and")) {
-			result = and(dbReader);
-		} else if (config.getExpression().equalsIgnoreCase("or")) {
-			result = or(dbReader);
-		} else if (config.getExpression().equalsIgnoreCase("not")) {
-			result = not(dbReader);
-		} else {
-			throw new IllegalArgumentException("Unknown expression " + config.getExpression());
-		}
-		printNameAnd(result);
-	}
-
 	/**
 	 * BooleanRetrieval config.
 	 */
@@ -52,6 +37,21 @@ public class BooleanRetrieval extends UseCase {
 		public List<String> getQuery() {
 			return query;
 		}
+	}
+
+	@Override
+	public void execute(final DBReader dbReader) {
+		final Object result;
+		if (config.getExpression().equalsIgnoreCase("and")) {
+			result = and(dbReader);
+		} else if (config.getExpression().equalsIgnoreCase("or")) {
+			result = or(dbReader);
+		} else if (config.getExpression().equalsIgnoreCase("not")) {
+			result = not(dbReader);
+		} else {
+			throw new IllegalArgumentException("Unknown expression " + config.getExpression());
+		}
+		printNameAnd(result);
 	}
 
 	/**

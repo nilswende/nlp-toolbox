@@ -28,19 +28,6 @@ public class DocumentSimilarity extends UseCase {
 		documents = config.getDocuments();
 	}
 
-	@Override
-	public void execute(final DBReader dbReader) {
-		final var similarities = calculate(dbReader);
-		if (similarities.isEmpty()) {
-			printNameAnd("Too few documents");
-		} else {
-			printName();
-			similarities.forEach((d1, m) -> m.forEach((d2, s) ->
-					printf("Document similarity of '%s' and '%s': %s", d1, d2, s)
-			));
-		}
-	}
-
 	/**
 	 * DocumentSimilarity config.
 	 */
@@ -69,6 +56,19 @@ public class DocumentSimilarity extends UseCase {
 
 		public List<String> getDocuments() {
 			return documents;
+		}
+	}
+
+	@Override
+	public void execute(final DBReader dbReader) {
+		final var similarities = calculate(dbReader);
+		if (similarities.isEmpty()) {
+			printNameAnd("Too few documents");
+		} else {
+			printName();
+			similarities.forEach((d1, m) -> m.forEach((d2, s) ->
+					printf("Document similarity of '%s' and '%s': %s", d1, d2, s)
+			));
 		}
 	}
 
