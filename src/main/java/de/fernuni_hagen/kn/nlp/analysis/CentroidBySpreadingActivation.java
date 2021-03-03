@@ -30,7 +30,7 @@ public class CentroidBySpreadingActivation extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var centroid = calculate(dbReader);
-		print(centroid);
+		printNameAnd(centroid);
 	}
 
 	/**

@@ -27,18 +27,12 @@ public class AppConfig {
 	 */
 
 	private String baseDir;
-	private String inputDir;
 	private String dbDir;
 	private String db;
-	private boolean analysisOnly;
 	private boolean persistInMemoryDb;
 
 	public String getBaseDir() {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
-	}
-
-	public Path getInputDir() {
-		return Path.of(getBaseDir(), defaultIfNull(inputDir, "input"));
 	}
 
 	public Path getDbDir() {
@@ -55,10 +49,6 @@ public class AppConfig {
 
 	public String getDb() {
 		return db == null ? DB_IN_MEMORY : db;
-	}
-
-	public boolean analysisOnly() {
-		return analysisOnly;
 	}
 
 	public boolean persistInMemoryDb() {

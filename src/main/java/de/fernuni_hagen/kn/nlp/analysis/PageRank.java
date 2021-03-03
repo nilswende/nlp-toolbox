@@ -30,7 +30,7 @@ public class PageRank extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var pageRanks = calculate(dbReader);
-		print(pageRanks);
+		printNameAnd(pageRanks);
 	}
 
 	/**

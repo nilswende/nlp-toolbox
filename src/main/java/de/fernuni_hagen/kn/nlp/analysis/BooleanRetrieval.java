@@ -35,7 +35,7 @@ public class BooleanRetrieval extends UseCase {
 		} else {
 			throw new IllegalArgumentException("Unknown expression " + config.getExpression());
 		}
-		print(result);
+		printNameAnd(result);
 	}
 
 	/**

@@ -4,6 +4,9 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * A use case.
  *
@@ -11,7 +14,7 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
  */
 public abstract class UseCase {
 
-	// hook methods
+	private static final String EMPTY_MESSAGE = "No data available";
 
 	/**
 	 * Executes the use case by handing over a DBReader and a DBWriter.
@@ -42,13 +45,29 @@ public abstract class UseCase {
 
 	}
 
-	// printing
-
 	/**
 	 * Prints the concrete use case's name.
 	 */
-	protected void print() {
+	protected void printName() {
 		System.out.println(this.getClass().getSimpleName() + ":");
+	}
+
+	/**
+	 * Prints the concrete use case's name and the map.
+	 *
+	 * @param map Collection
+	 */
+	protected void printNameAnd(final Map<?, ?> map) {
+		printNameAnd(map.isEmpty() ? EMPTY_MESSAGE : map);
+	}
+
+	/**
+	 * Prints the concrete use case's name and the collection.
+	 *
+	 * @param collection Collection
+	 */
+	protected void printNameAnd(final Collection<?> collection) {
+		printNameAnd(collection.isEmpty() ? EMPTY_MESSAGE : collection);
 	}
 
 	/**
@@ -56,9 +75,40 @@ public abstract class UseCase {
 	 *
 	 * @param o Object
 	 */
+	protected void printNameAnd(final Object o) {
+		printName();
+		print(o);
+	}
+
+	/**
+	 * Prints the object.
+	 *
+	 * @param o Object
+	 */
 	protected void print(final Object o) {
-		print();
 		System.out.println(o);
+	}
+
+	/**
+	 * Prints the concrete use case's name and the format.
+	 *
+	 * @param format format string
+	 * @param args   arguments
+	 */
+	protected void printfNameAnd(final String format, final Object... args) {
+		printName();
+		printf(format, args);
+	}
+
+	/**
+	 * Prints the format.
+	 *
+	 * @param format format string
+	 * @param args   arguments
+	 */
+	protected void printf(final String format, final Object... args) {
+		System.out.printf(format, args);
+		System.out.println();
 	}
 
 	/**

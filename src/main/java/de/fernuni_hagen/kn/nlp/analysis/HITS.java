@@ -25,7 +25,7 @@ public class HITS extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var scores = calculate(dbReader);
-		print(scores);
+		printNameAnd(scores);
 	}
 
 	/**
