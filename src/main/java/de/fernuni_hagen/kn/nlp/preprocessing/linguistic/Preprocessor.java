@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
-import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.Sentence;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
@@ -41,7 +40,7 @@ public class Preprocessor implements UseCase {
 	}
 
 	@Override
-	public void execute(DBReader dbReader, DBWriter dbWriter) {
+	public void execute(DBWriter dbWriter) {
 		preprocess(dbWriter);
 	}
 

@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
@@ -29,7 +28,7 @@ public class PageRank implements UseCase {
 	}
 
 	@Override
-	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
+	public void execute(final DBReader dbReader) {
 		final var pageRanks = calculate(dbReader);
 		print(pageRanks);
 	}

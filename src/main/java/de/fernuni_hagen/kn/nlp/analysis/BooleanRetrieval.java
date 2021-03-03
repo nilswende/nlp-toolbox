@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
@@ -25,16 +24,30 @@ public class BooleanRetrieval implements UseCase {
 	}
 
 	@Override
-	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
-		final var or = or(dbReader);
-		print(or);
+	public void execute(final DBReader dbReader) {
+		final Object result;
+		if (config.getExpression().equalsIgnoreCase("and")) {
+			result = and(dbReader);
+		} else if (config.getExpression().equalsIgnoreCase("or")) {
+			result = or(dbReader);
+		} else if (config.getExpression().equalsIgnoreCase("not")) {
+			result = not(dbReader);
+		} else {
+			throw new IllegalArgumentException("Unknown expression " + config.getExpression());
+		}
+		print(result);
 	}
 
 	/**
 	 * BooleanRetrieval config.
 	 */
 	public static class Config extends UseCaseConfig {
+		private String expression;
 		private List<String> query;
+
+		public String getExpression() {
+			return expression;
+		}
 
 		public List<String> getQuery() {
 			return query;

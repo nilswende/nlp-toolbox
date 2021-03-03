@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -26,7 +25,7 @@ public class TermSimilarity implements UseCase {
 	}
 
 	@Override
-	public void execute(DBReader dbReader, DBWriter dbWriter) {
+	public void execute(final DBReader dbReader) {
 		final var sim = calculate(dbReader);
 		print(sim);
 	}
