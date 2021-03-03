@@ -103,6 +103,8 @@ public class JsonConfigParser extends ConfigParser {
 				final var useCase = UseCases.fromIgnoreCase(name);
 				final var config = GSON.fromJson(arg, useCase.getConfigClass());
 				useCases.add(config);
+			} else {
+				throw new IllegalArgumentException(arg + " contains no use case name.");
 			}
 		}
 		return useCases;
