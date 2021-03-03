@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class TermSimilarity implements UseCase {
+public class TermSimilarity extends UseCase {
 
 	private final Config config;
 

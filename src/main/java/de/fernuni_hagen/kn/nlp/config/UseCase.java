@@ -9,7 +9,7 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
  *
  * @author Nils Wende
  */
-public interface UseCase {
+public abstract class UseCase {
 
 	// hook methods
 
@@ -19,7 +19,7 @@ public interface UseCase {
 	 * @param dbReader DBReader
 	 * @param dbWriter DBWriter
 	 */
-	default void execute(final DBReader dbReader, final DBWriter dbWriter) {
+	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
 		execute(dbReader);
 		execute(dbWriter);
 	}
@@ -29,7 +29,7 @@ public interface UseCase {
 	 *
 	 * @param dbReader DBReader
 	 */
-	default void execute(final DBReader dbReader) {
+	protected void execute(final DBReader dbReader) {
 
 	}
 
@@ -38,7 +38,7 @@ public interface UseCase {
 	 *
 	 * @param dbWriter DBWriter
 	 */
-	default void execute(final DBWriter dbWriter) {
+	protected void execute(final DBWriter dbWriter) {
 
 	}
 
@@ -47,7 +47,7 @@ public interface UseCase {
 	/**
 	 * Prints the concrete use case's name.
 	 */
-	default void print() {
+	protected void print() {
 		System.out.println(this.getClass().getSimpleName() + ":");
 	}
 
@@ -56,7 +56,7 @@ public interface UseCase {
 	 *
 	 * @param o Object
 	 */
-	default void print(final Object o) {
+	protected void print(final Object o) {
 		print();
 		System.out.println(o);
 	}
@@ -68,7 +68,7 @@ public interface UseCase {
 	 * @param configClass UseCaseConfig
 	 * @return new UseCase instance
 	 */
-	static UseCase from(final UseCaseConfig configClass) {
+	public static UseCase from(final UseCaseConfig configClass) {
 		try {
 			final Class<?> useCaseClass = configClass.getClass().getDeclaringClass();
 			return (UseCase) useCaseClass.getConstructor(configClass.getClass()).newInstance(configClass);

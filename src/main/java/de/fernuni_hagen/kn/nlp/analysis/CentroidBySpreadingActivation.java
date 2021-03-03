@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class CentroidBySpreadingActivation implements UseCase {
+public class CentroidBySpreadingActivation extends UseCase {
 
 	private final Config config;
 

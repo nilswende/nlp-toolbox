@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class PageRank implements UseCase {
+public class PageRank extends UseCase {
 
 	private final Config config;
 	private final double weight;

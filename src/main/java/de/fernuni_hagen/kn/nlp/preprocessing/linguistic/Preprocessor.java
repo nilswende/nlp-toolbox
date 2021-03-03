@@ -26,7 +26,7 @@ import static de.fernuni_hagen.kn.nlp.Logger.logStart;
  *
  * @author Nils Wende
  */
-public class Preprocessor implements UseCase {
+public class Preprocessor extends UseCase {
 
 	private final Config config;
 

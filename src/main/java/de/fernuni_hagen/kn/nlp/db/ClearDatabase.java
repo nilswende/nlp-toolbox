@@ -9,7 +9,7 @@ import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
  *
  * @author Nils Wende
  */
-public class ClearDatabase implements UseCase {
+public class ClearDatabase extends UseCase {
 
 	@Override
 	public void execute(DBWriter dbWriter) {

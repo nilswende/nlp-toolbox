@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class HITS implements UseCase {
+public class HITS extends UseCase {
 
 	protected final Config config;
 

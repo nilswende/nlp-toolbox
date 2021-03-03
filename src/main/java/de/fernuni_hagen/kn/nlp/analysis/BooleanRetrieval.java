@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public class BooleanRetrieval implements UseCase {
+public class BooleanRetrieval extends UseCase {
 
 	private final Config config;
 

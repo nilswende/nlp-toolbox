@@ -18,7 +18,7 @@ import static de.fernuni_hagen.kn.nlp.utils.Maps.*;
  *
  * @author Nils Wende
  */
-public class DocumentSimilarity implements UseCase {
+public class DocumentSimilarity extends UseCase {
 
 	private final Config config;
 	private List<String> documents;
