@@ -41,17 +41,15 @@ public class BooleanRetrieval extends UseCase {
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		final Object result;
 		if (config.getExpression().equalsIgnoreCase("and")) {
-			result = and(dbReader);
+			printfCollection(and(dbReader), "No matches found", "%s");
 		} else if (config.getExpression().equalsIgnoreCase("or")) {
-			result = or(dbReader);
+			printfMap(or(dbReader), "No matches found", "Document '%s' contains %s query terms");
 		} else if (config.getExpression().equalsIgnoreCase("not")) {
-			result = not(dbReader);
+			printfCollection(not(dbReader), "No matches found", "%s");
 		} else {
 			throw new IllegalArgumentException("Unknown expression " + config.getExpression());
 		}
-		printNameAnd(result);
 	}
 
 	/**

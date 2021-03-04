@@ -53,7 +53,7 @@ public class TermSimilarity extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var sim = calculate(dbReader);
-		printfNameAnd("Similarity between '%s' and '%s': %s", config.getTerm1(), config.getTerm2(), sim);
+		printf("Similarity between '%s' and '%s': %s", config.getTerm1(), config.getTerm2(), sim);
 	}
 
 	/**

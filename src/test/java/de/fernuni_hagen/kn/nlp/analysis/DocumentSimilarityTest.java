@@ -43,7 +43,6 @@ class DocumentSimilarityTest {
 
 	private DocumentSimilarity.Config mockConfig(final String... docs) {
 		final DocumentSimilarity.Config config = Mockito.mock(DocumentSimilarity.Config.class);
-		Mockito.when(config.calculate()).thenReturn(true);
 		Mockito.when(config.getDocuments()).thenReturn(List.of(docs));
 		Mockito.when(config.getWeightThreshold()).thenReturn(0.001);
 		Mockito.when(config.useInverseDocFrequency()).thenReturn(true);

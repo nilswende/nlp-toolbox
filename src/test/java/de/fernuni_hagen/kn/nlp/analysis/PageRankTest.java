@@ -41,7 +41,6 @@ class PageRankTest {
 
 	private PageRank.Config mockConfig() {
 		final var config = Mockito.mock(PageRank.Config.class);
-		Mockito.when(config.calculate()).thenReturn(true);
 		Mockito.when(config.getIterations()).thenReturn(25);
 		Mockito.when(config.getResultLimit()).thenReturn(Integer.MAX_VALUE);
 		Mockito.when(config.getWeight()).thenReturn(.85);

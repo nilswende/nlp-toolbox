@@ -37,7 +37,6 @@ public abstract class ConfigParser {
 			final var useCaseValues = List.of(cli.getOptionValues(USE_CASE_OPT));
 			appConfig = createAppConfig(appValue);
 			useCaseConfigs = createUseCaseConfigs(useCaseValues);
-			System.out.println(useCaseConfigs);
 		} catch (final ParseException e) {
 			throw new UncheckedException(e);
 		}

@@ -48,20 +48,37 @@ public class JsonConfigParser extends ConfigParser {
 			if (Files.exists(path)) {
 				return getJson(path);
 			}
-			throw new IllegalArgumentException("File " + path + " doesn't exist.");
+			throw new IllegalArgumentException("File '" + path + "' doesn't exist.");
 		} else if (isJson(appValue)) {
 			return appValue;
 		}
-		throw new IllegalArgumentException("AppConfig can't be created from " + appValue);
+		throw new IllegalArgumentException("AppConfig can't be created from '" + appValue + "'");
 	}
 
 	@Override
 	protected List<UseCaseConfig> createUseCaseConfigs(final List<String> useCaseValues) {
-		final var allJson = useCaseValues.stream()
+		return joinJsonParts(useCaseValues).stream()
 				.map(this::getJson)
+				.peek(System.out::println)
+				.map(this::getUseCaseConfig)
 				.collect(Collectors.toList());
-		System.out.println(allJson);
-		return getUseCases(allJson);
+	}
+
+	private List<String> joinJsonParts(final List<String> useCaseValues) {
+		final var list = new ArrayList<String>();
+		var sb = new StringBuilder();
+		for (final String value : useCaseValues) {
+			if (value.contains("{") || sb.length() > 0) {
+				sb.append(value);
+			} else {
+				list.add(value);
+			}
+			if (value.contains("}")) {
+				list.add(sb.toString());
+				sb = new StringBuilder();
+			}
+		}
+		return list;
 	}
 
 	private String getJson(final String arg) {
@@ -70,7 +87,7 @@ public class JsonConfigParser extends ConfigParser {
 			if (Files.exists(path)) {
 				return getJson(path);
 			}
-			throw new IllegalArgumentException("File " + path + " doesn't exist.");
+			throw new IllegalArgumentException("File '" + path + "' doesn't exist.");
 		} else if (isJson(arg)) {
 			return arg;
 		} else {
@@ -94,20 +111,15 @@ public class JsonConfigParser extends ConfigParser {
 		return arg.endsWith("}");
 	}
 
-	private List<UseCaseConfig> getUseCases(final List<String> args) {
-		final var useCases = new ArrayList<UseCaseConfig>();
-		for (final String arg : args) {
-			final var matcher = NAME_PATTERN.matcher(arg);
-			if (matcher.find()) {
-				final var name = matcher.group(1);
-				final var useCase = UseCases.fromIgnoreCase(name);
-				final var config = GSON.fromJson(arg, useCase.getConfigClass());
-				useCases.add(config);
-			} else {
-				throw new IllegalArgumentException(arg + " contains no use case name.");
-			}
+	private UseCaseConfig getUseCaseConfig(final String arg) {
+		final var matcher = NAME_PATTERN.matcher(arg);
+		if (matcher.find()) {
+			final var name = matcher.group(1);
+			final var useCase = UseCases.fromIgnoreCase(name);
+			return GSON.fromJson(arg, useCase.getConfigClass());
+		} else {
+			throw new IllegalArgumentException("'" + arg + "' contains no use case name.");
 		}
-		return useCases;
 	}
 
 }

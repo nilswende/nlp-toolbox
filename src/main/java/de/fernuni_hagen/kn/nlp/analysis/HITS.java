@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparingDouble;
+import static java.util.Map.Entry.comparingByValue;
+
 /**
  * Uses the HITS algorithm to find hubs and authorities in a graph.
  *
@@ -26,15 +29,10 @@ public class HITS extends UseCase {
 	 * HITS config.
 	 */
 	public static class Config extends UseCaseConfig {
-		private boolean calculate;
 		private boolean directed;
 		private int iterations;
 		private int resultLimit;
 		private WeightingFunction weightingFunction;
-
-		public boolean calculate() {
-			return calculate;
-		}
 
 		public boolean directed() {
 			return directed;
@@ -55,8 +53,15 @@ public class HITS extends UseCase {
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		final var scores = calculate(dbReader);
-		printNameAnd(scores);
+		final var hits = calculate(dbReader);
+		hits.entrySet().stream()
+				.sorted(comparingByValue(comparingDouble(Scores::getAuthorityScore).reversed()))
+				.limit(config.getResultLimit())
+				.forEach(e -> printf("Authority score of %s: %s", e.getKey(), e.getValue().getAuthorityScore()));
+		hits.entrySet().stream()
+				.sorted(comparingByValue(comparingDouble(Scores::getHubScore).reversed()))
+				.limit(config.getResultLimit())
+				.forEach(e -> printf("Hub score of %s: %s", e.getKey(), e.getValue().getHubScore()));
 	}
 
 	/**

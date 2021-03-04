@@ -49,8 +49,8 @@ class JsonConfigParserTest {
 	void getUseCaseValues() {
 		final var parser = new JsonConfigParser(new String[]{
 				"-u", "hits", "-u", "pageRank",
-				"-u", "{" + "name" + ":" + "" + "pagerank" + "}",
-				"-u", "{" + "name" + ":" + "" + "pagerank" + ", weightingFunction:POISSON}"
+				"-u", "{name:pagerank}",
+				"-u", "{name:pagerank,", "weightingFunction:POISSON}"
 		});
 		Assertions.assertNotNull(parser.getUseCaseConfigs());
 	}
@@ -67,5 +67,21 @@ class JsonConfigParserTest {
 	void throwIfNoUseCases() {
 		Assertions.assertThrows(UncheckedException.class,
 				() -> new JsonConfigParser(new String[]{}));
+	}
+
+	@Test
+	void throwIfNonExistingUseCase() {
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> new JsonConfigParser(new String[]{
+						"-u", "nonExistingUseCase"
+				}));
+	}
+
+	@Test
+	void throwIfNonExistingUseCaseName() {
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> new JsonConfigParser(new String[]{
+						"-u", "{namee:nonExistingUseCase}"
+				}));
 	}
 }

@@ -7,6 +7,9 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import java.util.Collection;
 import java.util.Map;
 
+import static de.fernuni_hagen.kn.nlp.Logger.logDuration;
+import static de.fernuni_hagen.kn.nlp.Logger.logStart;
+
 /**
  * A use case.
  *
@@ -23,8 +26,11 @@ public abstract class UseCase {
 	 * @param dbWriter DBWriter
 	 */
 	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
+		final var start = logStart(getName());
+		printName();
 		execute(dbReader);
 		execute(dbWriter);
+		logDuration(getName(), start);
 	}
 
 	/**
@@ -45,39 +51,16 @@ public abstract class UseCase {
 
 	}
 
+	private String getName() {
+		return this.getClass().getSimpleName();
+	}
+
 	/**
 	 * Prints the concrete use case's name.
 	 */
-	protected void printName() {
-		System.out.println(this.getClass().getSimpleName() + ":");
-	}
-
-	/**
-	 * Prints the concrete use case's name and the map.
-	 *
-	 * @param map Collection
-	 */
-	protected void printNameAnd(final Map<?, ?> map) {
-		printNameAnd(map.isEmpty() ? EMPTY_MESSAGE : map);
-	}
-
-	/**
-	 * Prints the concrete use case's name and the collection.
-	 *
-	 * @param collection Collection
-	 */
-	protected void printNameAnd(final Collection<?> collection) {
-		printNameAnd(collection.isEmpty() ? EMPTY_MESSAGE : collection);
-	}
-
-	/**
-	 * Prints the concrete use case's name and the object.
-	 *
-	 * @param o Object
-	 */
-	protected void printNameAnd(final Object o) {
-		printName();
-		print(o);
+	private void printName() {
+		System.out.print(getName());
+		System.out.println(":");
 	}
 
 	/**
@@ -90,17 +73,6 @@ public abstract class UseCase {
 	}
 
 	/**
-	 * Prints the concrete use case's name and the format.
-	 *
-	 * @param format format string
-	 * @param args   arguments
-	 */
-	protected void printfNameAnd(final String format, final Object... args) {
-		printName();
-		printf(format, args);
-	}
-
-	/**
 	 * Prints the format.
 	 *
 	 * @param format format string
@@ -109,6 +81,51 @@ public abstract class UseCase {
 	protected void printf(final String format, final Object... args) {
 		System.out.printf(format, args);
 		System.out.println();
+	}
+
+	/**
+	 * Prints the concrete use case's name and the collection.
+	 *
+	 * @param collection   the collection
+	 * @param emptyMessage message if the collection is empty
+	 * @param format       message for each collection entry
+	 */
+	protected void printfCollection(final Collection<?> collection, final String emptyMessage, final String format) {
+		if (collection.isEmpty()) {
+			print(emptyMessage);
+		} else {
+			collection.forEach(e -> printf(format, e));
+		}
+	}
+
+	/**
+	 * Prints the concrete use case's name and the map.
+	 *
+	 * @param map          the map
+	 * @param emptyMessage message if the map is empty
+	 * @param format       message for each map entry
+	 */
+	protected void printfMap(final Map<?, ?> map, final String emptyMessage, final String format) {
+		if (map.isEmpty()) {
+			print(emptyMessage);
+		} else {
+			map.forEach((k, v) -> printf(format, k, v));
+		}
+	}
+
+	/**
+	 * Prints the concrete use case's name and the map.
+	 *
+	 * @param map          the map
+	 * @param emptyMessage message if the map is empty
+	 * @param format       message for each inner map entry
+	 */
+	protected <K, V> void printfMapMap(final Map<?, Map<K, V>> map, final String emptyMessage, final String format) {
+		if (map.isEmpty()) {
+			print(emptyMessage);
+		} else {
+			map.forEach((k1, m) -> m.forEach((k2, v) -> printf(format, k1, k2, v)));
+		}
 	}
 
 	/**

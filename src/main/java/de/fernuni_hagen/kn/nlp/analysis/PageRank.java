@@ -6,9 +6,12 @@ import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.Map.Entry.comparingByValue;
 
 /**
  * Calculates the PageRanks for all terms in the DB.
@@ -31,15 +34,10 @@ public class PageRank extends UseCase {
 	 * PageRank config.
 	 */
 	public static class Config extends UseCaseConfig {
-		private boolean calculate;
 		private int iterations;
 		private int resultLimit;
 		private double weight;
 		private WeightingFunction weightingFunction;
-
-		public boolean calculate() {
-			return calculate;
-		}
 
 		public int getIterations() {
 			return iterations == 0 ? 25 : iterations;
@@ -61,7 +59,10 @@ public class PageRank extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var pageRanks = calculate(dbReader);
-		printNameAnd(pageRanks);
+		pageRanks.entrySet().stream()
+				.sorted(comparingByValue(Comparator.reverseOrder()))
+				.limit(config.getResultLimit())
+				.forEach(e -> printf("PageRank of %s: %s", e.getKey(), e.getValue()));
 	}
 
 	/**

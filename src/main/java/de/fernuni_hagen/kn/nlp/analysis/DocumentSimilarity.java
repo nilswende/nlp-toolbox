@@ -32,15 +32,10 @@ public class DocumentSimilarity extends UseCase {
 	 * DocumentSimilarity config.
 	 */
 	public static class Config extends UseCaseConfig {
-		private boolean calculate;
 		private boolean useInverseDocFrequency;
 		private double weightThreshold;
 		private DocSimilarityFunction similarityFunction;
 		private List<String> documents;
-
-		public boolean calculate() {
-			return calculate;
-		}
 
 		public boolean useInverseDocFrequency() {
 			return useInverseDocFrequency;
@@ -62,14 +57,7 @@ public class DocumentSimilarity extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var similarities = calculate(dbReader);
-		if (similarities.isEmpty()) {
-			printNameAnd("Too few documents");
-		} else {
-			printName();
-			similarities.forEach((d1, m) -> m.forEach((d2, s) ->
-					printf("Document similarity of '%s' and '%s': %s", d1, d2, s)
-			));
-		}
+		printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
 	}
 
 	/**
