@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
-import de.fernuni_hagen.kn.nlp.Sentence;
+import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 
 import java.util.List;
@@ -9,20 +9,25 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Executes the linguistic preprocessing on Strings.
+ * Executes the linguistic preprocessing of sentences.
  *
  * @author Nils Wende
  */
-class SentencePreprocessor {
+public class SentencePreprocessor {
 
 	protected final PreprocessingFactory factory;
 	private final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps;
 
-	public SentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+	SentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
 		this.preprocessingSteps = preprocessingSteps;
 		this.factory = factory;
 	}
 
+	/**
+	 * Executes the linguistic preprocessing of the given sentences.
+	 *
+	 * @param sentences DB
+	 */
 	public Stream<Sentence> processSentences(final Stream<String> sentences) {
 		final var cleanedSentences = cleanSentences(sentences);
 		final var taggedSentences = createSentences(cleanedSentences);
@@ -51,6 +56,18 @@ class SentencePreprocessor {
 		return preprocessingSteps.stream()
 				.map(step -> step.apply(factory))
 				.reduce(PreprocessingStep::chain);
+	}
+
+	/**
+	 * Creates a linguistic preprocessor.
+	 *
+	 * @param config  Preprocessor.Config
+	 * @param factory PreprocessingFactory
+	 * @return a linguistic preprocessor
+	 */
+	public static SentencePreprocessor from(final Preprocessor.Config config, final PreprocessingFactory factory) {
+		return config.extractPhrases() ? new PhrasedSentencePreprocessor(config.getPreprocessingSteps(), factory)
+				: new SentencePreprocessor(config.getPreprocessingSteps(), factory);
 	}
 
 }

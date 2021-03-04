@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  *
  * @author Nils Wende
  */
-interface PreprocessingStep extends UnaryOperator<Stream<TaggedTerm>> {
+public interface PreprocessingStep extends UnaryOperator<Stream<TaggedTerm>> {
 
 	/**
 	 * Applies the preprocessing step to the given sentence.

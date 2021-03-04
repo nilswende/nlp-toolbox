@@ -1,11 +1,13 @@
-package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.Sentence;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
@@ -18,11 +20,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logDuration;
-import static de.fernuni_hagen.kn.nlp.Logger.logStart;
-
 /**
- * Executes the linguistic preprocessing of a document.
+ * Executes the preprocessing of documents.
  *
  * @author Nils Wende
  */
@@ -69,7 +68,7 @@ public class Preprocessor extends UseCase {
 			return extractPhrases;
 		}
 
-		List<Function<PreprocessingFactory, PreprocessingStep>> getPreprocessingSteps() {
+		public List<Function<PreprocessingFactory, PreprocessingStep>> getPreprocessingSteps() {
 			final var steps = new ArrayList<Function<PreprocessingFactory, PreprocessingStep>>();
 			if (filterNouns) {
 				steps.add(PreprocessingFactory::createNounFilter);
@@ -91,13 +90,12 @@ public class Preprocessor extends UseCase {
 	}
 
 	/**
-	 * Executes the linguistic preprocessing of documents.
+	 * Executes the preprocessing of documents.
 	 *
 	 * @param db DB
 	 */
 	@Override
 	public void execute(final DBWriter db) {
-		final var start = logStart("preprocess");
 		final var documentConverter = new TikaDocumentConverter(config.getSentenceFileSizeLimitBytes());
 		try (final var paths = Files.walk(config.getInputDir())) {
 			paths.filter(p -> Files.isRegularFile(p))
@@ -111,7 +109,6 @@ public class Preprocessor extends UseCase {
 			if (!config.keepTempFiles()) {
 				FileHelper.deleteTempFiles();
 			}
-			logDuration("preprocess", start);
 		}
 	}
 
@@ -123,11 +120,8 @@ public class Preprocessor extends UseCase {
 	 */
 	private Stream<Sentence> preprocess(final Path textFile) {
 		final var factory = PreprocessingFactory.from(textFile);
-		final var preprocessingSteps = config.getPreprocessingSteps();
-		final var sentencePreprocessor = config.extractPhrases() ? new PhrasedSentencePreprocessor(preprocessingSteps, factory)
-				: new SentencePreprocessor(preprocessingSteps, factory);
 		final var sentences = factory.createSentenceExtractor().extract(textFile);
-		return sentencePreprocessor.processSentences(sentences);
+		return SentencePreprocessor.from(config, factory).processSentences(sentences);
 	}
 
 }

@@ -1,6 +1,4 @@
-package de.fernuni_hagen.kn.nlp;
-
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
+package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import java.util.List;
 import java.util.function.UnaryOperator;

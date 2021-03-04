@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
-import de.fernuni_hagen.kn.nlp.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.stream.Stream;
  */
 class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
-	public PhrasedSentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+	PhrasedSentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
 		super(preprocessingSteps, factory);
 	}
 

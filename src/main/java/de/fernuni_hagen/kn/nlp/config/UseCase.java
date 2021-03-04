@@ -17,8 +17,6 @@ import static de.fernuni_hagen.kn.nlp.Logger.logStart;
  */
 public abstract class UseCase {
 
-	private static final String EMPTY_MESSAGE = "No data available";
-
 	/**
 	 * Executes the use case by handing over a DBReader and a DBWriter.
 	 *
