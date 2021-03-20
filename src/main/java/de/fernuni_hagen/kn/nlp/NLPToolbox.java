@@ -22,8 +22,12 @@ public class NLPToolbox {
 	private final List<UseCaseConfig> useCaseConfigs;
 
 	public NLPToolbox(final ConfigParser configParser) {
-		this.appConfig = configParser.getAppConfig();
-		useCaseConfigs = configParser.getUseCaseConfigs();
+		this(configParser.getAppConfig(), configParser.getUseCaseConfigs());
+	}
+
+	public NLPToolbox(final AppConfig appConfig, final List<UseCaseConfig> useCaseConfigs) {
+		this.appConfig = appConfig;
+		this.useCaseConfigs = useCaseConfigs;
 		DBFactory.init(this.appConfig);
 	}
 
