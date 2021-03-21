@@ -73,10 +73,8 @@ class SentenceAdder {
 
 	private long addSentenceNode(final Transaction tx) {
 		final var id = sequences.nextValueFor(Labels.SENTENCE);
-		final var stmt = "CREATE (s:" + Labels.SENTENCE + " {id: $id})\n";
-		final Map<String, Object> params = Map.of("id", id);
-		StatementPrinter.print(stmt, params);
-		tx.execute(stmt, params);
+		final var node = tx.createNode(Labels.SENTENCE);
+		node.setProperty("id", id);
 		return id;
 	}
 

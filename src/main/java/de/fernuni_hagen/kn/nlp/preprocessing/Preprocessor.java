@@ -91,8 +91,6 @@ public class Preprocessor extends UseCase {
 
 	/**
 	 * Executes the preprocessing of documents.
-	 *
-	 * @param db DB
 	 */
 	@Override
 	public void execute(final DBWriter db) {
