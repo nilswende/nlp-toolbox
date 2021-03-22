@@ -60,8 +60,9 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 		String extractedSentence = sentence;
 		final var extractedPhrases = new ArrayList<String>();
 		for (final String phrase : phrases) {
-			if (extractedSentence.contains(phrase)) {
-				extractedSentence = StringUtils.remove(extractedSentence, phrase);
+			final var length = extractedSentence.length();
+			extractedSentence = StringUtils.remove(extractedSentence, phrase);
+			if (length != extractedSentence.length()) {
 				extractedPhrases.add(phrase);
 			}
 		}
