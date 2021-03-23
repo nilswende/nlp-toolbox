@@ -60,7 +60,7 @@ public class InMemoryDB {
 		values.documents.merge(currentDoc, 1L, Long::sum);
 		content.getDoc2Sentences()
 				.get(currentDoc)
-				.get(sentenceCount)
+				.get(sentenceCount - 1)
 				.add(term);
 	}
 

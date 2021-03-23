@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class JsonConfigParser extends ConfigParser {
 
 	private static final Gson GSON = new Gson();
-	private static final Pattern NAME_PATTERN = Pattern.compile("name\\s*:\\s*(\\w+)");
+	private static final Pattern NAME_PATTERN = Pattern.compile("name\"?\\s*:\\s*\"?(\\w+)");
 
 	/**
 	 * Parses the specified configs from the given JSON command-line arguments.
@@ -34,12 +34,10 @@ public class JsonConfigParser extends ConfigParser {
 	}
 
 	@Override
-	protected AppConfig createAppConfig(final String appValue) {
-		if (StringUtils.isEmpty(appValue)) {
-			return new AppConfig();
-		} else {
-			return GSON.fromJson(getAppJson(appValue), AppConfig.class);
-		}
+	protected AppConfig createAppConfig(final List<String> appValue) {
+		final var strings = String.join(StringUtils.EMPTY, joinJsonParts(appValue));
+		System.out.println(strings);
+		return GSON.fromJson(getAppJson(strings), AppConfig.class);
 	}
 
 	private String getAppJson(final String appValue) {

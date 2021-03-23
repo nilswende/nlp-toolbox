@@ -1,0 +1,7 @@
+{
+  "name": "preprocessing",
+  "useBaseFormReduction": true,
+  "filterNouns": true,
+  "removeStopWords": true,
+  "normalizeCase": true
+}
