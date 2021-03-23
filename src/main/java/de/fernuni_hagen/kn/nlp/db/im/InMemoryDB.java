@@ -2,6 +2,8 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,15 +15,15 @@ import java.util.TreeMap;
 public class InMemoryDB {
 
 	public static final String JSON_FILE = "data.json.gz";
-	private final Map<String, Values> data;
+	private final Content content;
 	private String currentDoc;
-	private long sentencesCount = 0;
+	private int sentenceCount;
 
 	public InMemoryDB(final AppConfig config) {
 		final var path = config.getInMemoryDbDir().resolve(JSON_FILE);
-		data = InMemoryDeserializer.deserialize(path);
+		content = InMemoryDeserializer.deserialize(path);
 		if (config.persistInMemoryDb()) {
-			InMemorySerializer.persistOnShutdown(path, data);
+			InMemorySerializer.persistOnShutdown(path, content);
 		}
 	}
 
@@ -31,17 +33,21 @@ public class InMemoryDB {
 	 * @param fileName the document's original file name
 	 */
 	public void addDocument(final String fileName) {
-		if (data.values().stream().map(Values::getDocuments).anyMatch(d -> d.containsKey(fileName))) {
+		if (content.getData().values().stream().map(Values::getDocuments).anyMatch(d -> d.containsKey(fileName))) {
 			System.out.println("no two input documents can have the same file name");
 		}
 		currentDoc = fileName;
+		sentenceCount = 0;
 	}
 
 	/**
 	 * Starts a new sentence to write terms from.
 	 */
 	public void addSentence() {
-		sentencesCount++;
+		sentenceCount++;
+		content.getDoc2Sentences()
+				.computeIfAbsent(currentDoc, x -> new ArrayList<>())
+				.add(new ArrayList<>());
 	}
 
 	/**
@@ -50,8 +56,12 @@ public class InMemoryDB {
 	 * @param term a term
 	 */
 	public void addTerm(final String term) {
-		final var values = data.computeIfAbsent(term, t -> new Values());
+		final var values = content.getData().computeIfAbsent(term, t -> new Values());
 		values.documents.merge(currentDoc, 1L, Long::sum);
+		content.getDoc2Sentences()
+				.get(currentDoc)
+				.get(sentenceCount)
+				.add(term);
 	}
 
 	/**
@@ -61,7 +71,7 @@ public class InMemoryDB {
 	 * @param term2 another term
 	 */
 	public void addDirectedRelationship(final String term1, final String term2) {
-		data.get(term1).getCooccs().merge(term2, 1L, Long::sum);
+		content.getData().get(term1).getCooccs().merge(term2, 1L, Long::sum);
 	}
 
 	/**
@@ -79,7 +89,7 @@ public class InMemoryDB {
 	 * Removes all data from the database.
 	 */
 	public void deleteAll() {
-		data.clear();
+		content.clear();
 	}
 
 	/**
@@ -88,7 +98,11 @@ public class InMemoryDB {
 	 * @return the database content
 	 */
 	public Map<String, Values> getData() {
-		return data;
+		return content.getData();
+	}
+
+	public Map<String, List<List<String>>> getDoc2Sentences() {
+		return content.getDoc2Sentences();
 	}
 
 	/**
@@ -97,7 +111,7 @@ public class InMemoryDB {
 	 * @return the maximum number of sentences that contain any term
 	 */
 	public long getMaxSentencesCount() {
-		return data.values().stream().mapToLong(Values::getCount).max().orElse(0L);
+		return content.getData().values().stream().mapToLong(Values::getCount).max().orElse(0L);
 	}
 
 	/**
@@ -106,7 +120,7 @@ public class InMemoryDB {
 	 * @return the total number of sentences
 	 */
 	public long getSentencesCount() {
-		return sentencesCount;
+		return content.getDoc2Sentences().values().stream().mapToLong(List::size).sum();
 	}
 
 	/**
@@ -119,7 +133,7 @@ public class InMemoryDB {
 		/**
 		 * Returns the set of documents this term occurs in.
 		 *
-		 * @return the set of documents this term occurs in
+		 * @return Map Document -> Count
 		 */
 		public Map<String, Long> getDocuments() {
 			return documents;
@@ -128,7 +142,7 @@ public class InMemoryDB {
 		/**
 		 * Returns the set of cooccurring terms along with the number of cooccurrences with this term.
 		 *
-		 * @return the set of cooccurring terms along with the number of cooccurrences with this term
+		 * @return Map Coocc -> Count
 		 */
 		public Map<String, Long> getCooccs() {
 			return cooccs;
@@ -141,6 +155,31 @@ public class InMemoryDB {
 		 */
 		public long getCount() {
 			return documents.values().stream().mapToLong(l -> l).sum();
+		}
+	}
+
+	static class Content {
+		private Map<String, Values> data;
+		private Map<String, List<List<String>>> doc2Sentences;
+
+		public static Content init() {
+			final var content = new Content();
+			content.data = new TreeMap<>();
+			content.doc2Sentences = new TreeMap<>();
+			return content;
+		}
+
+		public Map<String, Values> getData() {
+			return data;
+		}
+
+		public Map<String, List<List<String>>> getDoc2Sentences() {
+			return doc2Sentences;
+		}
+
+		public void clear() {
+			data.clear();
+			doc2Sentences.clear();
 		}
 	}
 

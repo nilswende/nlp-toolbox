@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.List;
+import java.util.SortedMap;
 import java.util.stream.Stream;
 
 /**
@@ -19,6 +19,6 @@ public interface PhraseExtractor {
 	 * @param sentences the text from which phrases should be extracted
 	 * @return the list of (terms, phrases) tuples, each forming one sentence
 	 */
-	Stream<Pair<String, List<String>>> extractPhrases(Stream<String> sentences);
+	Stream<Pair<String, SortedMap<Integer, String>>> extractPhrases(Stream<String> sentences);
 
 }

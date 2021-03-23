@@ -6,53 +6,45 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A sentence containing tagged terms and phrases.
+ * A sentence containing tagged terms.
  *
  * @author Nils Wende
  */
 public class Sentence {
 
-	private final List<TaggedTerm> terms;
-	private final List<String> phrases;
+	protected final List<TaggedTerm> terms;
 
 	/**
-	 * Create a sentence including phrases.
-	 *
-	 * @param terms   TaggedTerms
-	 * @param phrases phrases
-	 */
-	public Sentence(final List<TaggedTerm> terms, final List<String> phrases) {
-		this.terms = List.copyOf(terms);
-		this.phrases = List.copyOf(phrases);
-	}
-
-	/**
-	 * Create a sentence without phrases.
+	 * Create a sentence.
 	 *
 	 * @param terms TaggedTerms
 	 */
 	public Sentence(final List<TaggedTerm> terms) {
-		this(terms, List.of());
+		this.terms = List.copyOf(terms);
 	}
 
 	/**
 	 * Returns a copy of this Sentence with the mapper applied to its terms.
 	 *
-	 * @param mapper creating the new terms from the old
+	 * @param mapper creating the new terms from the old ones
 	 * @return Sentence
 	 */
 	public Sentence withTerms(final UnaryOperator<Stream<TaggedTerm>> mapper) {
-		final var newTerms = mapper.apply(terms.stream()).collect(Collectors.toList());
-		return new Sentence(newTerms, phrases);
+		final var newTerms = mapTerms(mapper);
+		return new Sentence(newTerms);
+	}
+
+	protected List<TaggedTerm> mapTerms(final UnaryOperator<Stream<TaggedTerm>> mapper) {
+		return mapper.apply(terms.stream()).collect(Collectors.toList());
 	}
 
 	/**
-	 * Returns all textual sentence content, such as terms and phrases.
+	 * Returns all textual sentence content, such as terms.
 	 *
 	 * @return Stream
 	 */
 	public Stream<String> getContent() {
-		return Stream.concat(terms.stream().map(TaggedTerm::getTerm), phrases.stream());
+		return terms.stream().map(TaggedTerm::getTerm);
 	}
 
 }

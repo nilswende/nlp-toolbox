@@ -8,6 +8,7 @@ import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,11 +101,21 @@ public class InMemoryReader implements DBReader {
 	 * @return all terms in the given document
 	 */
 	public List<String> getAllTermsInDocument(final Path path) {
-		final var pathStr = DBUtils.normalizePath(path);
-		return db.getData().entrySet().stream()
-				.filter(e -> e.getValue().getDocuments().containsKey(pathStr))
-				.map(Map.Entry::getKey)
+		return getAllSentencesInDocument(path).stream()
+				.flatMap(List::stream)
+				.distinct()
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Gets all sentences in the given document.
+	 *
+	 * @param path original path of a preprocessed file
+	 * @return all sentences in the given document
+	 */
+	public List<List<String>> getAllSentencesInDocument(final Path path) {
+		final var pathStr = DBUtils.normalizePath(path);
+		return db.getDoc2Sentences().get(pathStr).stream().map(ArrayList::new).collect(Collectors.toList());
 	}
 
 }

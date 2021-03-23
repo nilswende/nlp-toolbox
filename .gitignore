@@ -227,3 +227,4 @@ $RECYCLE.BIN/
 .project
 .classpath
 target
+data/
