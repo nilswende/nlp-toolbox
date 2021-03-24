@@ -101,7 +101,7 @@ public class PageRank extends UseCase {
 
 	private Map<String, Double> normalize(final Map<String, Double> pageRanks) {
 		pageRanks.values().stream()
-				.max(Double::compareTo)
+				.max(Comparator.naturalOrder())
 				.ifPresent(maxPageRank -> normalize(pageRanks, maxPageRank));
 		return pageRanks;
 	}
