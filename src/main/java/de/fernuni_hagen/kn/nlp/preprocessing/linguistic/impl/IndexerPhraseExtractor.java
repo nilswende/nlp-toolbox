@@ -6,9 +6,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import te.indexer.Indexer;
 import te.indexer.Word;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +27,7 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	}
 
 	@Override
-	public Stream<Pair<String, SortedMap<Integer, String>>> extractPhrases(final Stream<String> sentences) {
+	public Stream<Pair<String, Pair<String, List<String>>>> extractPhrases(final Stream<String> sentences) {
 		final var sentenceList = sentences.collect(Collectors.toList());
 		final Indexer indexer = createIndexer();
 		final var text = String.join(StringUtils.SPACE, sentenceList);
@@ -53,37 +52,21 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 				.collect(Collectors.toList());
 	}
 
-	private Stream<Pair<String, SortedMap<Integer, String>>> getPairs(final List<String> sentences, final List<String> phrases) {
+	private Stream<Pair<String, Pair<String, List<String>>>> getPairs(final List<String> sentences, final List<String> phrases) {
 		return sentences.stream().map(s -> getPair(s, phrases));
 	}
 
-	private Pair<String, SortedMap<Integer, String>> getPair(final String sentence, final List<String> phrases) {
+	private Pair<String, Pair<String, List<String>>> getPair(final String sentence, final List<String> phrases) {
 		String extractedSentence = sentence;
-		final var extractedPhrases = new TreeMap<Integer, String>();
+		final var extractedPhrases = new ArrayList<String>();
 		for (final String phrase : phrases) {
-			int start = 0;
-			int end = extractedSentence.indexOf(phrase);
-			if (end != -1) {
-				final var sb = new StringBuilder();
-				for (; end != -1; end = extractedSentence.indexOf(phrase, start)) {
-					sb.append(extractedSentence, start, end);
-					final int pos = getPos(phrases, extractedSentence.substring(0, end));
-					extractedPhrases.put(pos, phrase);
-					start = end + phrase.length();
-				}
-				sb.append(extractedSentence, start, extractedSentence.length());
-				extractedSentence = sb.toString();
+			final var length = extractedSentence.length();
+			extractedSentence = StringUtils.remove(extractedSentence, phrase);
+			if (length != extractedSentence.length()) {
+				extractedPhrases.add(phrase);
 			}
 		}
-		return Pair.of(extractedSentence, extractedPhrases);
-	}
-
-	private int getPos(final List<String> phrases, final String fullHead) {
-		String head = fullHead;
-		for (final String phrase : phrases) {
-			head = StringUtils.remove(head, phrase);
-		}
-		return StringUtils.countMatches(head, StringUtils.SPACE);
+		return Pair.of(extractedSentence, Pair.of(sentence, extractedPhrases));
 	}
 
 }

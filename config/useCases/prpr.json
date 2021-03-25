@@ -1,5 +1,6 @@
 {
   "name": "preprocessing",
+  "extractPhrases": true,
   "useBaseFormReduction": true,
   "filterNouns": true,
   "removeStopWords": true,

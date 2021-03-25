@@ -11,15 +11,18 @@ import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
  */
 public class ClearDatabase extends UseCase {
 
-	@Override
-	public void execute(DBWriter dbWriter) {
-		dbWriter.deleteAll();
+	public ClearDatabase(final Config config) {
 	}
 
 	/**
 	 * ClearDatabase config.
 	 */
 	public static class Config extends UseCaseConfig {
+	}
+
+	@Override
+	public void execute(final DBWriter dbWriter) {
+		dbWriter.deleteAll();
 	}
 
 }

@@ -8,7 +8,6 @@ import te.utils.Parameters;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,8 +25,8 @@ class IndexerPhraseExtractorTest {
 		final var pairs = new IndexerPhraseExtractor(Parameters.EN)
 				.extractPhrases(sentences.stream())
 				.collect(Collectors.toList());
-		pairs.forEach(pair -> assertTrue(pair.getRight().values().stream().noneMatch(p -> pair.getLeft().contains(p))));
-		final List<String> right = pairs.stream().map(Pair::getRight).map(Map::values).flatMap(Collection::stream).collect(Collectors.toList());
+		pairs.forEach(pair -> assertTrue(pair.getRight().getRight().stream().noneMatch(p -> pair.getLeft().contains(p))));
+		final var right = pairs.stream().map(Pair::getRight).map(Pair::getRight).flatMap(Collection::stream).collect(Collectors.toList());
 		assertTrue(phrases.containsAll(right), right.toString());
 		assertTrue(right.containsAll(phrases), right.toString());
 	}

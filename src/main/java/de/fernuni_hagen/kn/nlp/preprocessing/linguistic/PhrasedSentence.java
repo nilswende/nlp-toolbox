@@ -1,8 +1,8 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
@@ -13,17 +13,20 @@ import java.util.stream.Stream;
  */
 public class PhrasedSentence extends Sentence {
 
-	private final Map<Integer, String> phrases;
+	private final String sentence;
+	private final List<String> phrases;
 
 	/**
 	 * Create a sentence including phrases.
 	 *
-	 * @param terms   TaggedTerms
-	 * @param phrases phrases
+	 * @param terms    TaggedTerms
+	 * @param sentence sentence
+	 * @param phrases  phrases
 	 */
-	public PhrasedSentence(final List<TaggedTerm> terms, final Map<Integer, String> phrases) {
+	public PhrasedSentence(final List<TaggedTerm> terms, final String sentence, final List<String> phrases) {
 		super(terms);
-		this.phrases = Map.copyOf(phrases);
+		this.sentence = sentence;
+		this.phrases = List.copyOf(phrases);
 	}
 
 	/**
@@ -35,7 +38,7 @@ public class PhrasedSentence extends Sentence {
 	@Override
 	public PhrasedSentence withTerms(final UnaryOperator<Stream<TaggedTerm>> mapper) {
 		final var newTerms = mapTerms(mapper);
-		return new PhrasedSentence(newTerms, phrases);
+		return new PhrasedSentence(newTerms, sentence, phrases);
 	}
 
 	/**
@@ -47,14 +50,23 @@ public class PhrasedSentence extends Sentence {
 	public Stream<String> getContent() {
 		final var list = new ArrayList<String>();
 		int start = 0;
-		for (final Map.Entry<Integer, String> entry : phrases.entrySet()) {
-			final int pos = entry.getKey();
-			final String phrase = entry.getValue();
-			terms.subList(start, pos).stream().map(TaggedTerm::getTerm).forEach(list::add);
-			list.add(phrase);
-			start = pos;
+		final var phraseIterator = new PhraseIterator(sentence, phrases);
+		while (phraseIterator.hasNext()) {
+			final var phrase = phraseIterator.next();
+			final var position = phraseIterator.position();
+
+			final var oPos = terms.stream()
+					.max(Comparator.comparingInt(t -> sentence.lastIndexOf(t.getTerm(), position)))
+					.map(TaggedTerm::getPosition);
+
+			if (oPos.isPresent()) {
+				final var pos = oPos.get();
+				terms.subList(start, pos).stream().map(TaggedTerm::getTerm).forEach(list::add);
+				start = pos;
+			} else {
+				list.add(phrase);
+			}
 		}
-		terms.subList(start, terms.size()).stream().map(TaggedTerm::getTerm).forEach(list::add);
 		return list.stream();
 	}
 
