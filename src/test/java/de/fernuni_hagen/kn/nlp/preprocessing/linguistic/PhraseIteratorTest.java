@@ -35,6 +35,9 @@ class PhraseIteratorTest {
 	static Stream<Arguments> test() {
 		return Stream.of(
 				arguments("Art competitions at the Olympic Games Art competitions at the Olympic Games Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
+						List.of(),
+						List.of()),
+				arguments("Art competitions at the Olympic Games Art competitions at the Olympic Games Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
 						List.of("Art competitions"),
 						List.of("Art competitions", "Art competitions", "Art competitions")),
 				arguments("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948. The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin. (Art competitions)",

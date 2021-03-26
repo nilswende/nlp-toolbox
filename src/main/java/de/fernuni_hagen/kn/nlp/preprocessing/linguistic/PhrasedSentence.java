@@ -48,6 +48,9 @@ public class PhrasedSentence extends Sentence {
 	 */
 	@Override
 	public Stream<String> getContent() {
+		if (phrases.isEmpty()) {
+			return super.getContent();
+		}
 		final var list = new ArrayList<String>();
 		int start = 0;
 		final var phraseIterator = new PhraseIterator(sentence, phrases);
@@ -55,12 +58,12 @@ public class PhrasedSentence extends Sentence {
 			final var phrase = phraseIterator.next();
 			final var position = phraseIterator.position();
 
-			final var oPos = terms.stream()
+			final var posOpt = terms.stream()
 					.max(Comparator.comparingInt(t -> sentence.lastIndexOf(t.getTerm(), position)))
 					.map(TaggedTerm::getPosition);
 
-			if (oPos.isPresent()) {
-				final var pos = oPos.get();
+			if (posOpt.isPresent()) {
+				final var pos = posOpt.get();
 				terms.subList(start, pos).stream().map(TaggedTerm::getTerm).forEach(list::add);
 				start = pos;
 			} else {

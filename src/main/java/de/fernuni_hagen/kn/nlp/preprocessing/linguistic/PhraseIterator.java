@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Iterates over the phrases within a sentence.
@@ -32,7 +33,11 @@ public class PhraseIterator implements Iterator<String> {
 	 */
 	@Override
 	public boolean hasNext() {
-		return phrases.stream().anyMatch(p -> sentence.indexOf(p, pos + 1) != -1);
+		return phrases.stream().anyMatch(p -> nextPosition(p) != -1);
+	}
+
+	private int nextPosition(final String phrase) {
+		return sentence.indexOf(phrase, pos + 1);
 	}
 
 	/**
@@ -45,11 +50,14 @@ public class PhraseIterator implements Iterator<String> {
 		String phrase = null;
 		int index = Integer.MAX_VALUE;
 		for (final String p : phrases) {
-			final var i = sentence.indexOf(p, pos + 1);
+			final var i = nextPosition(p);
 			if (i != -1 && i < index) {
 				phrase = p;
 				index = i;
 			}
+		}
+		if (index == Integer.MAX_VALUE) {
+			throw new NoSuchElementException();
 		}
 		pos = index;
 		return phrase;
