@@ -94,8 +94,24 @@ public class PhraseIterator implements Iterator<String> {
 		if (builder == null) {
 			builder = new StringBuilder(sentence);
 		}
-		builder.delete(pos, pos + nextPhrase.length());
+		removePhrase();
 		removed = true;
+	}
+
+	private void removePhrase() {
+		int start = pos;
+		int end = start + nextPhrase.length();
+		final var trimStart = end == builder.length();
+		final var trimEnd = start == 0;
+		final var trim = !trimStart && !trimEnd
+				&& Character.isWhitespace(builder.charAt(start - 1))
+				&& Character.isWhitespace(builder.charAt((end)));
+		if (trimStart || trim) {
+			start--;
+		} else if (trimEnd) {
+			end++;
+		}
+		builder.delete(start, end);
 	}
 
 	/**

@@ -64,10 +64,10 @@ class PhraseIteratorTest {
 						"Art competitions at the Olympic Games Art competitions at the Olympic Games Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948."),
 				arguments("Art competitions at the Olympic Games Art competitions at the Olympic Games Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
 						List.of("Art competitions"),
-						" at the Olympic Games  at the Olympic Games  formed part of the modern Olympic Games during its early years, from 1912 to 1948."),
+						"at the Olympic Games at the Olympic Games formed part of the modern Olympic Games during its early years, from 1912 to 1948."),
 				arguments("Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948. The competitions were part of the original intention of the Olympic Movement's founder, Pierre de Frédy, Baron de Coubertin. Art competitions",
 						List.of("Art competitions", "Pierre de Frédy", "Baron de Coubertin"),
-						" formed part of the modern Olympic Games during its early years, from 1912 to 1948. The competitions were part of the original intention of the Olympic Movement's founder, , . ")
+						"formed part of the modern Olympic Games during its early years, from 1912 to 1948. The competitions were part of the original intention of the Olympic Movement's founder, , .")
 		);
 	}
 
