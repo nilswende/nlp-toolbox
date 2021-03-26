@@ -60,4 +60,32 @@ class PhrasedSentenceTest {
 						List.of("ph", "gg"))
 		);
 	}
+
+	@ParameterizedTest
+	@MethodSource
+	void getContentRemoved(final String sentence, final List<String> terms, final List<String> phrases, final String expected) {
+		final var tTerms = new ArrayList<TaggedTerm>();
+		for (int i = 0; i < terms.size(); i++) {
+			tTerms.add(TaggedTerm.from(terms.get(i) + Tagset.STTS.getTagSeparator() + "test", Tagset.STTS, i));
+		}
+
+		final var phrasedSentence = new PhrasedSentence(tTerms, sentence, phrases);
+
+		assertEquals(expected, phrasedSentence.getContent().collect(Collectors.joining(StringUtils.SPACE)));
+	}
+
+	static Stream<Arguments> getContentRemoved() {
+		return Stream.of(
+				// single phrase
+				arguments("0 1 1 ph 2 3 3 4",
+						List.of("0", "3", "3", "4"),
+						List.of("ph"),
+						"0 ph 3 3 4"),
+				// multiple phrase
+				arguments("gg 0 1 1 ph 2 3 3 4 gg",
+						List.of("0", "3", "3", "4"),
+						List.of("ph", "gg"),
+						"gg 0 ph 3 3 4 gg")
+		);
+	}
 }

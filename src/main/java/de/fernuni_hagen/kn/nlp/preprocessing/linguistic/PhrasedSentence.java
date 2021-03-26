@@ -19,7 +19,7 @@ public class PhrasedSentence extends Sentence {
 	 * Create a sentence including phrases.
 	 *
 	 * @param terms    TaggedTerms
-	 * @param sentence sentence
+	 * @param sentence original sentence
 	 * @param phrases  phrases
 	 */
 	public PhrasedSentence(final List<TaggedTerm> terms, final String sentence, final List<String> phrases) {
@@ -71,7 +71,7 @@ public class PhrasedSentence extends Sentence {
 
 	private TaggedTerm lastTermBefore(final int position) {
 		TaggedTerm term = null;
-		int max = Integer.MIN_VALUE;
+		int max = 0;
 		for (final TaggedTerm t : terms) {
 			final var i = sentence.lastIndexOf(t.getTerm(), position);
 			if (i != -1 && i >= max) {
