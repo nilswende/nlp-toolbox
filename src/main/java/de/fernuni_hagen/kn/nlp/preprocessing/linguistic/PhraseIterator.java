@@ -13,7 +13,12 @@ public class PhraseIterator implements Iterator<String> {
 
 	private final String sentence;
 	private final List<String> phrases;
+
+	private String nextPhrase;
+	private int nextPos;
 	private int pos = -1;
+
+	private StringBuilder builder;
 
 	/**
 	 * Constructs a new PhraseIterator.
@@ -33,20 +38,6 @@ public class PhraseIterator implements Iterator<String> {
 	 */
 	@Override
 	public boolean hasNext() {
-		return phrases.stream().anyMatch(p -> nextPosition(p) != -1);
-	}
-
-	private int nextPosition(final String phrase) {
-		return sentence.indexOf(phrase, pos + 1);
-	}
-
-	/**
-	 * Returns the next phrase in the sentence.
-	 *
-	 * @return the next phrase in the sentence
-	 */
-	@Override
-	public String next() {
 		String phrase = null;
 		int index = Integer.MAX_VALUE;
 		for (final String p : phrases) {
@@ -56,11 +47,50 @@ public class PhraseIterator implements Iterator<String> {
 				index = i;
 			}
 		}
-		if (index == Integer.MAX_VALUE) {
+		nextPhrase = phrase;
+		nextPos = index;
+		return index != Integer.MAX_VALUE;
+	}
+
+	private int nextPosition(final String phrase) {
+		return (builder == null
+				? sentence.indexOf(phrase, pos + 1)
+				: builder.indexOf(phrase, pos + 1));
+	}
+
+	/**
+	 * Returns the next phrase in the sentence.
+	 *
+	 * @return the next phrase in the sentence
+	 */
+	@Override
+	public String next() {
+		if (nextPhrase == null) {
 			throw new NoSuchElementException();
 		}
-		pos = index;
-		return phrase;
+		pos = nextPos;
+		return nextPhrase;
+	}
+
+	/**
+	 * Removes the current phrase from the underlying sentence.
+	 */
+	@Override
+	public void remove() {
+		if (builder == null) {
+			builder = new StringBuilder(sentence);
+		}
+		builder.delete(pos, pos + nextPhrase.length());
+	}
+
+	/**
+	 * Removes all phrases from the underlying sentence.
+	 *
+	 * @return the underlying sentence
+	 */
+	public String removeAll() {
+		forEachRemaining(p -> remove());
+		return getSentence();
 	}
 
 	/**
@@ -70,6 +100,15 @@ public class PhraseIterator implements Iterator<String> {
 	 */
 	public int position() {
 		return pos;
+	}
+
+	/**
+	 * Returns the underlying sentence.
+	 *
+	 * @return the underlying sentence
+	 */
+	public String getSentence() {
+		return builder == null ? sentence : builder.toString();
 	}
 
 }

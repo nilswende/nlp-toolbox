@@ -18,7 +18,7 @@ class PhraseIteratorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void test(final String sentence, final List<String> phrases, final List<String> expected) {
+	void next(final String sentence, final List<String> phrases, final List<String> expected) {
 		final var iterator = new PhraseIterator(sentence, phrases);
 		final var actual = new ArrayList<String>();
 		int pos = -1;
@@ -32,7 +32,7 @@ class PhraseIteratorTest {
 		assertEquals(expected, actual);
 	}
 
-	static Stream<Arguments> test() {
+	static Stream<Arguments> next() {
 		return Stream.of(
 				arguments("Art competitions at the Olympic Games Art competitions at the Olympic Games Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948.",
 						List.of(),
