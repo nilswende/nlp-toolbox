@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -86,11 +87,16 @@ public class PhraseIterator implements Iterator<String> {
 	/**
 	 * Removes all phrases from the underlying sentence.
 	 *
-	 * @return the underlying sentence
+	 * @return the removed phrases
 	 */
-	public String removeAll() {
-		forEachRemaining(p -> remove());
-		return getSentence();
+	public List<String> removeAll() {
+		final var extractedPhrases = new ArrayList<String>();
+		while (hasNext()) {
+			final var phrase = next();
+			extractedPhrases.add(phrase);
+			remove();
+		}
+		return extractedPhrases;
 	}
 
 	/**

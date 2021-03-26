@@ -2,10 +2,10 @@ package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseExtractor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import te.indexer.Indexer;
 import te.indexer.Word;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,13 +26,13 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	}
 
 	@Override
-	public Stream<Extraction> extractPhrases(final Stream<String> sentences) {
+	public Pair<List<String>, List<String>> extractPhrases(final Stream<String> sentences) {
 		final var sentenceList = sentences.collect(Collectors.toList());
 		final Indexer indexer = createIndexer();
 		final var text = String.join(StringUtils.SPACE, sentenceList);
 		indexer.prepare(text);
 		final List<String> phrases = getPhrases(indexer);
-		return getPairs(sentenceList, phrases);
+		return Pair.of(sentenceList, phrases);
 	}
 
 	private Indexer createIndexer() {
@@ -45,27 +45,8 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	private List<String> getPhrases(final Indexer indexer) {
 		final List<Word> phrases = cast(indexer.getPhrases());
 		return phrases.stream()
-				.map(p -> p.getPos().endsWith("A N") //TODO why?
-						? StringUtils.uncapitalize(p.getWordStr())
-						: p.getWordStr())
+				.map(Word::getWordStr)
 				.collect(Collectors.toList());
-	}
-
-	private Stream<Extraction> getPairs(final List<String> sentences, final List<String> phrases) {
-		return sentences.stream().map(s -> getPair(s, phrases));
-	}
-
-	private Extraction getPair(final String sentence, final List<String> phrases) {
-		String extractedSentence = sentence;
-		final var extractedPhrases = new ArrayList<String>();
-		for (final String phrase : phrases) {
-			final var length = extractedSentence.length();
-			extractedSentence = StringUtils.remove(extractedSentence, phrase);
-			if (length != extractedSentence.length()) {
-				extractedPhrases.add(phrase);
-			}
-		}
-		return new Extraction(extractedSentence, sentence, extractedPhrases);
 	}
 
 }

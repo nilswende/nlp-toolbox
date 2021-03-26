@@ -21,9 +21,16 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
 		final var phraseExtractor = factory.createPhraseExtractor();
 		final var tagger = factory.createTagger();
-		return phraseExtractor
-				.extractPhrases(sentences)
-				.map(p -> new PhrasedSentence(tagger.apply(p.getSentence()), p.getOriginalSentence(), p.getPhrases()));
+		final var pair = phraseExtractor.extractPhrases(sentences);
+		final var phrases = pair.getRight();
+		return pair.getLeft().stream()
+				.map(s -> extract(tagger, s, phrases));
+	}
+
+	private PhrasedSentence extract(final Tagger tagger, final String sentence, final List<String> phrases) {
+		final var phraseIterator = new PhraseIterator(sentence, phrases);
+		final var extractedPhrases = phraseIterator.removeAll();
+		return new PhrasedSentence(tagger.apply(phraseIterator.getSentence()), sentence, extractedPhrases);
 	}
 
 }
