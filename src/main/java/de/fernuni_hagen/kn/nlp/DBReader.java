@@ -3,6 +3,8 @@ package de.fernuni_hagen.kn.nlp;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,4 +56,11 @@ public interface DBReader {
 	 */
 	WeightedPath getShortestPath(String start, String end, WeightingFunction function);
 
+	/**
+	 * Gets all sentences in the given document.
+	 *
+	 * @param path original path of a preprocessed file
+	 * @return all sentences in the given document
+	 */
+	List<List<String>> getAllSentencesInDocument(Path path);
 }

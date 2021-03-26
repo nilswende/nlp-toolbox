@@ -21,14 +21,7 @@ class PhrasedSentenceTest {
 	@ParameterizedTest
 	@MethodSource
 	void getContent(final String sentence, final List<String> terms, final List<String> phrases) {
-		final var tTerms = new ArrayList<TaggedTerm>();
-		for (int i = 0; i < terms.size(); i++) {
-			tTerms.add(TaggedTerm.from(terms.get(i) + Tagset.STTS.getTagSeparator() + "test", Tagset.STTS, i));
-		}
-
-		final var phrasedSentence = new PhrasedSentence(tTerms, sentence, phrases);
-
-		assertEquals(sentence, phrasedSentence.getContent().collect(Collectors.joining(StringUtils.SPACE)));
+		getContentRemoved(sentence, terms, phrases, sentence);
 	}
 
 	static Stream<Arguments> getContent() {

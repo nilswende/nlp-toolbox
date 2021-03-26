@@ -107,12 +107,7 @@ public class InMemoryReader implements DBReader {
 				.collect(Collectors.toList());
 	}
 
-	/**
-	 * Gets all sentences in the given document.
-	 *
-	 * @param path original path of a preprocessed file
-	 * @return all sentences in the given document
-	 */
+	@Override
 	public List<List<String>> getAllSentencesInDocument(final Path path) {
 		final var pathStr = DBUtils.normalizePath(path);
 		return db.getDoc2Sentences().get(pathStr).stream().map(ArrayList::new).collect(Collectors.toList());

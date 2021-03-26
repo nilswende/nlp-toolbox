@@ -174,6 +174,11 @@ public class Neo4JReader implements DBReader {
 		}
 	}
 
+	@Override
+	public List<List<String>> getAllSentencesInDocument(java.nio.file.Path path) {
+		return null;//TODO
+	}
+
 	private static class SignificanceEvaluator implements CostEvaluator<Double> {
 		private final long k;
 		private final long kmax;
