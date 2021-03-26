@@ -25,7 +25,7 @@ class IndexerPhraseExtractorTest {
 		assertTrue(phrases.containsAll(extractedPhrases), extractedPhrases.toString());
 		assertTrue(extractedPhrases.containsAll(phrases), extractedPhrases.toString());
 		assertTrue(extractedPhrases.stream().allMatch(
-				p -> sameSentences.stream().anyMatch(s -> s.contains(p))
+				p -> sameSentences.anyMatch(s -> s.contains(p))
 		), extractedPhrases.toString());
 	}
 

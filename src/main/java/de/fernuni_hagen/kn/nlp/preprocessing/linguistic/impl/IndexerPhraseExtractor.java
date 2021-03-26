@@ -26,13 +26,13 @@ public class IndexerPhraseExtractor implements PhraseExtractor {
 	}
 
 	@Override
-	public Pair<List<String>, List<String>> extractPhrases(final Stream<String> sentences) {
+	public Pair<Stream<String>, List<String>> extractPhrases(final Stream<String> sentences) {
 		final var sentenceList = sentences.collect(Collectors.toList());
 		final Indexer indexer = createIndexer();
 		final var text = String.join(StringUtils.SPACE, sentenceList);
 		indexer.prepare(text);
 		final List<String> phrases = getPhrases(indexer);
-		return Pair.of(sentenceList, phrases);
+		return Pair.of(sentenceList.stream(), phrases);
 	}
 
 	private Indexer createIndexer() {

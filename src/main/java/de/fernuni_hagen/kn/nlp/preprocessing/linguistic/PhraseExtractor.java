@@ -19,6 +19,6 @@ public interface PhraseExtractor {
 	 * @param sentences the text from which phrases should be extracted
 	 * @return the sentences and all phrases in the text
 	 */
-	Pair<List<String>, List<String>> extractPhrases(Stream<String> sentences);
+	Pair<Stream<String>, List<String>> extractPhrases(Stream<String> sentences);
 
 }

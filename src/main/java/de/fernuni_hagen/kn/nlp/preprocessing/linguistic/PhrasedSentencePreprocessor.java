@@ -23,7 +23,7 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		final var tagger = factory.createTagger();
 		final var pair = phraseExtractor.extractPhrases(sentences);
 		final var phrases = pair.getRight();
-		return pair.getLeft().stream()
+		return pair.getLeft()
 				.map(s -> extract(tagger, s, phrases));
 	}
 
