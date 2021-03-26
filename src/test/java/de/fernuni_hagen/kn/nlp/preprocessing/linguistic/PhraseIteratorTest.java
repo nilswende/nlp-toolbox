@@ -1,14 +1,17 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
@@ -66,6 +69,38 @@ class PhraseIteratorTest {
 						List.of("Art competitions", "Pierre de Frédy", "Baron de Coubertin"),
 						" formed part of the modern Olympic Games during its early years, from 1912 to 1948. The competitions were part of the original intention of the Olympic Movement's founder, , . ")
 		);
+	}
+
+	@Test
+	void iterateViaNext() {
+		final var iterator = new PhraseIterator("a a a", List.of("a"));
+		int count = 0;
+		while (true) { // never iterate like this
+			try {
+				iterator.next();
+				count++;
+			} catch (final RuntimeException e) {
+				break;
+			}
+		}
+		assertEquals(3, count);
+	}
+
+	@Test
+	void nextThrows() {
+		final var iterator = new PhraseIterator("", List.of());
+		assertThrows(NoSuchElementException.class, iterator::next);
+	}
+
+	@Test
+	void removeThrows() {
+		final var iterator = new PhraseIterator("a", List.of("a"));
+		assertThrows(IllegalStateException.class, iterator::remove);
+		if (iterator.hasNext()) {
+			iterator.next();
+			iterator.remove();
+		}
+		assertThrows(IllegalStateException.class, iterator::remove);
 	}
 
 }

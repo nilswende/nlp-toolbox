@@ -74,7 +74,7 @@ public class PhrasedSentence extends Sentence {
 		int max = 0;
 		for (final TaggedTerm t : terms) {
 			final var i = sentence.lastIndexOf(t.getTerm(), position);
-			if (i != -1 && i >= max) {
+			if (i >= max) {
 				term = t;
 				max = i;
 			}

@@ -16,10 +16,11 @@ public class PhraseIterator implements Iterator<String> {
 	private final List<String> phrases;
 
 	private String nextPhrase;
-	private int nextPos;
+	private int nextPos = -1;
 	private int pos = -1;
 
 	private StringBuilder builder;
+	private boolean removed = true;
 
 	/**
 	 * Constructs a new PhraseIterator.
@@ -42,7 +43,7 @@ public class PhraseIterator implements Iterator<String> {
 		String phrase = null;
 		int index = Integer.MAX_VALUE;
 		for (final String p : phrases) {
-			final var i = nextPosition(p);
+			final int i = nextPosition(p);
 			if (i != -1 && i < index) {
 				phrase = p;
 				index = i;
@@ -66,11 +67,20 @@ public class PhraseIterator implements Iterator<String> {
 	 */
 	@Override
 	public String next() {
-		if (nextPhrase == null) {
-			throw new NoSuchElementException();
-		}
+		checkNext();
+		removed = false;
 		pos = nextPos;
 		return nextPhrase;
+	}
+
+	private void checkNext() {
+		var hasNext = true;
+		if (pos == nextPos) {
+			hasNext = hasNext();
+		}
+		if (!hasNext) {
+			throw new NoSuchElementException();
+		}
 	}
 
 	/**
@@ -78,10 +88,14 @@ public class PhraseIterator implements Iterator<String> {
 	 */
 	@Override
 	public void remove() {
+		if (removed) {
+			throw new IllegalStateException();
+		}
 		if (builder == null) {
 			builder = new StringBuilder(sentence);
 		}
 		builder.delete(pos, pos + nextPhrase.length());
+		removed = true;
 	}
 
 	/**
@@ -90,13 +104,13 @@ public class PhraseIterator implements Iterator<String> {
 	 * @return the removed phrases
 	 */
 	public List<String> removeAll() {
-		final var extractedPhrases = new ArrayList<String>();
+		final var removedPhrases = new ArrayList<String>();
 		while (hasNext()) {
 			final var phrase = next();
-			extractedPhrases.add(phrase);
+			removedPhrases.add(phrase);
 			remove();
 		}
-		return extractedPhrases;
+		return removedPhrases;
 	}
 
 	/**
