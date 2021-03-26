@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -58,19 +57,33 @@ public class PhrasedSentence extends Sentence {
 			final var phrase = phraseIterator.next();
 			final var position = phraseIterator.position();
 
-			final var posOpt = terms.stream()
-					.max(Comparator.comparingInt(t -> sentence.lastIndexOf(t.getTerm(), position)))
-					.map(TaggedTerm::getPosition);
-
-			if (posOpt.isPresent()) {
-				final var pos = posOpt.get();
-				terms.subList(start, pos).stream().map(TaggedTerm::getTerm).forEach(list::add);
+			final TaggedTerm term = lastTermBefore(position);
+			if (term != null) {
+				final var pos = term.getPosition() + 1;
+				addTerms(list, start, pos);
 				start = pos;
-			} else {
-				list.add(phrase);
+			}
+			list.add(phrase);
+		}
+		addTerms(list, start, terms.size());
+		return list.stream();
+	}
+
+	private TaggedTerm lastTermBefore(final int position) {
+		TaggedTerm term = null;
+		int max = Integer.MIN_VALUE;
+		for (final TaggedTerm t : terms) {
+			final var i = sentence.lastIndexOf(t.getTerm(), position);
+			if (i != -1 && i >= max) {
+				term = t;
+				max = i;
 			}
 		}
-		return list.stream();
+		return term;
+	}
+
+	private void addTerms(final List<String> list, final int start, final int pos) {
+		terms.subList(start, pos).stream().map(TaggedTerm::getTerm).forEach(list::add);
 	}
 
 }

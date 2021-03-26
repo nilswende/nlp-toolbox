@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
-import org.apache.commons.lang3.tuple.Pair;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseExtractor;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,11 +22,11 @@ class IndexerPhraseExtractorTest {
 	@ParameterizedTest
 	@MethodSource
 	void extractPhrases(final List<String> sentences, final List<String> phrases) {
-		final var pairs = new IndexerPhraseExtractor(Parameters.EN)
+		final var extractions = new IndexerPhraseExtractor(Parameters.EN)
 				.extractPhrases(sentences.stream())
 				.collect(Collectors.toList());
-		pairs.forEach(pair -> assertTrue(pair.getRight().getRight().stream().noneMatch(p -> pair.getLeft().contains(p))));
-		final var right = pairs.stream().map(Pair::getRight).map(Pair::getRight).flatMap(Collection::stream).collect(Collectors.toList());
+		extractions.forEach(ex -> assertTrue(ex.getPhrases().stream().noneMatch(p -> ex.getSentence().contains(p))));
+		final var right = extractions.stream().map(PhraseExtractor.Extraction::getPhrases).flatMap(Collection::stream).collect(Collectors.toList());
 		assertTrue(phrases.containsAll(right), right.toString());
 		assertTrue(right.containsAll(phrases), right.toString());
 	}
