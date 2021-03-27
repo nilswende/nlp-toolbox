@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
+import de.fernuni_hagen.kn.nlp.analysis.DL4JWord2Vec;
 import de.fernuni_hagen.kn.nlp.analysis.DocumentSimilarity;
 import de.fernuni_hagen.kn.nlp.analysis.HITS;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
@@ -25,7 +26,8 @@ public enum UseCases {
 	DOCUMENT_SIMILARITY(DocumentSimilarity.Config.class),
 	HITS(HITS.Config.class),
 	PAGE_RANK(PageRank.Config.class),
-	TERM_SIMILARITY(TermSimilarity.Config.class);
+	TERM_SIMILARITY(TermSimilarity.Config.class),
+	WORD2VEC(DL4JWord2Vec.Config.class);
 
 	private final Class<? extends UseCaseConfig> configClass;
 
