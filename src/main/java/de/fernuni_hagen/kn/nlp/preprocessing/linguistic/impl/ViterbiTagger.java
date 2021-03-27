@@ -5,9 +5,9 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Uses POS tagging on sentences.
@@ -32,8 +32,8 @@ public class ViterbiTagger implements Tagger {
 	public List<TaggedTerm> apply(final String sentence) {
 		final var taggedSentence = tagger.tagSentence(sentence).stripLeading();
 		final var terms = taggedSentence.split(StringUtils.SPACE);
-		return IntStream.range(0, terms.length)
-				.mapToObj(i -> TaggedTerm.from(terms[i], tagset, i))
+		return Arrays.stream(terms)
+				.map(term -> TaggedTerm.from(term, tagset))
 				.collect(Collectors.toList());
 	}
 

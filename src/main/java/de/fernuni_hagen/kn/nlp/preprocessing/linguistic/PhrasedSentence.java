@@ -57,9 +57,9 @@ public class PhrasedSentence extends Sentence {
 			final var phrase = phraseIterator.next();
 			final var position = phraseIterator.position();
 
-			final TaggedTerm term = lastTermBefore(position);
-			if (term != null) {
-				final var pos = term.getPosition() + 1;
+			final int termPos = lastTermBefore(position);
+			if (termPos != -1) {
+				final int pos = termPos + 1;
 				addTerms(list, start, pos);
 				start = pos;
 			}
@@ -69,17 +69,18 @@ public class PhrasedSentence extends Sentence {
 		return list.stream();
 	}
 
-	private TaggedTerm lastTermBefore(final int position) {
-		TaggedTerm term = null;
+	private int lastTermBefore(final int position) {
+		int termPos = -1;
 		int max = 0;
-		for (final TaggedTerm t : terms) {
-			final var i = sentence.lastIndexOf(t.getTerm(), position);
-			if (i >= max) {
-				term = t;
-				max = i;
+		for (int i = 0; i < terms.size(); i++) {
+			final TaggedTerm t = terms.get(i);
+			final var index = sentence.lastIndexOf(t.getTerm(), position);
+			if (index >= max) {
+				termPos = i;
+				max = index;
 			}
 		}
-		return term;
+		return termPos;
 	}
 
 	private void addTerms(final List<String> list, final int start, final int pos) {

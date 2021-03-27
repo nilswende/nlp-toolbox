@@ -58,8 +58,8 @@ class PhrasedSentenceTest {
 	@MethodSource
 	void getContentRemoved(final String sentence, final List<String> terms, final List<String> phrases, final String expected) {
 		final var tTerms = new ArrayList<TaggedTerm>();
-		for (int i = 0; i < terms.size(); i++) {
-			tTerms.add(TaggedTerm.from(terms.get(i) + Tagset.STTS.getTagSeparator() + "test", Tagset.STTS, i));
+		for (String term : terms) {
+			tTerms.add(TaggedTerm.from(term + Tagset.STTS.getTagSeparator() + "test", Tagset.STTS));
 		}
 
 		final var phrasedSentence = new PhrasedSentence(tTerms, sentence, phrases);

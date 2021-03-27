@@ -12,13 +12,11 @@ public class TaggedTerm {
 	private final String term;
 	private final String tag;
 	private final Tagset tagset;
-	private final int position;
 
-	private TaggedTerm(final String term, final String tag, final Tagset tagset, final int position) {
+	private TaggedTerm(final String term, final String tag, final Tagset tagset) {
 		this.term = term;
 		this.tag = tag;
 		this.tagset = tagset;
-		this.position = position;
 	}
 
 	/**
@@ -26,13 +24,12 @@ public class TaggedTerm {
 	 *
 	 * @param taggedTerm a tagged term
 	 * @param tagset     the tagset used for tagging
-	 * @param position   the term's position in the sentence
 	 * @return TaggedTerm
 	 */
-	public static TaggedTerm from(final String taggedTerm, final Tagset tagset, final int position) {
+	public static TaggedTerm from(final String taggedTerm, final Tagset tagset) {
 		final var separator = tagset.getTagSeparator();
 		final var pos = taggedTerm.lastIndexOf(separator);
-		return new TaggedTerm(taggedTerm.substring(0, pos), taggedTerm.substring(pos + separator.length()), tagset, position);
+		return new TaggedTerm(taggedTerm.substring(0, pos), taggedTerm.substring(pos + separator.length()), tagset);
 	}
 
 	/**
@@ -42,7 +39,7 @@ public class TaggedTerm {
 	 * @return TaggedTerm
 	 */
 	public TaggedTerm withTerm(final String term) {
-		return new TaggedTerm(term, tag, tagset, position);
+		return new TaggedTerm(term, tag, tagset);
 	}
 
 	/**
@@ -90,7 +87,4 @@ public class TaggedTerm {
 		return tagset;
 	}
 
-	public int getPosition() {
-		return position;
-	}
 }
