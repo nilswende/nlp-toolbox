@@ -46,6 +46,7 @@ public class Preprocessor extends UseCase {
 		private boolean keepTempFiles;
 		private int sentenceFileSizeLimitBytes;
 		private boolean extractPhrases;
+		private boolean removePhrases;
 		private boolean useBaseFormReduction;
 		private boolean filterNouns;
 		private boolean removeStopWords;
@@ -66,6 +67,10 @@ public class Preprocessor extends UseCase {
 
 		public boolean extractPhrases() {
 			return extractPhrases;
+		}
+
+		public boolean removePhrases() {
+			return removePhrases;
 		}
 
 		public List<Function<PreprocessingFactory, PreprocessingStep>> getPreprocessingSteps() {

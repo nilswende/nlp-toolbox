@@ -27,10 +27,15 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 				.map(s -> extract(tagger, s, phrases));
 	}
 
-	private PhrasedSentence extract(final Tagger tagger, final String sentence, final List<String> phrases) {
+	private Sentence extract(final Tagger tagger, final String sentence, final List<String> phrases) {
 		final var phraseIterator = new PhraseIterator(sentence, phrases);
 		final var extractedPhrases = phraseIterator.removeAll();
-		return new PhrasedSentence(tagger.apply(phraseIterator.getSentence()), sentence, extractedPhrases);
+		final var taggedTerms = tagger.apply(phraseIterator.getSentence());
+		return createSentence(taggedTerms, sentence, extractedPhrases);
+	}
+
+	protected Sentence createSentence(List<TaggedTerm> taggedTerms, String sentence, List<String> extractedPhrases) {
+		return new PhrasedSentence(taggedTerms, sentence, extractedPhrases);
 	}
 
 }

@@ -66,8 +66,13 @@ public class SentencePreprocessor {
 	 * @return a linguistic preprocessor
 	 */
 	public static SentencePreprocessor from(final Preprocessor.Config config, final PreprocessingFactory factory) {
-		return config.extractPhrases() ? new PhrasedSentencePreprocessor(config.getPreprocessingSteps(), factory)
-				: new SentencePreprocessor(config.getPreprocessingSteps(), factory);
+		if (config.removePhrases()) {
+			return new UnphrasedSentencePreprocessor(config.getPreprocessingSteps(), factory);
+		}
+		if (config.extractPhrases()) {
+			return new PhrasedSentencePreprocessor(config.getPreprocessingSteps(), factory);
+		}
+		return new SentencePreprocessor(config.getPreprocessingSteps(), factory);
 	}
 
 }
