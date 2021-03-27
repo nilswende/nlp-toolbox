@@ -78,7 +78,12 @@ class PhrasedSentenceTest {
 				arguments("gg 0 1 1 ph 2 3 3 4 gg",
 						List.of("0", "3", "3", "4"),
 						List.of("ph", "gg"),
-						"gg 0 ph 3 3 4 gg")
+						"gg 0 ph 3 3 4 gg"),
+				// single term gets e.g. mistagged and removed
+				arguments("gg 0 1 1 ph 2 3 3 4 gg",
+						List.of("0", "1", "3", "3", "4"),
+						List.of("ph", "gg"),
+						"gg 0 1 ph 3 3 4 gg")
 		);
 	}
 }
