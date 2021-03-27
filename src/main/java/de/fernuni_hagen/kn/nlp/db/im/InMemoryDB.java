@@ -106,9 +106,9 @@ public class InMemoryDB {
 	}
 
 	/**
-	 * Returns the maximum number of sentences that contain any term.
+	 * Returns the maximum number of sentences that contain the same term.
 	 *
-	 * @return the maximum number of sentences that contain any term
+	 * @return the maximum number of sentences that contain the same term
 	 */
 	public long getMaxSentencesCount() {
 		return content.getData().values().stream().mapToLong(Values::getCount).max().orElse(0L);

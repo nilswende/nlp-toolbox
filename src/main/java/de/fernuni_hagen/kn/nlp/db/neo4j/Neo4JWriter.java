@@ -51,8 +51,8 @@ public class Neo4JWriter implements DBWriter {
 	}
 
 	@Override
-	public void addSentence(final List<String> distinctTerms) {
-		new SentenceAdder(graphDb).addSentence(distinctTerms, currentDocId);
+	public void addSentence(final List<String> terms) {
+		new SentenceAdder(graphDb).addSentence(terms, currentDocId);
 	}
 
 }

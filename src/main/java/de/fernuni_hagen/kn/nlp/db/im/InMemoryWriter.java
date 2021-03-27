@@ -30,21 +30,21 @@ public class InMemoryWriter implements DBWriter {
 	}
 
 	@Override
-	public void addSentence(final List<String> distinctTerms) {
+	public void addSentence(final List<String> terms) {
 		db.addSentence();
-		addTerms(distinctTerms);
-		addRelationships(distinctTerms);
+		addTerms(terms);
+		addRelationships(terms);
 	}
 
-	private void addTerms(final List<String> distinctTerms) {
-		distinctTerms.forEach(db::addTerm);
+	private void addTerms(final List<String> terms) {
+		terms.forEach(db::addTerm);
 	}
 
-	private void addRelationships(final List<String> distinctTerms) {
-		for (int i = 0; i < distinctTerms.size(); i++) {
-			final var term1 = distinctTerms.get(i);
-			for (int j = i + 1; j < distinctTerms.size(); j++) {
-				final var term2 = distinctTerms.get(j);
+	private void addRelationships(final List<String> terms) {
+		for (int i = 0; i < terms.size(); i++) {
+			final var term1 = terms.get(i);
+			for (int j = i + 1; j < terms.size(); j++) {
+				final var term2 = terms.get(j);
 				db.addUndirectedRelationship(term1, term2);
 			}
 		}

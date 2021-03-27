@@ -117,6 +117,9 @@ public class Neo4JReader implements DBReader {
 		}
 	}
 
+	/**
+	 * Returns the maximum number of sentences that contain the same term.
+	 */
 	private long getMaxSentencesCount(final Transaction tx) {
 		final var countSentences = " MATCH (:" + Labels.SENTENCE + ")-[s:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.TERM + ")\n" +
 				"RETURN max(s.count) as max\n";
@@ -175,7 +178,7 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public List<List<String>> getAllSentencesInDocument(java.nio.file.Path path) {
+	public List<List<String>> getAllSentencesInDocument(final java.nio.file.Path path) {
 		return null;//TODO
 	}
 

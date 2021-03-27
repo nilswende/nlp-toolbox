@@ -29,9 +29,9 @@ public interface DBWriter {
 	/**
 	 * Adds a sentence to the DB.
 	 *
-	 * @param distinctTerms a sentence in the form of distinct terms
+	 * @param terms a sentence in the form of terms
 	 */
-	void addSentence(List<String> distinctTerms);
+	void addSentence(List<String> terms);
 
 	/**
 	 * Adds a sentence to the DB.
@@ -39,8 +39,8 @@ public interface DBWriter {
 	 * @param sentence a sentence
 	 */
 	default void addSentence(final Sentence sentence) {
-		final var distinctTerms = sentence.getContent().distinct().collect(Collectors.toList());
-		addSentence(distinctTerms);
+		final var terms = sentence.getContent().collect(Collectors.toList());
+		addSentence(terms);
 	}
 
 }
