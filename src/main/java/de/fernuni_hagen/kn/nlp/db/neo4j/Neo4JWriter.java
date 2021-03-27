@@ -19,6 +19,7 @@ public class Neo4JWriter implements DBWriter {
 	private final GraphDatabaseService graphDb;
 	private final Sequences sequences;
 	private long currentDocId;
+	private long currentSentence;
 
 	public Neo4JWriter(final Neo4J db) {
 		graphDb = db.getGraphDb();
@@ -28,8 +29,8 @@ public class Neo4JWriter implements DBWriter {
 	@Override
 	public void deleteAll() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var stmt = "MATCH (n)\n" +
-					"DETACH DELETE n\n";
+			final var stmt = "MATCH (n)\n"
+					+ "DETACH DELETE n\n";
 			tx.execute(stmt);
 			tx.commit();
 		}
@@ -46,13 +47,14 @@ public class Neo4JWriter implements DBWriter {
 			final Node doc = tx.createNode(Labels.DOCUMENT);
 			doc.setProperty("name", name);
 			doc.setProperty("id", currentDocId);
+			currentSentence = 0;
 			tx.commit();
 		}
 	}
 
 	@Override
 	public void addSentence(final List<String> terms) {
-		new SentenceAdder(graphDb).addSentence(terms, currentDocId);
+		new SentenceAdder(graphDb).addSentence(terms, currentDocId, currentSentence++);
 	}
 
 }

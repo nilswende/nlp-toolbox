@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.neo4j.graphalgo.CostEvaluator;
@@ -12,6 +13,7 @@ import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,8 +38,8 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getCooccurrences() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var matchCooccs = "MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
-					"RETURN t1.name, t2.name, c.count\n";
+			final var matchCooccs = "MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+					+ "RETURN t1.name, t2.name, c.count\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -57,8 +59,8 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
-			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
-					"RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
+			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -98,9 +100,9 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
-			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n" +
-					" WHERE (c.count / t1.count) >= (c.count / t2.count)\n" +
-					"RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
+			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+					+ " WHERE (c.count / t1.count) >= (c.count / t2.count)\n"
+					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -121,9 +123,9 @@ public class Neo4JReader implements DBReader {
 	 * Returns the maximum number of sentences that contain the same term.
 	 */
 	private long getMaxSentencesCount(final Transaction tx) {
-		final var countSentences = " MATCH (:" + Labels.SENTENCE + ")-[s:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.TERM + ")\n" +
-				"RETURN max(s.count) as max\n";
-		try (final var result = tx.execute(countSentences)) {
+		final var stmt = " MATCH (:" + Labels.SENTENCE + ")-[s:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.TERM + ")\n"
+				+ "RETURN max(s.count) as max\n";
+		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
 			return toLong(row.get("max"));
 		}
@@ -146,10 +148,10 @@ public class Neo4JReader implements DBReader {
 	}
 
 	public void printPath(final String t1, final String t2) {
-		final var stmt = " MATCH (t1:" + Labels.TERM + " {name: $t1}),\n" +
-				"       (t2:" + Labels.TERM + " {name: $t2}),\n" +
-				"       p = shortestPath((t1)-[:" + RelationshipTypes.COOCCURS + "*]-(t2))\n" +
-				"RETURN p\n";
+		final var stmt = " MATCH (t1:" + Labels.TERM + " {name: $t1}),\n"
+				+ "       (t2:" + Labels.TERM + " {name: $t2}),\n"
+				+ "       p = shortestPath((t1)-[:" + RelationshipTypes.COOCCURS + "*]-(t2))\n"
+				+ "RETURN p\n";
 		try (final Transaction tx = graphDb.beginTx()) {
 			final Map<String, Object> params = Map.of("t1", t1, "t2", t2);
 			tx.execute(stmt, params).stream()
@@ -179,7 +181,16 @@ public class Neo4JReader implements DBReader {
 
 	@Override
 	public List<List<String>> getAllSentencesInDocument(final java.nio.file.Path path) {
-		return null;//TODO
+		final var stmt = "   MATCH (:" + Labels.DOCUMENT + " {name: $doc})-[r:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")-[p:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
+				+ "  RETURN r.position, t\n"
+				+ "ORDER BY r.position, p.position\n";
+		final Map<String, Object> params = Map.of("doc", DBUtils.normalizePath(path));
+		try (final Transaction tx = graphDb.beginTx();
+			 final var result = tx.execute(stmt, params)) {
+			return new ArrayList<>(result.stream()
+					.collect(Collectors.groupingBy(row -> row.get("r.position"), Collectors.mapping(row -> row.get("t").toString(), Collectors.toList())))
+					.values());
+		}
 	}
 
 	private static class SignificanceEvaluator implements CostEvaluator<Double> {
