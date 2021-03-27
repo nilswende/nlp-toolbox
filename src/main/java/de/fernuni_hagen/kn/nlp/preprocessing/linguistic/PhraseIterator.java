@@ -101,17 +101,20 @@ public class PhraseIterator implements Iterator<String> {
 	private void removePhrase() {
 		int start = pos;
 		int end = start + nextPhrase.length();
-		final var trimStart = end == builder.length();
-		final var trimEnd = start == 0;
-		final var trim = !trimStart && !trimEnd
-				&& Character.isWhitespace(builder.charAt(start - 1))
-				&& Character.isWhitespace(builder.charAt((end)));
-		if (trimStart || trim) {
+		final var isStart = start == 0;
+		final var isEnd = end == builder.length();
+		final var trimStart = !isStart && isWhitespace(start - 1);
+		final var trimEnd = !isEnd && isWhitespace(end);
+		if (trimStart && isEnd || trimStart && trimEnd) {
 			start--;
-		} else if (trimEnd) {
+		} else if (trimEnd && isStart) {
 			end++;
 		}
 		builder.delete(start, end);
+	}
+
+	private boolean isWhitespace(final int index) {
+		return Character.isWhitespace(builder.charAt(index));
 	}
 
 	/**

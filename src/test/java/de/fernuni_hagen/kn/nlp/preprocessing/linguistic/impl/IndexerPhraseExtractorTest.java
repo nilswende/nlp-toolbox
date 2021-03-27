@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import te.utils.Parameters;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,12 +21,12 @@ class IndexerPhraseExtractorTest {
 	@MethodSource
 	void extractPhrases(final List<String> sentences, final List<String> phrases) {
 		final var extractions = new IndexerPhraseExtractor(Parameters.EN).extractPhrases(sentences.stream());
-		final var sameSentences = extractions.getLeft();
+		final var sameSentences = extractions.getLeft().collect(Collectors.toList());
 		final var extractedPhrases = extractions.getRight();
 		assertTrue(phrases.containsAll(extractedPhrases), extractedPhrases.toString());
 		assertTrue(extractedPhrases.containsAll(phrases), extractedPhrases.toString());
 		assertTrue(extractedPhrases.stream().allMatch(
-				p -> sameSentences.anyMatch(s -> s.contains(p))
+				p -> sameSentences.stream().anyMatch(s -> s.contains(p))
 		), extractedPhrases.toString());
 	}
 
