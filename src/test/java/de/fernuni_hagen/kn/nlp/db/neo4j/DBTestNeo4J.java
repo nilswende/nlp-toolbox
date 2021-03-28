@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.DBTest;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import org.mockito.Mockito;
+import org.neo4j.graphdb.Transaction;
 
 import java.nio.file.Path;
 
@@ -28,6 +29,15 @@ public abstract class DBTestNeo4J extends DBTest {
 		try (final var tx = ((Neo4J) getDbFactory().getDb()).getGraphDb().beginTx()) {
 			final var nodes = tx.getAllNodes();
 			Neo4JUtils.stream(nodes).map(EntityFormatter::formatNode).forEach(System.out::println);
+			System.out.println();
+		}
+	}
+
+	public void printAllRelationships() {
+		try (final Transaction tx = ((Neo4J) getDbFactory().getDb()).getGraphDb().beginTx()) {
+			tx.getAllRelationships().stream()
+					.map(EntityFormatter::formatRelationship)
+					.forEach(System.out::println);
 			System.out.println();
 		}
 	}

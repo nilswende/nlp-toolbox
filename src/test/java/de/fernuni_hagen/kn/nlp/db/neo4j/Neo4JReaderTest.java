@@ -12,6 +12,50 @@ import java.util.List;
 class Neo4JReaderTest extends DBTestNeo4J {
 
 	@Test
+	void getCooccurrences() {
+		writer.addSentence(List.of("a", "b", "c", "e"));
+		writer.addSentence(List.of("b", "d", "c", "d"));
+
+		final var cooccurrences = reader.getCooccurrences();
+		Assertions.assertEquals(5, cooccurrences.size(), cooccurrences.toString());
+		var cooccs = cooccurrences.get("a");
+		Assertions.assertEquals(3, cooccs.size(), cooccs.toString());
+		Assertions.assertEquals(1, cooccs.get("b"));
+		Assertions.assertEquals(1, cooccs.get("c"));
+		Assertions.assertEquals(1, cooccs.get("e"));
+		cooccs = cooccurrences.get("b");
+		Assertions.assertEquals(4, cooccs.size(), cooccs.toString());
+		Assertions.assertEquals(1, cooccs.get("a"));
+		Assertions.assertEquals(2, cooccs.get("c"));
+		Assertions.assertEquals(2, cooccs.get("d"));
+		Assertions.assertEquals(1, cooccs.get("e"));
+		cooccs = cooccurrences.get("c");
+		Assertions.assertEquals(4, cooccs.size(), cooccs.toString());
+		Assertions.assertEquals(1, cooccs.get("a"));
+		Assertions.assertEquals(2, cooccs.get("b"));
+		Assertions.assertEquals(2, cooccs.get("d"));
+		Assertions.assertEquals(1, cooccs.get("e"));
+		cooccs = cooccurrences.get("d");
+		Assertions.assertEquals(3, cooccs.size(), cooccs.toString());
+		Assertions.assertEquals(2, cooccs.get("b"));
+		Assertions.assertEquals(2, cooccs.get("c"));
+		Assertions.assertEquals(1, cooccs.get("d"));
+		cooccs = cooccurrences.get("e");
+		Assertions.assertEquals(3, cooccs.size(), cooccs.toString());
+		Assertions.assertEquals(1, cooccs.get("a"));
+		Assertions.assertEquals(1, cooccs.get("b"));
+		Assertions.assertEquals(1, cooccs.get("c"));
+	}
+
+	@Test
+	void getSignificances() {
+	}
+
+	@Test
+	void getDirectedSignificances() {
+	}
+
+	@Test
 	void getTermFrequencies() {
 		writer.addSentence(List.of("a", "b", "c"));
 		writer.addSentence(List.of("b", "d", "c", "e"));
@@ -33,6 +77,10 @@ class Neo4JReaderTest extends DBTestNeo4J {
 		Assertions.assertEquals(2, doc.get("a"));
 		Assertions.assertEquals(1, doc.get("b"));
 		Assertions.assertEquals(1, doc.get("f"));
+	}
+
+	@Test
+	void getShortestPath() {//TODO
 	}
 
 	@Test

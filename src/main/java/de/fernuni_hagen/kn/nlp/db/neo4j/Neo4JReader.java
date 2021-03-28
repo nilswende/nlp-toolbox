@@ -39,15 +39,15 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getCooccurrences() {
 		try (final Transaction tx = graphDb.beginTx()) {
-			final var matchCooccs = "MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-					+ "RETURN t1.name, t2.name, c.count\n";
+			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+					+ "RETURN t1.name, t2.name, count(c)\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
 					final var row = result.next();
 					final var t1 = row.get("t1.name").toString();
 					final var t2 = row.get("t2.name").toString();
-					final var c = toDouble(row.get("c.count"));
+					final var c = toDouble(row.get("count(c)"));
 					map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, c);
 				}
 				return map;
@@ -61,7 +61,7 @@ public class Neo4JReader implements DBReader {
 			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
+					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -102,8 +102,8 @@ public class Neo4JReader implements DBReader {
 			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
 			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-					+ " WHERE (c.count / t1.count) >= (c.count / t2.count)\n"
-					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
+					+ " WHERE (count(c) / t1.count) >= (count(c) / t2.count)\n"
+					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
 			try (final var result = tx.execute(matchCooccs)) {
 				final var map = new TreeMap<String, Map<String, Double>>();
 				while (result.hasNext()) {
@@ -125,7 +125,7 @@ public class Neo4JReader implements DBReader {
 	 */
 	private long getMaxSentencesCount(final Transaction tx) {
 		final var stmt = " MATCH (:" + Labels.SENTENCE + ")-[s:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.TERM + ")\n"
-				+ "RETURN max(s.count) as max\n";
+				+ "RETURN max(count(s)) as max\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
 			return toLong(row.get("max"));
@@ -190,13 +190,13 @@ public class Neo4JReader implements DBReader {
 
 	@Override
 	public List<List<String>> getAllSentencesInDocument(final java.nio.file.Path path) {
-		final var stmt = "   MATCH (:" + Labels.DOCUMENT + " {name: $doc})-[r:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")-[p:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
+		final var stmt = "   MATCH (:" + Labels.DOCUMENT + " {name: $doc})-[r:" + RelationshipTypes.CONTAINS + "]-()-[p:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
 				+ "  RETURN r.position, t.name\n"
 				+ "ORDER BY r.position, p.position\n";
 		final Map<String, Object> params = Map.of("doc", DBUtils.normalizePath(path));
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt, params)) {
-			// no Stream groupingBy because we want to preserve the sentence/term order
+			// no Stream groupingBy to preserve the sentence/term order
 			return collectToLists(result, "r.position", "t.name");
 		}
 	}

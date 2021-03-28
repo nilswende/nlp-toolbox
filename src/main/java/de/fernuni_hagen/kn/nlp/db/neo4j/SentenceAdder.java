@@ -33,7 +33,7 @@ class SentenceAdder {
 	public void addSentence(final List<String> terms, final long docId, final long currentSentence) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var termNodes = addTermNodes(terms, tx);
-			addTermRelationships(termNodes, tx);
+			addTermRelationships(termNodes);
 			addSentenceNode(termNodes, docId, currentSentence, tx);
 			tx.commit();
 		}
@@ -55,7 +55,7 @@ class SentenceAdder {
 		}
 	}
 
-	private void addTermRelationships(final List<Node> termNodes, final Transaction tx) {
+	private void addTermRelationships(final List<Node> termNodes) {
 		for (int i = 0; i < termNodes.size(); i++) {
 			final var term1 = termNodes.get(i);
 			for (int j = i + 1; j < termNodes.size(); j++) {
