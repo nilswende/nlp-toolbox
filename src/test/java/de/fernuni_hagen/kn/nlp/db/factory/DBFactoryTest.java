@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.factory;
 
-import de.fernuni_hagen.kn.nlp.db.DBTestIm;
+import de.fernuni_hagen.kn.nlp.db.im.DBTestIm;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

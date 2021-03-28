@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
-import de.fernuni_hagen.kn.nlp.db.DBTestIm;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

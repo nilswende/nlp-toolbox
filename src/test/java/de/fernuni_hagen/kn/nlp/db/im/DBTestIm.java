@@ -1,6 +1,7 @@
-package de.fernuni_hagen.kn.nlp.db;
+package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.db.DBTest;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import org.mockito.Mockito;
 

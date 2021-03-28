@@ -11,6 +11,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.ArrayList;
@@ -163,7 +164,17 @@ public class Neo4JReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Long>> getTermFrequencies() {
-		return null;//TODO
+		final var stmt = "  MATCH (d:" + Labels.DOCUMENT + ")-[:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")-[:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
+				+ "RETURN d.name, t.name, 1\n";
+		try (final Transaction tx = graphDb.beginTx();
+			 final var result = tx.execute(stmt)) {
+			final var map = result.stream()
+					.collect(Collectors.groupingBy(row -> row.get("d.name").toString(),
+							Collectors.toMap(row -> row.get("t.name").toString(), row -> toLong(row.get("count(t)")))
+					));
+			tx.commit();
+			return map;
+		}
 	}
 
 	@Override
@@ -182,15 +193,31 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public List<List<String>> getAllSentencesInDocument(final java.nio.file.Path path) {
 		final var stmt = "   MATCH (:" + Labels.DOCUMENT + " {name: $doc})-[r:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")-[p:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
-				+ "  RETURN r.position, t\n"
+				+ "  RETURN r.position, t.name\n"
 				+ "ORDER BY r.position, p.position\n";
 		final Map<String, Object> params = Map.of("doc", DBUtils.normalizePath(path));
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt, params)) {
-			return new ArrayList<>(result.stream()
-					.collect(Collectors.groupingBy(row -> row.get("r.position"), Collectors.mapping(row -> row.get("t").toString(), Collectors.toList())))
-					.values());
+			// no Stream groupingBy because we want to preserve the sentence/term order
+			return collectToLists(result, "r.position", "t.name");
 		}
+	}
+
+	private List<List<String>> collectToLists(final Result result, final String outerKey, final String innerKey) {
+		final var lists = new ArrayList<List<String>>();
+		Object currentSentence = null;
+		while (result.hasNext()) {
+			final var row = result.next();
+			final var outer = row.get(outerKey);
+			final var inner = row.get(innerKey).toString();
+			if (!outer.equals(currentSentence)) {
+				lists.add(new ArrayList<>());
+				currentSentence = outer;
+			}
+			final var list = lists.get(lists.size() - 1);
+			list.add(inner);
+		}
+		return lists;
 	}
 
 	private static class SignificanceEvaluator implements CostEvaluator<Double> {

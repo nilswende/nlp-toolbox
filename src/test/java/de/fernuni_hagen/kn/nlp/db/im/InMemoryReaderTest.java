@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
-import de.fernuni_hagen.kn.nlp.db.DBTestIm;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.junit.jupiter.api.Test;
 

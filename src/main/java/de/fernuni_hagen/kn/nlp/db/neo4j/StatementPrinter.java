@@ -1,7 +1,10 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.output.NullPrintStream;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
 
@@ -12,15 +15,17 @@ import java.util.Map;
  */
 public class StatementPrinter {
 
+	private static final boolean PRINT = false;
 	private static final PrintStream stream;
 
 	static {
-		/*try {
-			stream = new PrintStream("stmtLog.txt", AppConfig.DEFAULT_CHARSET);
+		try {
+			stream = PRINT
+					? new PrintStream("stmtLog.txt", AppConfig.DEFAULT_CHARSET)
+					: NullPrintStream.NULL_PRINT_STREAM;
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
-		}*/
-		stream = NullPrintStream.NULL_PRINT_STREAM;
+		}
 	}
 
 	public static void print(final String stmt) {

@@ -80,10 +80,8 @@ class SentenceAdder {
 	}
 
 	private void addSentenceRelationships(final long id, final List<String> terms, final Transaction tx) {
-		final String stmt = "MATCH (s:" + Labels.SENTENCE + " {id: $id}),(t:" + Labels.TERM + " {name: $name})\n"
-				+ "MERGE (s)-[r:" + RelationshipTypes.CONTAINS + "]->(t)\n"
-				+ "ON CREATE SET r.count = 1, r.position = $position\n"
-				+ "ON  MATCH SET r.count = r.count + 1, r.position = $position\n";
+		final String stmt = " MATCH (s:" + Labels.SENTENCE + " {id: $id}),(t:" + Labels.TERM + " {name: $name})\n"
+				+ "CREATE (s)-[r:" + RelationshipTypes.CONTAINS + " {position: $position}]->(t)\n";
 		for (int i = 0; i < terms.size(); i++) {
 			final String term = terms.get(i);
 			final Map<String, Object> params = Map.of("id", id, "name", term, "position", i);
