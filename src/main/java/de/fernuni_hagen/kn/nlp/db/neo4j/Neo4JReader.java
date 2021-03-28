@@ -38,39 +38,37 @@ public class Neo4JReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Double>> getCooccurrences() {
-		try (final Transaction tx = graphDb.beginTx()) {
-			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-					+ "RETURN t1.name, t2.name, count(c)\n";
-			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new TreeMap<String, Map<String, Double>>();
-				while (result.hasNext()) {
-					final var row = result.next();
-					final var t1 = row.get("t1.name").toString();
-					final var t2 = row.get("t2.name").toString();
-					final var c = toDouble(row.get("count(c)"));
-					map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, c);
-				}
-				return map;
+		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+				+ "RETURN t1.name, t2.name, count(c)\n";
+		try (final Transaction tx = graphDb.beginTx();
+			 final var result = tx.execute(stmt)) {
+			final var map = new TreeMap<String, Map<String, Double>>();
+			while (result.hasNext()) {
+				final var row = result.next();
+				final var t1 = row.get("t1.name").toString();
+				final var t2 = row.get("t2.name").toString();
+				final var c = toDouble(row.get("count(c)"));
+				map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, c);
 			}
+			return map;
 		}
 	}
 
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
-		try (final Transaction tx = graphDb.beginTx()) {
+		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
+		try (final Transaction tx = graphDb.beginTx();
+			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
-			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
-			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new TreeMap<String, Map<String, Double>>();
-				while (result.hasNext()) {
-					final var row = result.next();
-					final double sig = calcSig(row, k, kmax, function);
-					putSig(row, sig, map);
-				}
-				return map;
+			final var map = new TreeMap<String, Map<String, Double>>();
+			while (result.hasNext()) {
+				final var row = result.next();
+				final double sig = calcSig(row, k, kmax, function);
+				putSig(row, sig, map);
 			}
+			return map;
 		}
 	}
 
@@ -88,9 +86,9 @@ public class Neo4JReader implements DBReader {
 	}
 
 	private long countSentences(final Transaction tx) {
-		final var countSentences = " MATCH (s:" + Labels.SENTENCE + ")\n" +
+		final var stmt = " MATCH (s:" + Labels.SENTENCE + ")\n" +
 				"RETURN count(*)\n";
-		try (final var result = tx.execute(countSentences)) {
+		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
 			return toLong(row.get("count(*)"));
 		}
@@ -98,25 +96,24 @@ public class Neo4JReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
-		try (final Transaction tx = graphDb.beginTx()) {
+		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+				+ " WHERE (count(c) / t1.count) >= (count(c) / t2.count)\n"
+				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
+		try (final Transaction tx = graphDb.beginTx();
+			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
 			final var kmax = getMaxSentencesCount(tx);
-			final var matchCooccs = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-					+ " WHERE (count(c) / t1.count) >= (count(c) / t2.count)\n"
-					+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
-			try (final var result = tx.execute(matchCooccs)) {
-				final var map = new TreeMap<String, Map<String, Double>>();
-				while (result.hasNext()) {
-					final var row = result.next();
-					final var t1 = row.get("t1.name").toString();
-					final var t2 = row.get("t2.name").toString();
-					if (!map.containsKey(t2) || !map.get(t2).containsKey(t1)) {
-						final double sig = calcSig(row, k, kmax, function);
-						map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
-					}
+			final var map = new TreeMap<String, Map<String, Double>>();
+			while (result.hasNext()) {
+				final var row = result.next();
+				final var t1 = row.get("t1.name").toString();
+				final var t2 = row.get("t2.name").toString();
+				if (!map.containsKey(t2) || !map.get(t2).containsKey(t1)) {
+					final double sig = calcSig(row, k, kmax, function);
+					map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
 				}
-				return map;
 			}
+			return map;
 		}
 	}
 
