@@ -1,10 +1,12 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a sentence to the DB.
@@ -30,72 +32,57 @@ class SentenceAdder {
 	 */
 	public void addSentence(final List<String> terms, final long docId, final long currentSentence) {
 		try (final Transaction tx = graphDb.beginTx()) {
-			addTermNodes(terms, tx);
-			addTermRelationships(terms, tx);
-			addSentenceNode(terms, docId, currentSentence, tx);
+			final var termNodes = addTermNodes(terms, tx);
+			addTermRelationships(termNodes, tx);
+			addSentenceNode(termNodes, docId, currentSentence, tx);
 			tx.commit();
 		}
 	}
 
-	private void addTermNodes(final List<String> terms, final Transaction tx) {
+	private List<Node> addTermNodes(final List<String> terms, final Transaction tx) {
 		final var stmt = "MERGE (t:" + Labels.TERM + " {name: $name})\n"
 				+ "ON CREATE SET t.name = $name, t.count = 1\n"
-				+ "ON  MATCH SET t.count = t.count + 1\n";
-		terms.forEach(t -> addTerm(t, stmt, tx));
+				+ "ON  MATCH SET t.count = t.count + 1\n"
+				+ "RETURN t\n";
+		return terms.stream().map(t -> addTerm(t, stmt, tx)).collect(Collectors.toList());
 	}
 
-	private void addTerm(final String term, final String stmt, final Transaction tx) {
+	private Node addTerm(final String term, final String stmt, final Transaction tx) {
 		final Map<String, Object> params = Map.of("name", term);
 		StatementPrinter.print(stmt, params);
-		tx.execute(stmt, params);
+		try (final var result = tx.execute(stmt, params)) {
+			return ((Node) result.next().get("t"));
+		}
 	}
 
-	private void addTermRelationships(final List<String> terms, final Transaction tx) {
-		final var stmt = "MATCH (t1:" + Labels.TERM + " {name: $name1}),(t2:" + Labels.TERM + " {name: $name2})\n"
-				+ "MERGE (t1)-[r:" + RelationshipTypes.COOCCURS + "]-(t2)\n"
-				+ "ON CREATE SET r.count = 1\n"
-				+ "ON  MATCH SET r.count = r.count + 1\n";
-		for (int i = 0; i < terms.size(); i++) {
-			final var term1 = terms.get(i);
-			for (int j = i + 1; j < terms.size(); j++) {
-				final var term2 = terms.get(j);
-				final Map<String, Object> params = Map.of("name1", term1, "name2", term2);
-				StatementPrinter.print(stmt, params);
-				tx.execute(stmt, params);
+	private void addTermRelationships(final List<Node> termNodes, final Transaction tx) {
+		for (int i = 0; i < termNodes.size(); i++) {
+			final var term1 = termNodes.get(i);
+			for (int j = i + 1; j < termNodes.size(); j++) {
+				final var term2 = termNodes.get(j);
+				term1.createRelationshipTo(term2, RelationshipTypes.COOCCURS);
 			}
 		}
 	}
 
-	private void addSentenceNode(final List<String> terms, final long docId, final long currentSentence, final Transaction tx) {
-		final long id = addSentenceNode(tx);
-		addSentenceRelationships(id, terms, tx);
-		addDocumentRelationship(id, docId, currentSentence, tx);
+	private void addSentenceNode(final List<Node> termNodes, final long docId, final long currentSentence, final Transaction tx) {
+		final var sentenceNode = tx.createNode(Labels.SENTENCE);
+		addSentenceRelationships(sentenceNode, termNodes, tx);
+		addDocumentRelationship(sentenceNode, docId, currentSentence, tx);
 	}
 
-	private long addSentenceNode(final Transaction tx) {
-		final var id = sequences.nextValueFor(Labels.SENTENCE);
-		final var node = tx.createNode(Labels.SENTENCE);
-		node.setProperty("id", id);
-		return id;
-	}
-
-	private void addSentenceRelationships(final long id, final List<String> terms, final Transaction tx) {
-		final String stmt = " MATCH (s:" + Labels.SENTENCE + " {id: $id}),(t:" + Labels.TERM + " {name: $name})\n"
-				+ "CREATE (s)-[r:" + RelationshipTypes.CONTAINS + " {position: $position}]->(t)\n";
+	private void addSentenceRelationships(final Node sentenceNode, final List<Node> terms, final Transaction tx) {
 		for (int i = 0; i < terms.size(); i++) {
-			final String term = terms.get(i);
-			final Map<String, Object> params = Map.of("id", id, "name", term, "position", i);
-			StatementPrinter.print(stmt, params);
-			tx.execute(stmt, params);
+			final var termNode = terms.get(i);
+			final var relationship = sentenceNode.createRelationshipTo(termNode, RelationshipTypes.CONTAINS);
+			relationship.setProperty("position", i);
 		}
 	}
 
-	private void addDocumentRelationship(final long id, final long docId, final long currentSentence, final Transaction tx) {
-		final var stmt = " MATCH (s:" + Labels.SENTENCE + " {id: $sId}),(d:" + Labels.DOCUMENT + " {id: $dId})\n"
-				+ "CREATE (s)<-[r:" + RelationshipTypes.CONTAINS + " {position: $position}]-(d)\n";
-		final Map<String, Object> params = Map.of("sId", id, "dId", docId, "position", currentSentence);
-		StatementPrinter.print(stmt, params);
-		tx.execute(stmt, params);
+	private void addDocumentRelationship(final Node sentenceNode, final long docId, final long currentSentence, final Transaction tx) {
+		final var docNode = tx.findNode(Labels.DOCUMENT, "id", docId);
+		final var relationship = sentenceNode.createRelationshipTo(docNode, RelationshipTypes.CONTAINS);
+		relationship.setProperty("position", currentSentence);
 	}
 
 }

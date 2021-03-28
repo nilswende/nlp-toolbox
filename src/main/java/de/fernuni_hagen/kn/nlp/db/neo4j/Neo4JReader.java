@@ -164,16 +164,14 @@ public class Neo4JReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Long>> getTermFrequencies() {
-		final var stmt = "  MATCH (d:" + Labels.DOCUMENT + ")-[:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.SENTENCE + ")-[:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
-				+ "RETURN d.name, t.name, 1\n";
+		final var stmt = " MATCH (d:" + Labels.DOCUMENT + ")-[:" + RelationshipTypes.CONTAINS + "*2]-(t:" + Labels.TERM + ")\n"
+				+ "RETURN d.name, t.name, count(t)\n";
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
-			final var map = result.stream()
+			return result.stream()
 					.collect(Collectors.groupingBy(row -> row.get("d.name").toString(),
 							Collectors.toMap(row -> row.get("t.name").toString(), row -> toLong(row.get("count(t)")))
 					));
-			tx.commit();
-			return map;
 		}
 	}
 

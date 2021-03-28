@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.Entity;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
@@ -21,11 +22,12 @@ class EntityFormatter {
 	 * @return formatted Node
 	 */
 	public static String formatNode(final Node n) {
-		return "(:" + n.getLabels().iterator().next() + " " + formatEntity(n) + ")";
+		return "(:" + n.getLabels().iterator().next() + formatEntity(n) + ")";
 	}
 
 	private static String formatEntity(final Entity e) {
-		return e.getAllProperties().toString();
+		final var allProperties = e.getAllProperties();
+		return allProperties.isEmpty() ? StringUtils.EMPTY : " " + allProperties.toString();
 	}
 
 	/**
@@ -35,7 +37,7 @@ class EntityFormatter {
 	 * @return formatted Relationship
 	 */
 	public static String formatRelationship(final Relationship r) {
-		return formatNode(r.getStartNode()) + "-[:" + formatEntity(r) + "]-" + formatNode(r.getEndNode());
+		return formatNode(r.getStartNode()) + "-[:" + r.getType() + formatEntity(r) + "]-" + formatNode(r.getEndNode());
 	}
 
 	/**
