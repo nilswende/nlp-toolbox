@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
-import de.fernuni_hagen.kn.nlp.db.DBTest;
+import de.fernuni_hagen.kn.nlp.db.DBTestIm;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Nils Wende
  */
-class InMemoryReaderTest extends DBTest {
+class InMemoryReaderTest extends DBTestIm {
 
 	@Test
 	void getSignificances() {

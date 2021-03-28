@@ -18,6 +18,7 @@ import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
  */
 public class NLPToolbox {
 
+	private final DBFactory dbFactory;
 	private final AppConfig appConfig;
 	private final List<UseCaseConfig> useCaseConfigs;
 
@@ -28,14 +29,13 @@ public class NLPToolbox {
 	public NLPToolbox(final AppConfig appConfig, final List<UseCaseConfig> useCaseConfigs) {
 		this.appConfig = appConfig;
 		this.useCaseConfigs = useCaseConfigs;
-		DBFactory.init(this.appConfig);
+		dbFactory = DBFactory.from(this.appConfig);
 	}
 
 	private void run() {
-		final var dbReader = DBFactory.instance().getReader();
-		final var dbWriter = DBFactory.instance().getWriter();
+		final var dbReader = dbFactory.getReader();
+		final var dbWriter = dbFactory.getWriter();
 		useCaseConfigs.stream().map(UseCase::from).forEach(u -> u.execute(dbReader, dbWriter));
-		//new CsvExporter().export();
 		//((Neo4JReader)DBFactory.instance().getReader()).printPath("art", "version");
 	}
 

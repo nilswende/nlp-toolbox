@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.factory;
 
-import de.fernuni_hagen.kn.nlp.db.DBTest;
+import de.fernuni_hagen.kn.nlp.db.DBTestIm;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * @author Nils Wende
  */
-public class DBFactoryTest extends DBTest {
+public class DBFactoryTest extends DBTestIm {
 
 	@Test
 	void getReader() {
@@ -23,17 +23,17 @@ public class DBFactoryTest extends DBTest {
 
 	@Test
 	void getDb() {
-		assertNotNull(DBFactory.instance().getDb());
+		assertNotNull(getDbFactory().getDb());
 	}
 
 	@Test
 	void instance() {
-		assertNotNull(DBFactory.instance());
+		assertNotNull(getDbFactory());
 	}
 
 	@Test
-	void init() {
-		assertThrows(AssertionError.class, () -> DBFactory.init(null));
+	void from() {
+		assertThrows(NullPointerException.class, () -> DBFactory.from(null));
 	}
 
 }

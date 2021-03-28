@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
-import de.fernuni_hagen.kn.nlp.db.DBTest;
-import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
+import de.fernuni_hagen.kn.nlp.db.DBTestIm;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Nils Wende
  */
-class InMemoryWriterTest extends DBTest {
+class InMemoryWriterTest extends DBTestIm {
 
-	InMemoryDB db = (InMemoryDB) DBFactory.instance().getDb();
+	InMemoryDB db = (InMemoryDB) getDbFactory().getDb();
 
 	@Test
 	void addSentence() {
