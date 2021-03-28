@@ -82,10 +82,12 @@ public class InMemoryReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Long>> getTermFrequencies() {
-		final var data = db.getData();
-		final var copy = Maps.<String, Map<String, Long>>newHashMap(data.size());
-		data.forEach((k, v) -> copy.put(k, new HashMap<>(v.getDocuments())));
-		return copy;
+		final var map = new HashMap<String, Map<String, Long>>();
+		db.getData().forEach(
+				(k, v) -> v.getDocuments().forEach(
+						(d, n) -> map.computeIfAbsent(d, x -> new HashMap<>()).put(k, n)
+				));
+		return map;
 	}
 
 	@Override

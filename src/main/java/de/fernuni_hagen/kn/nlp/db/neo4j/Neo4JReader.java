@@ -97,7 +97,6 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
 		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-				+ " WHERE (count(c) / t1.count) >= (count(c) / t2.count)\n"
 				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
@@ -121,8 +120,9 @@ public class Neo4JReader implements DBReader {
 	 * Returns the maximum number of sentences that contain the same term.
 	 */
 	private long getMaxSentencesCount(final Transaction tx) {
-		final var stmt = " MATCH (:" + Labels.SENTENCE + ")-[s:" + RelationshipTypes.CONTAINS + "]-(:" + Labels.TERM + ")\n"
-				+ "RETURN max(count(s)) as max\n";
+		final var stmt = " MATCH (s:" + Labels.SENTENCE + ")-[r:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
+				+ "  WITH s, t, count(r) as c\n"
+				+ "RETURN max(c) as max\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
 			return toLong(row.get("max"));

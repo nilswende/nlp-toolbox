@@ -82,7 +82,9 @@ public class InMemoryDB {
 	 */
 	public void addUndirectedRelationship(final String term1, final String term2) {
 		addDirectedRelationship(term1, term2);
-		addDirectedRelationship(term2, term1);
+		if (!term1.equals(term2)) {
+			addDirectedRelationship(term2, term1);
+		}
 	}
 
 	/**

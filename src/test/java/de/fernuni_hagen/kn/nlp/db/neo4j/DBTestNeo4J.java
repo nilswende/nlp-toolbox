@@ -11,9 +11,9 @@ import java.nio.file.Path;
 /**
  * @author Nils Wende
  */
-public abstract class DBTestNeo4J extends DBTest {
+public class DBTestNeo4J extends DBTest {
 
-	protected static final DBFactory dbFactory;
+	private static final DBFactory dbFactory;
 
 	static {
 		final var mock = Mockito.mock(AppConfig.class);
