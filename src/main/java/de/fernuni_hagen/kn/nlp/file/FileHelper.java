@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Helps with file operations.
@@ -17,12 +14,17 @@ import java.util.List;
  */
 public final class FileHelper {
 
-	private static final List<Path> tempFiles = Collections.synchronizedList(new ArrayList<>());
-
 	private FileHelper() {
 		throw new AssertionError("no init");
 	}
 
+	/**
+	 * Opens a file for reading with the default charset.
+	 *
+	 * @param path the file path
+	 * @return Reader
+	 * @throws IOException if an I/O error occurs opening the file
+	 */
 	public static Reader newFileReader(final Path path) throws IOException {
 		return Files.newBufferedReader(path, AppConfig.DEFAULT_CHARSET);
 	}
