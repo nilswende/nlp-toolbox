@@ -1,5 +1,6 @@
 {
   "name": "preprocessing",
+  "keepTempFiles": true,
   "extractPhrases": true,
   "useBaseFormReduction": true,
   "filterNouns": true,

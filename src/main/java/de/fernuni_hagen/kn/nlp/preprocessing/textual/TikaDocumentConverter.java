@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
-import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -21,15 +21,15 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
-	private final int sentenceFileSizeLimitBytes;
+	private final Preprocessor.Config config;
 
-	public TikaDocumentConverter(final int sentenceFileSizeLimitBytes) {
-		this.sentenceFileSizeLimitBytes = sentenceFileSizeLimitBytes;
+	public TikaDocumentConverter(final Preprocessor.Config config) {
+		this.config = config;
 	}
 
 	@Override
 	public Path convert(final Path path) {
-		final var tempFile = FileHelper.createTempFile(".txt");
+		final Path tempFile = getTempFile(path);
 		try (final var writer = Files.newBufferedWriter(tempFile, AppConfig.DEFAULT_CHARSET)) {
 			parseInput(path, writer);
 			return tempFile;
@@ -38,10 +38,18 @@ public class TikaDocumentConverter implements DocumentConverter {
 		}
 	}
 
+	private Path getTempFile(final Path path) {
+		final var tempFile = Path.of(Path.of("data", "sentencefiles").resolve(path.getFileName()).toString() + ".txt");
+		if (!config.keepTempFiles()) {
+			tempFile.toFile().deleteOnExit();
+		}
+		return tempFile;
+	}
+
 	private void parseInput(final Path path, final Writer writer) {
 		try (final var inputStream = Files.newInputStream(path)) {
 			final var parser = new AutoDetectParser();
-			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes));
+			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
 			final var metadata = new Metadata();
 			parser.parse(inputStream, contentHandler, metadata);
 		} catch (final Exception e) {

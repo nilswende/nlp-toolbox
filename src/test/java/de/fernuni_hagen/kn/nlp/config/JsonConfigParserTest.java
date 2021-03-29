@@ -1,6 +1,5 @@
-package de.fernuni_hagen.kn.nlp;
+package de.fernuni_hagen.kn.nlp.config;
 
-import de.fernuni_hagen.kn.nlp.config.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

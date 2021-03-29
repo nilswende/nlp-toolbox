@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.file;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
-import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -22,31 +21,6 @@ public final class FileHelper {
 
 	private FileHelper() {
 		throw new AssertionError("no init");
-	}
-
-	public static Path createTempFile(final String suffix) {
-		try {
-			final var tempFile = Files.createTempFile("nlp", suffix);
-			tempFiles.add(tempFile);
-			return tempFile;
-		} catch (final IOException e) {
-			throw new UncheckedException(e);
-		}
-	}
-
-	public static void delete(final Path path) {
-		try {
-			Files.deleteIfExists(path);
-		} catch (final IOException e) {
-			throw new UncheckedException(e);
-		}
-	}
-
-	public static void deleteTempFiles() {
-		synchronized (tempFiles) {
-			tempFiles.forEach(FileHelper::delete);
-			tempFiles.clear();
-		}
 	}
 
 	public static Reader newFileReader(final Path path) throws IOException {

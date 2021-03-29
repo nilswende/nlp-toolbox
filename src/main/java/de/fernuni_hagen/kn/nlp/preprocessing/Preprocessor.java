@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
-import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
@@ -99,7 +98,7 @@ public class Preprocessor extends UseCase {
 	 */
 	@Override
 	public void execute(final DBWriter db) {
-		final var documentConverter = new TikaDocumentConverter(config.getSentenceFileSizeLimitBytes());
+		final var documentConverter = new TikaDocumentConverter(config);
 		try (final var paths = Files.walk(config.getInputDir())) {
 			paths.filter(p -> Files.isRegularFile(p))
 					.peek(db::addDocument)
@@ -108,10 +107,6 @@ public class Preprocessor extends UseCase {
 					.forEach(db::addSentence);
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
-		} finally {
-			if (!config.keepTempFiles()) {
-				FileHelper.deleteTempFiles();
-			}
 		}
 	}
 
