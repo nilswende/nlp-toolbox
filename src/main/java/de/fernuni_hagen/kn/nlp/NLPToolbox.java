@@ -6,6 +6,7 @@ import de.fernuni_hagen.kn.nlp.config.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
+import de.fernuni_hagen.kn.nlp.file.ExternalResourcesExtractor;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class NLPToolbox {
 	}
 
 	public static void main(final String[] args) {
-		//ExternalResourcesExtractor.extractExternalResources();
+		ExternalResourcesExtractor.extractExternalResources();
 		new NLPToolbox(new JsonConfigParser(args)).run();
 		logCurrentThreadCpuTime();
 	}

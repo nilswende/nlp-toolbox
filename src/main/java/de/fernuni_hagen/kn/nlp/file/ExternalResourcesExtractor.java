@@ -3,10 +3,10 @@ package de.fernuni_hagen.kn.nlp.file;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -29,9 +29,9 @@ public final class ExternalResourcesExtractor {
 		final var resource = ExternalResourcesExtractor.class.getClassLoader().getResourceAsStream(zipName);
 		if (resource == null) {
 			System.out.println("no file found in " + zipName);
-			return;
+		} else {
+			unzip(resource);
 		}
-		unzip(resource);
 	}
 
 	private static void unzip(final InputStream resource) {
@@ -40,9 +40,9 @@ public final class ExternalResourcesExtractor {
 			while ((entry = zip.getNextEntry()) != null) {
 				if (!entry.isDirectory()) {
 					final var fileName = entry.getName();
-					final var file = new File(fileName);
-					if (!file.exists()) {
-						IOUtils.copy(zip, new FileOutputStream(file));
+					final var path = Path.of(fileName);
+					if (!Files.exists(path)) {
+						IOUtils.copy(zip, Files.newOutputStream(path));
 					}
 				}
 			}
