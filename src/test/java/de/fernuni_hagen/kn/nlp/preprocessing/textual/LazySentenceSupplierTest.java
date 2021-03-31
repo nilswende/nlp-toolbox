@@ -1,14 +1,12 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.TempFileTest;
-import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +25,7 @@ class LazySentenceSupplierTest extends TempFileTest {
 	void get(final List<String> sentences) {
 		final String input = String.join("", sentences);
 		try {
-			Files.writeString(tempFile, input, AppConfig.DEFAULT_CHARSET);
+			writeString(input);
 			final var strings = new ArrayList<String>();
 			try (final var sentenceSupplier = new LazySentenceSupplier(tempFile, Locale.ENGLISH)) {
 				for (char[] s; (s = sentenceSupplier.get()) != null; ) {

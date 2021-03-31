@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.utils.Utils;
 import org.neo4j.graphalgo.CostEvaluator;
 import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphdb.Direction;
@@ -180,7 +181,7 @@ public class Neo4JReader implements DBReader {
 			final var evaluator = new SignificanceEvaluator(k, kmax, function);
 			final var pathFinder = GraphAlgoFactory.dijkstra(PathExpanders.forType(RelationshipTypes.COOCCURS), evaluator, 1);
 			final var path = pathFinder.findSinglePath(tx.findNode(Labels.TERM, "name", start), tx.findNode(Labels.TERM, "name", end));
-			final var nodes = Neo4JUtils.stream(path.nodes()).map(n -> n.getProperty("name").toString()).collect(Collectors.toList());
+			final var nodes = Utils.stream(path.nodes()).map(n -> n.getProperty("name").toString()).collect(Collectors.toList());
 			return new WeightedPath(nodes, path.weight());
 		}
 	}

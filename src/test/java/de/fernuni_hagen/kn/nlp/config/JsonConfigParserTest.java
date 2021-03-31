@@ -1,13 +1,24 @@
 package de.fernuni_hagen.kn.nlp.config;
 
+import de.fernuni_hagen.kn.nlp.TempFileTest;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * @author Nils Wende
  */
-class JsonConfigParserTest {
+class JsonConfigParserTest extends TempFileTest {
+
+	@BeforeAll
+	static void setUp() throws IOException {
+		tempFile = Files.createTempFile("nlp", ".json");
+		tempFile.toFile().deleteOnExit();
+	}
 
 	@Test
 	void getAppConfig() {
@@ -51,6 +62,14 @@ class JsonConfigParserTest {
 				"-u", "{name:pagerank}",
 				"-u", "{name:pagerank,", "weightingFunction:POISSON}"
 		});
+		Assertions.assertNotNull(parser.getUseCaseConfigs());
+	}
+
+	@Test
+	void getUseCaseValuesFromJsonArray() throws IOException {
+		var json = "[\n{\n\"name\": \"pagerank\",\n\"resultLimit\": 25\n},\n{\n\"name\": \"hits\",\n\"resultLimit\": 25\n}\n]";
+		writeString(json);
+		final var parser = new JsonConfigParser(new String[]{"-u", tempFile.toString()});
 		Assertions.assertNotNull(parser.getUseCaseConfigs());
 	}
 

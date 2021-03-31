@@ -1,8 +1,11 @@
 package de.fernuni_hagen.kn.nlp.config;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
+import de.fernuni_hagen.kn.nlp.utils.Utils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Parses configs from JSON command-line arguments.
@@ -57,8 +61,9 @@ public class JsonConfigParser extends ConfigParser {
 	protected List<UseCaseConfig> createUseCaseConfigs(final List<String> useCaseValues) {
 		return joinJsonParts(useCaseValues).stream()
 				.map(this::getJson)
+				.map(this::asJsonArray)
 				.peek(System.out::println)
-				.map(this::getUseCaseConfig)
+				.flatMap(this::getUseCaseConfigs)
 				.collect(Collectors.toList());
 	}
 
@@ -107,6 +112,17 @@ public class JsonConfigParser extends ConfigParser {
 
 	private boolean isJson(final String arg) {
 		return arg.endsWith("}");
+	}
+
+	private String asJsonArray(final String json) {
+		return json.stripLeading().startsWith("[") ? json : "[" + json + "]";
+	}
+
+	private Stream<UseCaseConfig> getUseCaseConfigs(final String arg) {
+		final var jsonArray = JsonParser.parseString(arg).getAsJsonArray();
+		return Utils.stream(jsonArray)
+				.map(JsonElement::toString)
+				.map(this::getUseCaseConfig);
 	}
 
 	private UseCaseConfig getUseCaseConfig(final String arg) {

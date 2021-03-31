@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp;
 
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
@@ -17,6 +18,10 @@ public abstract class TempFileTest {
 	static void setUp() throws IOException {
 		tempFile = Files.createTempFile("nlp", ".test");
 		tempFile.toFile().deleteOnExit();
+	}
+
+	protected void writeString(final String input) throws IOException {
+		Files.writeString(tempFile, input, AppConfig.DEFAULT_CHARSET);
 	}
 
 }

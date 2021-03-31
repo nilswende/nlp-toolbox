@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
+import de.fernuni_hagen.kn.nlp.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.Entity;
 import org.neo4j.graphdb.Node;
@@ -47,7 +48,7 @@ class EntityFormatter {
 	 * @return formatted Path
 	 */
 	public static String formatPath(final Path p) {
-		return Neo4JUtils.stream(p.relationships())
+		return Utils.stream(p.relationships())
 				.map(EntityFormatter::formatRelationship)
 				.collect(Collectors.joining("\n"));
 	}
