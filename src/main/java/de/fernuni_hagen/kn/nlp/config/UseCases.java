@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.config;
 
 import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
+import de.fernuni_hagen.kn.nlp.analysis.CentroidByMinAvgDistance;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
 import de.fernuni_hagen.kn.nlp.analysis.DL4JWord2Vec;
 import de.fernuni_hagen.kn.nlp.analysis.DocumentSimilarity;
@@ -22,6 +23,7 @@ public enum UseCases {
 	CLEAR_DATABASE(ClearDatabase.Config.class),
 	PREPROCESSING(Preprocessor.Config.class),
 	BOOLEAN_RETRIEVAL(BooleanRetrieval.Config.class),
+	CENTROID_BY_MIN_AVG_DISTANCE(CentroidByMinAvgDistance.Config.class),
 	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivation.Config.class),
 	DOCUMENT_SIMILARITY(DocumentSimilarity.Config.class),
 	HITS(HITS.Config.class),
