@@ -62,8 +62,8 @@ public class CentroidBySpreadingActivation extends UseCase {
 			return null;
 		}
 
-		significances.values().forEach(m -> m.replaceAll((k, v) -> 1 / v));
-		return findCentroid(cleanedQuery, significances);
+		final var distances = Maps.invertValues(significances);
+		return findCentroid(cleanedQuery, distances);
 	}
 
 	private List<String> cleanQuery(final List<String> query, final Map<String, Map<String, Double>> significances) {
@@ -71,22 +71,22 @@ public class CentroidBySpreadingActivation extends UseCase {
 		if (cleanedQuery == null || cleanedQuery.size() <= 1) {
 			return null;
 		}
-		cleanedQuery = getDbQuery(cleanedQuery, significances);
+		cleanedQuery = filterQueryTermsContainedInDB(cleanedQuery, significances);
 		if (cleanedQuery.size() <= 1) {
 			return null;
 		}
-		cleanedQuery = getSubgraphQuery(cleanedQuery, significances);
+		cleanedQuery = getQueryTermsSpanningBiggestSubgraph(cleanedQuery, significances);
 		if (cleanedQuery.size() <= 1) {
 			return null;
 		}
 		return cleanedQuery;
 	}
 
-	private List<String> getDbQuery(final List<String> query, final Map<String, Map<String, Double>> significances) {
+	private List<String> filterQueryTermsContainedInDB(final List<String> query, final Map<String, Map<String, Double>> significances) {
 		return query.stream().filter(significances::containsKey).collect(Collectors.toList());
 	}
 
-	private List<String> getSubgraphQuery(final List<String> query, final Map<String, Map<String, Double>> significances) {
+	private List<String> getQueryTermsSpanningBiggestSubgraph(final List<String> query, final Map<String, Map<String, Double>> significances) {
 		var subgraphQuery = List.<String>of();
 		final var bfs = new BreadthFirstGraphSearcher();
 		for (final var queryTerm : query) {

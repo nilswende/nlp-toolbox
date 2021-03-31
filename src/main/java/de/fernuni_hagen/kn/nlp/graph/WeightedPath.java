@@ -28,6 +28,15 @@ public class WeightedPath {
 		this.weight = weight;
 	}
 
+	/**
+	 * Returns true, if the path exists.
+	 *
+	 * @return true, if the path exists
+	 */
+	public boolean exists() {
+		return weight != Double.POSITIVE_INFINITY;
+	}
+
 	public List<String> getPath() {
 		return path;
 	}
