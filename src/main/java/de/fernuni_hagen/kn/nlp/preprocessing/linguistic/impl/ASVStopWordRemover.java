@@ -24,7 +24,8 @@ public class ASVStopWordRemover implements StopWordRemover {
 	/**
 	 * Constructor.
 	 *
-	 * @param locale the sentence's language
+	 * @param locale      the sentence's language
+	 * @param asvLanguage the language constant defined by the ASV library
 	 */
 	public ASVStopWordRemover(final Locale locale, final int asvLanguage) {
 		this.locale = locale;

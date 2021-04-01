@@ -117,6 +117,8 @@ public abstract class UseCase {
 	 * @param map          the map
 	 * @param emptyMessage message if the map is empty
 	 * @param format       message for each inner map entry
+	 * @param <K>          inner key type
+	 * @param <V>          value type
 	 */
 	protected <K, V> void printfMapMap(final Map<?, Map<K, V>> map, final String emptyMessage, final String format) {
 		if (map.isEmpty()) {

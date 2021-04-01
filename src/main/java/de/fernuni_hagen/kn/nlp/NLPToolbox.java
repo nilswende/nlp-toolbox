@@ -22,21 +22,34 @@ public class NLPToolbox {
 	private final AppConfig appConfig;
 	private final List<UseCaseConfig> useCaseConfigs;
 
+	/**
+	 * Creates an instance from a {@link ConfigParser}.
+	 *
+	 * @param configParser ConfigParser
+	 */
 	public NLPToolbox(final ConfigParser configParser) {
 		this(configParser.getAppConfig(), configParser.getUseCaseConfigs());
 	}
 
+	/**
+	 * Creates an instance from configs.
+	 *
+	 * @param appConfig      AppConfig
+	 * @param useCaseConfigs UseCaseConfigs
+	 */
 	public NLPToolbox(final AppConfig appConfig, final List<UseCaseConfig> useCaseConfigs) {
 		this.appConfig = appConfig;
 		this.useCaseConfigs = useCaseConfigs;
 		dbFactory = DBFactory.from(this.appConfig);
 	}
 
-	private void run() {
+	/**
+	 * Run NLPToolbox with the supplied configs.
+	 */
+	public void run() {
 		final var dbReader = dbFactory.getReader();
 		final var dbWriter = dbFactory.getWriter();
 		useCaseConfigs.stream().map(UseCase::from).forEach(u -> u.execute(dbReader, dbWriter));
-		//((Neo4JReader)DBFactory.instance().getReader()).printPath("art", "version");
 	}
 
 	public static void main(final String[] args) {

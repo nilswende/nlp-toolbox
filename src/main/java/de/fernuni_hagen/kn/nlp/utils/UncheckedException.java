@@ -9,16 +9,10 @@ package de.fernuni_hagen.kn.nlp.utils;
 public class UncheckedException extends RuntimeException {
 	private static final long serialVersionUID = -1L;
 
-	/**
-	 * @see RuntimeException#RuntimeException(Throwable)
-	 */
 	public UncheckedException(final Throwable cause) {
 		super(cause);
 	}
 
-	/**
-	 * @see RuntimeException#RuntimeException(String, Throwable)
-	 */
 	public UncheckedException(final String message, final Throwable cause) {
 		super(message, cause);
 	}

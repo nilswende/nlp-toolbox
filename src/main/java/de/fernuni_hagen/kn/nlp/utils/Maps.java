@@ -20,14 +20,14 @@ public final class Maps {
 	}
 
 	/**
-	 * Creates a new HashMap with an initial capacity high enough to hold {@code size} entries without rehashing.
+	 * Creates a new HashMap with an initial capacity high enough to hold {@code size} entries without rehashing.<br>
+	 * Should only be used when you need to explicitly create a new map and you know its size beforehand.
+	 * If you can create the map by using e. g. Collectors.toMap, do so, since it is usually clearer and more concise.
 	 *
 	 * @param size the expected number of entries of the new HashMap
 	 * @param <K>  key type
 	 * @param <V>  value type
 	 * @return a new HashMap
-	 * @apiNote Should only be used when you need to explicitly create a new map and you know its size beforehand.
-	 * If you can create the map by using e. g. Collectors.toMap, do so, since it is usually clearer and more concise.
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(final int size) {
 		return new HashMap<>((int) (size / 0.75) + 1);

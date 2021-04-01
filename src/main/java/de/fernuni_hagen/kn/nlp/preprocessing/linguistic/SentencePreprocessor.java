@@ -27,6 +27,7 @@ public class SentencePreprocessor {
 	 * Executes the linguistic preprocessing of the given sentences.
 	 *
 	 * @param sentences DB
+	 * @return the preprocessed sentences
 	 */
 	public Stream<Sentence> processSentences(final Stream<String> sentences) {
 		final var cleanedSentences = cleanSentences(sentences);
