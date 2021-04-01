@@ -27,28 +27,26 @@ public class BooleanRetrieval extends UseCase {
 	 * BooleanRetrieval config.
 	 */
 	public static class Config extends UseCaseConfig {
-		private String expression;
-		private List<String> query;
-
-		public String getExpression() {
-			return expression;
-		}
-
-		public List<String> getQuery() {
-			return query;
-		}
+		/**
+		 * The type of boolean retrieval to use. Options are "and", "or", "not".
+		 */
+		public String expression;
+		/**
+		 * The terms used for retrieval.
+		 */
+		public List<String> query;
 	}
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		if (config.getExpression().equalsIgnoreCase("and")) {
+		if (config.expression.equalsIgnoreCase("and")) {
 			printfCollection(and(dbReader), "No matches found", "%s");
-		} else if (config.getExpression().equalsIgnoreCase("or")) {
+		} else if (config.expression.equalsIgnoreCase("or")) {
 			printfMap(or(dbReader), "No matches found", "Document '%s' contains %s query terms");
-		} else if (config.getExpression().equalsIgnoreCase("not")) {
+		} else if (config.expression.equalsIgnoreCase("not")) {
 			printfCollection(not(dbReader), "No matches found", "%s");
 		} else {
-			throw new IllegalArgumentException("Unknown expression " + config.getExpression());
+			throw new IllegalArgumentException("Unknown expression " + config.expression);
 		}
 	}
 
@@ -60,7 +58,7 @@ public class BooleanRetrieval extends UseCase {
 	 */
 	public Set<String> and(final DBReader db) {
 		return or(db).entrySet().stream()
-				.filter(e -> e.getValue() == config.getQuery().size())
+				.filter(e -> e.getValue() == config.query.size())
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 	}
@@ -73,7 +71,7 @@ public class BooleanRetrieval extends UseCase {
 	 */
 	public Map<String, Long> or(final DBReader db) {
 		final var term2doc = db.getTermFrequencies();
-		return config.getQuery().stream()
+		return config.query.stream()
 				.flatMap(t -> term2doc.getOrDefault(t, Map.of()).keySet().stream())
 				.collect(Collectors.toMap(doc -> doc, doc -> 1L, Long::sum));
 	}
@@ -87,7 +85,7 @@ public class BooleanRetrieval extends UseCase {
 	public Set<String> not(final DBReader db) {
 		final var doc2term = Maps.invertMapping(db.getTermFrequencies());
 		return doc2term.entrySet().stream()
-				.filter(e -> config.getQuery().stream().noneMatch(t -> e.getValue().containsKey(t)))
+				.filter(e -> config.query.stream().noneMatch(t -> e.getValue().containsKey(t)))
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 	}

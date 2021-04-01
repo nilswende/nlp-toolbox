@@ -30,7 +30,7 @@ class BooleanRetrievalTest {
 
 	private BooleanRetrieval.Config mockConfig(final String... query) {
 		final BooleanRetrieval.Config config = Mockito.mock(BooleanRetrieval.Config.class);
-		Mockito.when(config.getQuery()).thenReturn(List.of(query));
+		Mockito.when(config.query).thenReturn(List.of(query));
 		return config;
 	}
 
