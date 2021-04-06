@@ -40,6 +40,11 @@ public class PhraseIterator implements Iterator<String> {
 	 */
 	@Override
 	public boolean hasNext() {
+		findNext();
+		return nextPhrase != null;
+	}
+
+	private void findNext() {
 		String phrase = null;
 		int index = Integer.MAX_VALUE;
 		for (final String p : phrases) {
@@ -51,13 +56,12 @@ public class PhraseIterator implements Iterator<String> {
 		}
 		nextPhrase = phrase;
 		nextPos = index;
-		return index != Integer.MAX_VALUE;
 	}
 
 	private int nextPosition(final String phrase) {
-		return (builder == null
+		return builder == null
 				? sentence.indexOf(phrase, pos + 1)
-				: builder.indexOf(phrase, pos + 1));
+				: builder.indexOf(phrase, pos + 1);
 	}
 
 	/**
@@ -74,11 +78,10 @@ public class PhraseIterator implements Iterator<String> {
 	}
 
 	private void checkNext() {
-		var hasNext = true;
 		if (pos == nextPos) {
-			hasNext = hasNext();
+			findNext();
 		}
-		if (!hasNext) {
+		if (nextPhrase == null) {
 			throw new NoSuchElementException();
 		}
 	}

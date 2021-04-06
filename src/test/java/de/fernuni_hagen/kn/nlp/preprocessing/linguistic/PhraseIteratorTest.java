@@ -94,6 +94,13 @@ class PhraseIteratorTest {
 	}
 
 	@Test
+	void hasNextAndNextThrows() {
+		final var iterator = new PhraseIterator("", List.of());
+		final var hasNext = iterator.hasNext();
+		assertThrows(NoSuchElementException.class, iterator::next);
+	}
+
+	@Test
 	void removeThrows() {
 		final var iterator = new PhraseIterator("a", List.of("a"));
 		assertThrows(IllegalStateException.class, iterator::remove);
