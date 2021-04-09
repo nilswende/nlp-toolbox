@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +29,7 @@ public abstract class DBTest {
 	@BeforeEach
 	void beforeEach() {
 		writer.deleteAll();
-		writer.addDocument(Path.of("1"));
+		writer.addDocument("1");
 	}
 
 	@AfterEach
@@ -111,7 +110,7 @@ public abstract class DBTest {
 	void getTermFrequencies() {
 		writer.addSentence(List.of("a", "b", "c"));
 		writer.addSentence(List.of("b", "d", "c", "e"));
-		writer.addDocument(Path.of("2"));
+		writer.addDocument("2");
 		writer.addSentence(List.of("b", "a"));
 		writer.addSentence(List.of("a", "f"));
 
@@ -140,7 +139,7 @@ public abstract class DBTest {
 		writer.addSentence(List.of("a", "b", "c", "d"));
 		writer.addSentence(List.of("e", "f", "g", "h"));
 
-		final var list = reader.getAllSentencesInDocument(Path.of("1"));
+		final var list = reader.getAllSentencesInDocument("1");
 		assertEquals(2, list.size(), list.toString());
 		var sentence = list.get(0);
 		assertEquals(4, sentence.size(), sentence.toString());

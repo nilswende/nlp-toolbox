@@ -7,7 +7,6 @@ import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.sentenceiterator.CollectionSentenceIterator;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 
-import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +59,7 @@ public class DL4JWord2Vec extends UseCase {
 
 	@Override
 	protected void execute(final DBReader dbReader) {
-		final var sentences = dbReader.getAllSentencesInDocument(Path.of(document)).stream()
+		final var sentences = dbReader.getAllSentencesInDocument(document).stream()
 				.map(l -> String.join(StringUtils.SPACE, l))
 				.collect(Collectors.toList());
 		final var sentenceIterator = new CollectionSentenceIterator(sentences);

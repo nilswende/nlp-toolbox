@@ -3,8 +3,8 @@
     "name": "clearDatabase"
   },
   {
-    "name": "preprocessing",
-    "keepTempFiles": true,
+    "name": "filepreprocessing",
+    "keepTempFiles": false,
     "extractPhrases": true,
     "useBaseFormReduction": true,
     "filterNouns": true,

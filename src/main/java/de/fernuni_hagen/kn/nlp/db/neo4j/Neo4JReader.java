@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Utils;
@@ -187,11 +186,11 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
-	public List<List<String>> getAllSentencesInDocument(final java.nio.file.Path path) {
+	public List<List<String>> getAllSentencesInDocument(final String name) {
 		final var stmt = "   MATCH (:" + Labels.DOCUMENT + " {name: $doc})-[r:" + RelationshipTypes.CONTAINS + "]-()-[p:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
 				+ "  RETURN r.position, t.name\n"
 				+ "ORDER BY r.position, p.position\n";
-		final Map<String, Object> params = Map.of("doc", DBUtils.normalizePath(path));
+		final Map<String, Object> params = Map.of("doc", name);
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt, params)) {
 			// no Stream groupingBy to preserve the sentence/term order

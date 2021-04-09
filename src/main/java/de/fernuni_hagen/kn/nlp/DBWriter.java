@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,11 +19,11 @@ public interface DBWriter {
 
 	/**
 	 * Adds a document to the DB.<br>
-	 * No two input documents should have the same file name.
+	 * No two input documents should have the same name.
 	 *
-	 * @param path the document's file path
+	 * @param name the document's name
 	 */
-	void addDocument(Path path);
+	void addDocument(String name);
 
 	/**
 	 * Adds a sentence to the DB.

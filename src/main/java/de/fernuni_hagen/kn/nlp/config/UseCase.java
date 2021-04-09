@@ -84,7 +84,7 @@ public abstract class UseCase {
 		}
 
 		private String getName() {
-			return this.getClass().getEnclosingClass().getSimpleName();
+			return this.getClass().getDeclaringClass().getSimpleName();
 		}
 
 		/**

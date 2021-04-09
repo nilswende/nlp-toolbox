@@ -1,13 +1,11 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,20 +97,19 @@ public class InMemoryReader implements DBReader {
 	/**
 	 * Gets all terms in the given document.
 	 *
-	 * @param path original path of a preprocessed file
+	 * @param name original name of a preprocessed document
 	 * @return all terms in the given document
 	 */
-	public List<String> getAllTermsInDocument(final Path path) {
-		return getAllSentencesInDocument(path).stream()
+	public List<String> getAllTermsInDocument(final String name) {
+		return getAllSentencesInDocument(name).stream()
 				.flatMap(List::stream)
 				.distinct()
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<List<String>> getAllSentencesInDocument(final Path path) {
-		final var pathStr = DBUtils.normalizePath(path);
-		return db.getDoc2Sentences().get(pathStr).stream().map(ArrayList::new).collect(Collectors.toList());
+	public List<List<String>> getAllSentencesInDocument(final String name) {
+		return db.getDoc2Sentences().get(name).stream().map(ArrayList::new).collect(Collectors.toList());
 	}
 
 }

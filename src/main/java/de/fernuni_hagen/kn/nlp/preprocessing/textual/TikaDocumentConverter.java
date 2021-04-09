@@ -3,12 +3,14 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.WriteOutContentHandler;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,39 +22,37 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
-	private final boolean keepTempFiles;
 	private final int sentenceFileSizeLimitBytes;
+	public static final Path DIR = Path.of("data", "sentencefiles");
 
-	public TikaDocumentConverter(final boolean keepTempFiles, final int sentenceFileSizeLimitBytes) {
-		this.keepTempFiles = keepTempFiles;
+	public TikaDocumentConverter(final int sentenceFileSizeLimitBytes) {
 		this.sentenceFileSizeLimitBytes = sentenceFileSizeLimitBytes;
 	}
 
 	@Override
-	public Path convert(final Path path) {
-		final Path tempFile = getTempFile(path);
-		try (final var writer = Files.newBufferedWriter(tempFile, AppConfig.DEFAULT_CHARSET)) {
-			parseInput(path, writer);
-			return tempFile;
+	public Path convert(final Reader reader, final String name) {
+		final Path tempFile = getTempFile(name);
+		try {
+			Files.createDirectories(DIR);
+			try (final var writer = Files.newBufferedWriter(tempFile, AppConfig.DEFAULT_CHARSET)) {
+				parseInput(reader, writer);
+				return tempFile;
+			}
 		} catch (final IOException e) {
 			throw new UncheckedException(e);
 		}
 	}
 
-	private Path getTempFile(final Path path) {
-		final var tempFile = Path.of(Path.of("data", "sentencefiles").resolve(path.getFileName()).toString() + ".txt");
-		if (!keepTempFiles) {
-			tempFile.toFile().deleteOnExit();
-		}
-		return tempFile;
+	private Path getTempFile(final String name) {
+		return Path.of(DIR.resolve(name).toString() + ".txt");
 	}
 
-	private void parseInput(final Path path, final Writer writer) {
-		try (final var inputStream = Files.newInputStream(path)) {
-			final var parser = new AutoDetectParser();
-			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes));
+	private void parseInput(final Reader reader, final Writer writer) {
+		try {
+			final var stream = new ReaderInputStream(reader, AppConfig.DEFAULT_CHARSET);
+			final var handler = new BodyContentHandler(new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes));
 			final var metadata = new Metadata();
-			parser.parse(inputStream, contentHandler, metadata);
+			new AutoDetectParser().parse(stream, handler, metadata);
 		} catch (final Exception e) {
 			handleException(e);
 		}

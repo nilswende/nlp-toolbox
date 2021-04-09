@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
@@ -11,6 +10,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,13 +19,14 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Executes the preprocessing of documents.
+ * Executes the preprocessing of a document.
  *
  * @author Nils Wende
  */
 public class Preprocessor extends UseCase {
 
-	private Path inputDir = Path.of(AppConfig.DEFAULT_BASE_DIR, "input");
+	private Reader input;
+	private String documentName;
 	private boolean keepTempFiles;
 	private int sentenceFileSizeLimitBytes = Integer.MAX_VALUE;
 	private boolean extractPhrases;
@@ -36,21 +37,21 @@ public class Preprocessor extends UseCase {
 	private boolean removeAbbreviations;
 	private boolean normalizeCase;
 
+	private Result result;
+
 	/**
-	 * Executes the preprocessing of documents.
+	 * Executes the preprocessing of a document.
 	 */
 	@Override
 	public void execute(final DBWriter db) {
-		final var documentConverter = new TikaDocumentConverter(keepTempFiles, sentenceFileSizeLimitBytes);
-		try (final var paths = Files.walk(inputDir)) {
-			paths.filter(p -> Files.isRegularFile(p))
-					.peek(db::addDocument)
-					.map(documentConverter::convert)
-					.flatMap(this::preprocess)
-					.forEach(db::addSentence);
-		} catch (final IOException e) {
-			throw new UncheckedException(e);
+		final var documentConverter = new TikaDocumentConverter(sentenceFileSizeLimitBytes);
+		final var tempFile = documentConverter.convert(input, documentName);
+		db.addDocument(documentName);
+		preprocess(tempFile).forEach(db::addSentence);
+		if (!keepTempFiles) {
+			deleteTempFile(tempFile);
 		}
+		result = new Result();
 	}
 
 	/**
@@ -85,13 +86,26 @@ public class Preprocessor extends UseCase {
 		return steps;
 	}
 
-	@Override
-	public Result getResult() {
-		return new Result();
+	private void deleteTempFile(final Path tempFile) {
+		try {
+			Files.delete(tempFile);
+		} catch (final IOException e) {
+			throw new UncheckedException(e);
+		}
 	}
 
-	public Preprocessor setInputDir(final Path inputDir) {
-		this.inputDir = inputDir;
+	@Override
+	public Result getResult() {
+		return result;
+	}
+
+	public Preprocessor setInput(final Reader input) {
+		this.input = input;
+		return this;
+	}
+
+	public Preprocessor setDocumentName(final String documentName) {
+		this.documentName = documentName;
 		return this;
 	}
 

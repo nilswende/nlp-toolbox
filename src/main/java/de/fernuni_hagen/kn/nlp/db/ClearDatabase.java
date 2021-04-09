@@ -10,14 +10,17 @@ import de.fernuni_hagen.kn.nlp.config.UseCase;
  */
 public class ClearDatabase extends UseCase {
 
+	private Result result;
+
 	@Override
 	public void execute(final DBWriter dbWriter) {
 		dbWriter.deleteAll();
+		result = new Result();
 	}
 
 	@Override
 	public Result getResult() {
-		return new Result();
+		return result;
 	}
 
 }

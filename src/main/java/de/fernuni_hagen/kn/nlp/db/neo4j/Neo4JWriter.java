@@ -1,12 +1,10 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -37,8 +35,7 @@ public class Neo4JWriter implements DBWriter {
 	}
 
 	@Override
-	public void addDocument(final Path path) {
-		final var name = DBUtils.normalizePath(path);
+	public void addDocument(final String name) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			if (tx.findNode(Labels.DOCUMENT, "name", name) != null) {
 				System.out.println("no two input documents can have the same file name");

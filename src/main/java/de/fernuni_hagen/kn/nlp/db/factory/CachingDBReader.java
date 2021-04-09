@@ -5,7 +5,6 @@ import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
-import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,7 @@ class CachingDBReader implements DBReader {
 	}
 
 	@Override
-	public List<List<String>> getAllSentencesInDocument(final Path path) {
-		return dbReader.getAllSentencesInDocument(path);
+	public List<List<String>> getAllSentencesInDocument(final String name) {
+		return dbReader.getAllSentencesInDocument(name);
 	}
 }
