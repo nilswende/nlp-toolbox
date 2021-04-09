@@ -2,17 +2,15 @@ package de.fernuni_hagen.kn.nlp.config;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logDuration;
-import static de.fernuni_hagen.kn.nlp.Logger.logStart;
 import static java.util.Map.Entry.comparingByValue;
 
 /**
@@ -32,11 +30,10 @@ public abstract class UseCase {
 	 * @param dbWriter DBWriter
 	 */
 	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
-		final var start = logStart(getName());
-		printName();
+		final var start = System.nanoTime();
 		execute(dbReader);
 		execute(dbWriter);
-		logDuration(getName(), start);
+		getResult().setDuration(start, System.nanoTime());
 	}
 
 	/**
@@ -59,14 +56,6 @@ public abstract class UseCase {
 
 	private String getName() {
 		return this.getClass().getSimpleName();
-	}
-
-	/**
-	 * Prints the concrete use case's name.
-	 */
-	private void printName() {
-		printWriter.print(getName());
-		printWriter.println(":");
 	}
 
 	/**
@@ -151,22 +140,6 @@ public abstract class UseCase {
 	}
 
 	/**
-	 * Creates a new UseCase instance from its config.
-	 * For this to work the config has to be declared inside the concrete UseCase class.
-	 *
-	 * @param configClass UseCaseConfig
-	 * @return new UseCase instance
-	 */
-	public static UseCase from(final UseCaseConfig configClass) {
-		try {
-			final Class<?> useCaseClass = configClass.getClass().getDeclaringClass();
-			return (UseCase) useCaseClass.getConstructor(configClass.getClass()).newInstance(configClass);
-		} catch (final Exception e) {
-			throw new UncheckedException(e);
-		}
-	}
-
-	/**
 	 * Returns the use case's result.
 	 *
 	 * @return the use case's result
@@ -179,10 +152,19 @@ public abstract class UseCase {
 	 * Will usually be overridden by a use case implementation to return a more specific result.
 	 */
 	public class Result {
+		private Duration duration;
+
 		@Override
 		public String toString() {
+			printWriter.println("start " + getName());
+			printWriter.println("  end " + getName());
+			printWriter.println(String.format("duration: %d s %d ms", duration.toSecondsPart(), duration.toMillisPart()));
 			printWriter.flush();
 			return stringWriter.toString();
+		}
+
+		void setDuration(final long start, final long end) {
+			this.duration = Duration.ofNanos(end - start);
 		}
 	}
 
