@@ -32,7 +32,7 @@ class BooleanRetrievalTest {
 	@Test
 	void and() {
 		final var booleanRetrieval = new BooleanRetrieval()
-				.setExpression("and")
+				.setType(BooleanRetrieval.Type.AND)
 				.setQuery(List.of("t1", "t2"));
 		booleanRetrieval.execute(dbReader);
 		final var result = booleanRetrieval.getResult();
@@ -42,7 +42,7 @@ class BooleanRetrievalTest {
 	@Test
 	void or() {
 		final var booleanRetrieval = new BooleanRetrieval()
-				.setExpression("or")
+				.setType(BooleanRetrieval.Type.OR)
 				.setQuery(List.of("t1", "t2"));
 		booleanRetrieval.execute(dbReader);
 		final var result = booleanRetrieval.getResult();
@@ -53,7 +53,7 @@ class BooleanRetrievalTest {
 	@Test
 	void not() {
 		final var booleanRetrieval = new BooleanRetrieval()
-				.setExpression("not")
+				.setType(BooleanRetrieval.Type.NOT)
 				.setQuery(List.of("t1"));
 		booleanRetrieval.execute(dbReader);
 		final var result = booleanRetrieval.getResult();

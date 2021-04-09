@@ -15,7 +15,9 @@ class NLPToolboxTest {
 
 	@Test
 	void asLibrary() {
-		final var booleanRetrieval = new BooleanRetrieval().setExpression("and").setQuery(List.of("abc"));
+		final var booleanRetrieval = new BooleanRetrieval()
+				.setType(BooleanRetrieval.Type.AND)
+				.setQuery(List.of("abc"));
 		new NLPToolbox(new AppConfig(), booleanRetrieval).run();
 		assertTrue(booleanRetrieval.getResult().getDocuments().isEmpty());
 	}

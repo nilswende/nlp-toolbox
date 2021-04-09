@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class BooleanRetrieval extends UseCase {
 
-	private String expression;
+	private Type type;
 	private List<String> query;
 
 	private Result result;
@@ -33,19 +33,30 @@ public class BooleanRetrieval extends UseCase {
 		}
 	}
 
+	/**
+	 * The type of boolean retrieval.
+	 */
+	public enum Type {
+		AND, OR, NOT
+	}
+
 	@Override
 	public void execute(final DBReader dbReader) {
-		final Map<String, Long> map;
-		if (expression.equalsIgnoreCase("and")) {
-			map = and(dbReader);
-		} else if (expression.equalsIgnoreCase("or")) {
-			map = or(dbReader);
-		} else if (expression.equalsIgnoreCase("not")) {
-			map = not(dbReader);
-		} else {
-			throw new IllegalArgumentException("Unknown expression " + expression);
-		}
+		final var map = findDocuments(dbReader);
 		result = new Result(map);
+	}
+
+	private Map<String, Long> findDocuments(final DBReader dbReader) {
+		switch (type) {
+			case AND:
+				return and(dbReader);
+			case OR:
+				return or(dbReader);
+			case NOT:
+				return not(dbReader);
+			default:
+				throw new IllegalArgumentException("Unknown expression " + type);
+		}
 	}
 
 	/**
@@ -93,13 +104,13 @@ public class BooleanRetrieval extends UseCase {
 	}
 
 	/**
-	 * Set the type of boolean retrieval to use. Options are "and", "or", "not"
+	 * Set the type of boolean retrieval to use.
 	 *
-	 * @param expression the type of boolean retrieval to use
+	 * @param type the type of boolean retrieval to use
 	 * @return this object
 	 */
-	public BooleanRetrieval setExpression(final String expression) {
-		this.expression = expression;
+	public BooleanRetrieval setType(final Type type) {
+		this.type = type;
 		return this;
 	}
 
