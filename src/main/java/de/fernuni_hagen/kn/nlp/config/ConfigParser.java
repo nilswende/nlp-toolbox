@@ -20,7 +20,7 @@ public abstract class ConfigParser {
 	protected static final String USE_CASE_OPT = "u";
 
 	protected final AppConfig appConfig;
-	protected final List<UseCaseConfig> useCaseConfigs;
+	protected final List<UseCase> useCases;
 
 	/**
 	 * Parses the specified configs from the given command-line arguments.
@@ -36,7 +36,7 @@ public abstract class ConfigParser {
 			final var cli = parser.parse(options, args);
 			appConfig = readAppConfig(cli);
 			final var useCaseValues = List.of(cli.getOptionValues(USE_CASE_OPT));
-			useCaseConfigs = createUseCaseConfigs(useCaseValues);
+			useCases = createUseCases(useCaseValues);
 		} catch (final ParseException e) {
 			throw new UncheckedException(e);
 		}
@@ -65,14 +65,14 @@ public abstract class ConfigParser {
 	 * @param useCaseValues the specified, non-null use cases
 	 * @return all parsed use case configs
 	 */
-	protected abstract List<UseCaseConfig> createUseCaseConfigs(List<String> useCaseValues);
+	protected abstract List<UseCase> createUseCases(List<String> useCaseValues);
 
 	public AppConfig getAppConfig() {
 		return appConfig;
 	}
 
-	public List<UseCaseConfig> getUseCaseConfigs() {
-		return useCaseConfigs;
+	public List<UseCase> getUseCases() {
+		return useCases;
 	}
 
 }

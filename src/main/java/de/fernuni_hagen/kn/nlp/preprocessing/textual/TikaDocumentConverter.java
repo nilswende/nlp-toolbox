@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
-import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -21,10 +20,12 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
-	private final Preprocessor.Config config;
+	private final boolean keepTempFiles;
+	private final int sentenceFileSizeLimitBytes;
 
-	public TikaDocumentConverter(final Preprocessor.Config config) {
-		this.config = config;
+	public TikaDocumentConverter(final boolean keepTempFiles, final int sentenceFileSizeLimitBytes) {
+		this.keepTempFiles = keepTempFiles;
+		this.sentenceFileSizeLimitBytes = sentenceFileSizeLimitBytes;
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class TikaDocumentConverter implements DocumentConverter {
 
 	private Path getTempFile(final Path path) {
 		final var tempFile = Path.of(Path.of("data", "sentencefiles").resolve(path.getFileName()).toString() + ".txt");
-		if (!config.keepTempFiles()) {
+		if (!keepTempFiles) {
 			tempFile.toFile().deleteOnExit();
 		}
 		return tempFile;
@@ -49,7 +50,7 @@ public class TikaDocumentConverter implements DocumentConverter {
 	private void parseInput(final Path path, final Writer writer) {
 		try (final var inputStream = Files.newInputStream(path)) {
 			final var parser = new AutoDetectParser();
-			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, config.getSentenceFileSizeLimitBytes()));
+			final var contentHandler = new BodyContentHandler(new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes));
 			final var metadata = new Metadata();
 			parser.parse(inputStream, contentHandler, metadata);
 		} catch (final Exception e) {

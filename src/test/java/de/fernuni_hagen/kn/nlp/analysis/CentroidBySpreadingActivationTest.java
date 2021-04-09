@@ -21,21 +21,21 @@ import static org.mockito.ArgumentMatchers.any;
  */
 class CentroidBySpreadingActivationTest {
 
-	private CentroidBySpreadingActivation.Config mockConfig(final String... query) {
-		final CentroidBySpreadingActivation.Config config = Mockito.mock(CentroidBySpreadingActivation.Config.class);
-		Mockito.when(config.getQuery()).thenReturn(List.of(query));
-		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.NONE);
-		return config;
+	private CentroidBySpreadingActivation mock(final List<String> query) {
+		return new CentroidBySpreadingActivation()
+				.setQuery(query)
+				.setWeightingFunction(WeightingFunction.NONE);
 	}
 
 	@ParameterizedTest
 	@MethodSource
 	void clean(final List<String> query, final Map<String, Map<String, Double>> significances,
 			   final String expectedCentroid) {
-		final var config = mockConfig(query.toArray(new String[0]));
 		final DBReader dbReader = Mockito.mock(DBReader.class);
 		Mockito.when(dbReader.getSignificances(any(WeightingFunction.class))).thenReturn(Maps.copyOf(significances));
-		final String actual = new CentroidBySpreadingActivation(config).calculate(dbReader);
+		final var mock = mock(query);
+		mock.execute(dbReader);
+		final String actual = mock.getResult().getCentroid();
 		assertEquals(expectedCentroid, actual);
 	}
 
@@ -61,10 +61,11 @@ class CentroidBySpreadingActivationTest {
 	@MethodSource
 	void calculate(final List<String> query, final Map<String, Map<String, Double>> significances,
 				   final String expectedCentroid) {
-		final var config = mockConfig(query.toArray(new String[0]));
 		final DBReader dbReader = Mockito.mock(DBReader.class);
 		Mockito.when(dbReader.getSignificances(any(WeightingFunction.class))).thenReturn(Maps.copyOf(significances));
-		final String actual = new CentroidBySpreadingActivation(config).calculate(dbReader);
+		final var mock = mock(query);
+		mock.execute(dbReader);
+		final String actual = mock.getResult().getCentroid();
 		assertEquals(expectedCentroid, actual);
 	}
 

@@ -62,7 +62,7 @@ class JsonConfigParserTest extends TempFileTest {
 				"-u", "{name:pagerank}",
 				"-u", "{name:pagerank,", "weightingFunction:POISSON}"
 		});
-		Assertions.assertNotNull(parser.getUseCaseConfigs());
+		Assertions.assertNotNull(parser.getUseCases());
 	}
 
 	@Test
@@ -70,7 +70,7 @@ class JsonConfigParserTest extends TempFileTest {
 		var json = "[\n{\n\"name\": \"pagerank\",\n\"resultLimit\": 25\n},\n{\n\"name\": \"hits\",\n\"resultLimit\": 25\n}\n]";
 		writeString(json);
 		final var parser = new JsonConfigParser(new String[]{"-u", tempFile.toString()});
-		Assertions.assertNotNull(parser.getUseCaseConfigs());
+		Assertions.assertNotNull(parser.getUseCases());
 	}
 
 	@Test

@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidByMinAvgDistance;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
 import de.fernuni_hagen.kn.nlp.analysis.DL4JWord2Vec;
+import de.fernuni_hagen.kn.nlp.analysis.DirectedHITS;
 import de.fernuni_hagen.kn.nlp.analysis.DocumentSimilarity;
 import de.fernuni_hagen.kn.nlp.analysis.HITS;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
@@ -20,21 +21,22 @@ import java.util.stream.Collectors;
  * @author Nils Wende
  */
 public enum UseCases {
-	CLEAR_DATABASE(ClearDatabase.Config.class),
-	PREPROCESSING(Preprocessor.Config.class),
-	BOOLEAN_RETRIEVAL(BooleanRetrieval.Config.class),
-	CENTROID_BY_MIN_AVG_DISTANCE(CentroidByMinAvgDistance.Config.class),
-	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivation.Config.class),
-	DOCUMENT_SIMILARITY(DocumentSimilarity.Config.class),
-	HITS(HITS.Config.class),
-	PAGE_RANK(PageRank.Config.class),
-	TERM_SIMILARITY(TermSimilarity.Config.class),
-	WORD2VEC(DL4JWord2Vec.Config.class);
+	CLEAR_DATABASE(ClearDatabase.class),
+	PREPROCESSING(Preprocessor.class),
+	BOOLEAN_RETRIEVAL(BooleanRetrieval.class),
+	CENTROID_BY_MIN_AVG_DISTANCE(CentroidByMinAvgDistance.class),
+	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivation.class),
+	DOCUMENT_SIMILARITY(DocumentSimilarity.class),
+	HITS(HITS.class),
+	DIRECTED_HITS(DirectedHITS.class),
+	PAGE_RANK(PageRank.class),
+	TERM_SIMILARITY(TermSimilarity.class),
+	WORD2VEC(DL4JWord2Vec.class);
 
-	private final Class<? extends UseCaseConfig> configClass;
+	private final Class<? extends UseCase> useCaseClass;
 
-	UseCases(final Class<? extends UseCaseConfig> configClass) {
-		this.configClass = configClass;
+	UseCases(final Class<? extends UseCase> useCaseClass) {
+		this.useCaseClass = useCaseClass;
 	}
 
 	/**
@@ -52,8 +54,8 @@ public enum UseCases {
 						+ Arrays.stream(values()).map(Object::toString).collect(Collectors.joining(", "))));
 	}
 
-	public Class<? extends UseCaseConfig> getConfigClass() {
-		return configClass;
+	public Class<? extends UseCase> getUseCaseClass() {
+		return useCaseClass;
 	}
 
 }

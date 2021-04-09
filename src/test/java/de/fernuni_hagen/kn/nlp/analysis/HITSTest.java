@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.util.Comparator;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Set;
 
+import static java.util.Map.Entry.comparingByValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -20,16 +20,17 @@ class HITSTest {
 
 	@Test
 	void calculate() {
-		final var config = mockConfig();
 		final var dbReader = mockDbReader();
-		final var actual = new HITS(config).calculate(dbReader);
-		assertEqualSize(dbReader, actual);
-		assertEqualScore("a", "b", actual, HITS.Scores::getHubScore);
-		assertEqualScore("a", "b", actual, HITS.Scores::getAuthorityScore);
-		assertMaxScore("c", actual, HITS.Scores::getHubScore);
-		assertMaxScore("c", actual, HITS.Scores::getAuthorityScore);
-		assertMinScore("d", actual, HITS.Scores::getHubScore);
-		assertMinScore("d", actual, HITS.Scores::getAuthorityScore);
+		final var mock = mock();
+		mock.execute(dbReader);
+		final var result = mock.getResult();
+		assertEqualSize(dbReader, result.getTerms());
+		assertEqualScore("a", "b", result.getHubScores());
+		assertEqualScore("a", "b", result.getAuthorityScores());
+		assertMaxScore("c", result.getHubScores());
+		assertMaxScore("c", result.getAuthorityScores());
+		assertMinScore("d", result.getHubScores());
+		assertMinScore("d", result.getAuthorityScores());
 	}
 
 	private DBReader mockDbReader() {
@@ -44,35 +45,28 @@ class HITSTest {
 		return dbReader;
 	}
 
-	private HITS.Config mockConfig() {
-		final var config = Mockito.mock(HITS.Config.class);
-		Mockito.when(config.directed()).thenReturn(false);
-		Mockito.when(config.getIterations()).thenReturn(50);
-		Mockito.when(config.getResultLimit()).thenReturn(Integer.MAX_VALUE);
-		Mockito.when(config.getWeightingFunction()).thenReturn(WeightingFunction.NONE);
-		return config;
+	private HITS mock() {
+		return new HITS()
+				.setIterations(50)
+				.setWeightingFunction(WeightingFunction.NONE);
 	}
 
-	private void assertEqualSize(final DBReader dbReader, final Map<String, HITS.Scores> actual) {
+	private void assertEqualSize(final DBReader dbReader, final Set<String> actual) {
 		assertEquals(dbReader.getSignificances(WeightingFunction.NONE).size(), actual.size());
 	}
 
-	private void assertEqualScore(final String a, final String b,
-								  final Map<String, HITS.Scores> actual,
-								  final Function<HITS.Scores, Double> score) {
-		assertEquals(score.apply(actual.get(a)), score.apply(actual.get(b)), .001);
+	private void assertEqualScore(final String a, final String b, final Map<String, Double> actual) {
+		assertEquals(actual.get(a), actual.get(b), .001);
 	}
 
 	private void assertMaxScore(final String node,
-								final Map<String, HITS.Scores> actual,
-								final Function<HITS.Scores, Double> score) {
-		assertEquals(node, actual.entrySet().stream().max(Comparator.comparing(score.compose(Map.Entry::getValue))).map(Map.Entry::getKey).orElseThrow());
+								final Map<String, Double> actual) {
+		assertEquals(node, actual.entrySet().stream().max(comparingByValue()).map(Map.Entry::getKey).orElseThrow());
 	}
 
 	private void assertMinScore(final String node,
-								final Map<String, HITS.Scores> actual,
-								final Function<HITS.Scores, Double> score) {
-		assertEquals(node, actual.entrySet().stream().min(Comparator.comparing(score.compose(Map.Entry::getValue))).map(Map.Entry::getKey).orElseThrow());
+								final Map<String, Double> actual) {
+		assertEquals(node, actual.entrySet().stream().min(comparingByValue()).map(Map.Entry::getKey).orElseThrow());
 	}
 
 }

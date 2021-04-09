@@ -58,7 +58,7 @@ public class JsonConfigParser extends ConfigParser {
 	}
 
 	@Override
-	protected List<UseCaseConfig> createUseCaseConfigs(final List<String> useCaseValues) {
+	protected List<UseCase> createUseCases(final List<String> useCaseValues) {
 		return joinJsonParts(useCaseValues).stream()
 				.map(this::getJson)
 				.map(this::asJsonArray)
@@ -118,19 +118,19 @@ public class JsonConfigParser extends ConfigParser {
 		return json.stripLeading().startsWith("[") ? json : "[" + json + "]";
 	}
 
-	private Stream<UseCaseConfig> getUseCaseConfigs(final String arg) {
+	private Stream<UseCase> getUseCaseConfigs(final String arg) {
 		final var jsonArray = JsonParser.parseString(arg).getAsJsonArray();
 		return Utils.stream(jsonArray)
 				.map(JsonElement::toString)
-				.map(this::getUseCaseConfig);
+				.map(this::getUseCase);
 	}
 
-	private UseCaseConfig getUseCaseConfig(final String arg) {
+	private UseCase getUseCase(final String arg) {
 		final var matcher = NAME_PATTERN.matcher(arg);
 		if (matcher.find()) {
 			final var name = matcher.group(1);
 			final var useCase = UseCases.fromIgnoreCase(name);
-			return GSON.fromJson(arg, useCase.getConfigClass());
+			return GSON.fromJson(arg, useCase.getUseCaseClass());
 		} else {
 			throw new IllegalArgumentException("'" + arg + "' contains no use case name.");
 		}

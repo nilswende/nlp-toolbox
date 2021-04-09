@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
-import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -20,44 +19,30 @@ import static de.fernuni_hagen.kn.nlp.utils.Maps.*;
  */
 public class DocumentSimilarity extends UseCase {
 
-	private final Config config;
+	private boolean useInverseDocFrequency;
+	private double weightThreshold;
+	private DocSimilarityFunction similarityFunction = DocSimilarityFunction.COSINE;
 	private List<String> documents;
 
-	public DocumentSimilarity(final Config config) {
-		this.config = config;
-		documents = config.getDocuments();
-	}
+	private Result result;
 
-	/**
-	 * DocumentSimilarity config.
-	 */
-	public static class Config extends UseCaseConfig {
-		private boolean useInverseDocFrequency;
-		private double weightThreshold;
-		private DocSimilarityFunction similarityFunction;
-		private List<String> documents;
+	public class Result extends UseCase.Result {
+		private final Map<String, Map<String, Double>> similarities;
 
-		public boolean useInverseDocFrequency() {
-			return useInverseDocFrequency;
+		Result(final Map<String, Map<String, Double>> similarities) {
+			this.similarities = similarities;
+			printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
 		}
 
-		public double getWeightThreshold() {
-			return weightThreshold;
-		}
-
-		public DocSimilarityFunction getSimilarityFunction() {
-			return similarityFunction == null ? DocSimilarityFunction.COSINE : similarityFunction;
-		}
-
-		public List<String> getDocuments() {
-			return documents;
+		public Map<String, Map<String, Double>> getSimilarities() {
+			return similarities;
 		}
 	}
 
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var similarities = calculate(dbReader);
-		printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
+		result = new Result(similarities);
 	}
 
 	/**
@@ -70,14 +55,14 @@ public class DocumentSimilarity extends UseCase {
 		final var termFreqs = db.getTermFrequencies();
 		replaceDocuments(termFreqs);
 		final var normalizedTermFreqs = getNormalizedTermFrequencies(termFreqs);
-		final var termWeights = config.useInverseDocFrequency() ? getTermWeights(normalizedTermFreqs) : normalizedTermFreqs;
+		final var termWeights = useInverseDocFrequency ? getTermWeights(normalizedTermFreqs) : normalizedTermFreqs;
 		final var reducedTermWeights = getReducedTermWeights(termWeights);
 		final var documentVectors = invertMapping(reducedTermWeights);
 		return getSimilarities(documentVectors);
 	}
 
 	private void replaceDocuments(final Map<String, Map<String, Long>> term2doc) {
-		if (CollectionUtils.isEmpty(config.getDocuments())) {
+		if (CollectionUtils.isEmpty(documents)) {
 			documents = new ArrayList<>(getInnerKeys(term2doc));
 		} else {
 			term2doc.forEach((t, docs) -> docs.keySet().removeIf(d -> !documents.contains(d)));
@@ -102,7 +87,7 @@ public class DocumentSimilarity extends UseCase {
 	}
 
 	private Map<String, Map<String, Double>> getReducedTermWeights(final Map<String, Map<String, Double>> term2doc) {
-		final var threshold = config.getWeightThreshold();
+		final var threshold = weightThreshold;
 		if (threshold > 0) {
 			term2doc.forEach((t, docs) -> docs.values().removeIf(w -> w < threshold));
 			term2doc.values().removeIf(Map::isEmpty);
@@ -111,7 +96,6 @@ public class DocumentSimilarity extends UseCase {
 	}
 
 	private Map<String, Map<String, Double>> getSimilarities(final Map<String, Map<String, Double>> doc2term) {
-		final var similarityFunction = config.getSimilarityFunction();
 		final var map = new TreeMap<String, Map<String, Double>>();
 		for (int i = 0; i < documents.size(); i++) {
 			final var d1 = documents.get(i);
@@ -124,4 +108,52 @@ public class DocumentSimilarity extends UseCase {
 		return map;
 	}
 
+	@Override
+	public Result getResult() {
+		return result;
+	}
+
+	/**
+	 * Set the use of the inverse document frequency.
+	 *
+	 * @param useInverseDocFrequency use the inverse document frequency
+	 * @return this object
+	 */
+	public DocumentSimilarity setUseInverseDocFrequency(final boolean useInverseDocFrequency) {
+		this.useInverseDocFrequency = useInverseDocFrequency;
+		return this;
+	}
+
+	/**
+	 * Set the weight threshold, below which a term is not important for its document and ignored.
+	 *
+	 * @param weightThreshold the weight threshold
+	 * @return this object
+	 */
+	public DocumentSimilarity setWeightThreshold(final double weightThreshold) {
+		this.weightThreshold = weightThreshold;
+		return this;
+	}
+
+	/**
+	 * Set the function to calculate the similarity between two documents.
+	 *
+	 * @param similarityFunction the similarity function
+	 * @return this object
+	 */
+	public DocumentSimilarity setSimilarityFunction(final DocSimilarityFunction similarityFunction) {
+		this.similarityFunction = similarityFunction;
+		return this;
+	}
+
+	/**
+	 * Set the list of documents to compare.
+	 *
+	 * @param documents the list of documents to compare
+	 * @return this object
+	 */
+	public DocumentSimilarity setDocuments(final List<String> documents) {
+		this.documents = documents;
+		return this;
+	}
 }

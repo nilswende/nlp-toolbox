@@ -20,9 +20,10 @@ class DocumentSimilarityTest {
 	@Test
 	void calculate() {
 		final DBReader dbReader = mockDbReader();
-		final var config = mockConfig("1", "2", "3", "4");
 
-		final var actual = new DocumentSimilarity(config).calculate(dbReader);
+		final var mock = mock("1", "2", "3", "4");
+		mock.execute(dbReader);
+		final var actual = mock.getResult().getSimilarities();
 		assertFullCalculation(actual);
 	}
 
@@ -41,13 +42,12 @@ class DocumentSimilarityTest {
 		return dbReader;
 	}
 
-	private DocumentSimilarity.Config mockConfig(final String... docs) {
-		final DocumentSimilarity.Config config = Mockito.mock(DocumentSimilarity.Config.class);
-		Mockito.when(config.getDocuments()).thenReturn(List.of(docs));
-		Mockito.when(config.getWeightThreshold()).thenReturn(0.001);
-		Mockito.when(config.useInverseDocFrequency()).thenReturn(true);
-		Mockito.when(config.getSimilarityFunction()).thenReturn(DocSimilarityFunction.COSINE);
-		return config;
+	private DocumentSimilarity mock(final String... docs) {
+		return new DocumentSimilarity()
+				.setDocuments(List.of(docs))
+				.setWeightThreshold(0.001)
+				.setUseInverseDocFrequency(true)
+				.setSimilarityFunction(DocSimilarityFunction.COSINE);
 	}
 
 	private void assertFullCalculation(final Map<String, Map<String, Double>> actual) {
@@ -67,9 +67,10 @@ class DocumentSimilarityTest {
 	@Test
 	void calculateSubsetDocs() {
 		final DBReader dbReader = mockDbReader();
-		final var config = mockConfig("1", "2", "3");
 
-		final var actual = new DocumentSimilarity(config).calculate(dbReader);
+		final var mock = mock("1", "2", "3");
+		mock.execute(dbReader);
+		final var actual = mock.getResult().getSimilarities();
 		final var expected = Map.of(
 				"1", Map.of("2", .0, "3", .0),
 				"2", Map.of("1", .0, "3", .160),
@@ -78,7 +79,7 @@ class DocumentSimilarityTest {
 		assertEqual(expected, actual);
 	}
 
-	private void assertEqual(Map<String, Map<String, Double>> expected, Map<String, Map<String, Double>> actual) {
+	private void assertEqual(final Map<String, Map<String, Double>> expected, final Map<String, Map<String, Double>> actual) {
 		assertTrue(expected.size() >= actual.size(), "actual contains too many entries");
 		expected.forEach((d1, m) -> m.forEach((d2, s) ->
 				assertEquals(s, getActualSim(d1, d2, actual), .0015, "d1=" + d1 + ", d2=" + d2)
@@ -88,9 +89,10 @@ class DocumentSimilarityTest {
 	@Test
 	void calculateStandardDocs() {
 		final DBReader dbReader = mockDbReader();
-		final var config = mockConfig();
 
-		final var actual = new DocumentSimilarity(config).calculate(dbReader);
+		final var mock = mock();
+		mock.execute(dbReader);
+		final var actual = mock.getResult().getSimilarities();
 		assertFullCalculation(actual);
 	}
 

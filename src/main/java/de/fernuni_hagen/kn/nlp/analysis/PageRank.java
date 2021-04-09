@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
-import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
@@ -11,8 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Map.Entry.comparingByValue;
-
 /**
  * Calculates the PageRanks for all terms in the DB.
  *
@@ -20,75 +17,46 @@ import static java.util.Map.Entry.comparingByValue;
  */
 public class PageRank extends UseCase {
 
-	private final Config config;
-	private final double weight;
-	private final double invWeight;
+	private int iterations = 25;
+	private int resultLimit;
+	private double weight = 0.85;
+	private WeightingFunction weightingFunction = WeightingFunction.DICE;
 
-	public PageRank(final Config config) {
-		this.config = config;
-		weight = config.getWeight();
-		invWeight = 1 - weight;
-	}
+	private Result result;
 
-	/**
-	 * PageRank config.
-	 */
-	public static class Config extends UseCaseConfig {
-		private int iterations;
-		private int resultLimit;
-		private double weight;
-		private WeightingFunction weightingFunction;
+	public class Result extends UseCase.Result {
+		private final Map<String, Double> scores;
 
-		public int getIterations() {
-			return iterations == 0 ? 25 : iterations;
+		Result(final Map<String, Double> scores) {
+			this.scores = resultLimit == 0 ? scores : topNScores(scores, resultLimit);
+			this.scores.forEach((term, score) -> printf("PageRank of %s: %s", term, score));
 		}
 
-		public int getResultLimit() {
-			return resultLimit == 0 ? Integer.MAX_VALUE : resultLimit;
-		}
-
-		public double getWeight() {
-			return weight == 0 ? 0.85 : weight;
-		}
-
-		public WeightingFunction getWeightingFunction() {
-			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		public Map<String, Double> getScores() {
+			return scores;
 		}
 	}
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		final var pageRanks = calculate(dbReader);
-		pageRanks.entrySet().stream()
-				.sorted(comparingByValue(Comparator.reverseOrder()))
-				.limit(config.getResultLimit())
-				.forEach(e -> printf("PageRank of %s: %s", e.getKey(), e.getValue()));
-	}
-
-	/**
-	 * Calculates the PageRanks for all terms in the DB.
-	 *
-	 * @param db DB
-	 * @return PageRanks
-	 */
-	public Map<String, Double> calculate(final DBReader db) {
-		final var significances = db.getSignificances(config.getWeightingFunction());
+		final var significances = dbReader.getSignificances(weightingFunction);
 		new BreadthFirstGraphSearcher().findBiggestSubgraph(significances);
 
 		final var pageRanks = initPageRanks(significances.keySet());
-		for (int i = 0; i < config.getIterations(); i++) {
+		for (int i = 0; i < iterations; i++) {
 			calculate(pageRanks, significances);
 		}
-		return normalize(pageRanks);
+		final var normalizedPageRanks = normalize(pageRanks);
+		result = new Result(normalizedPageRanks);
 	}
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {
-		return terms.stream().collect(Collectors.toMap(t -> t, t -> invWeight));
+		return terms.stream().collect(Collectors.toMap(t -> t, t -> 1 - weight));
 	}
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
 		significances.forEach((t1, adjacent) -> {
-			final double pr = invWeight + weight * sumAdjacentPageRanks(pageRanks, adjacent, significances);
+			final double pr = 1 - weight + weight * sumAdjacentPageRanks(pageRanks, adjacent, significances);
 			pageRanks.put(t1, pr);
 		});
 	}
@@ -110,4 +78,52 @@ public class PageRank extends UseCase {
 		pageRanks.replaceAll((t, pr) -> pr / maxPageRank);
 	}
 
+	@Override
+	public Result getResult() {
+		return result;
+	}
+
+	/**
+	 * Set the number of times the algorithm should be executed before returning.
+	 *
+	 * @param iterations the number of iterations
+	 * @return this object
+	 */
+	public PageRank setIterations(final int iterations) {
+		this.iterations = iterations;
+		return this;
+	}
+
+	/**
+	 * Set the number of terms with the highest score that should be returned.
+	 *
+	 * @param resultLimit the number of terms
+	 * @return this object
+	 */
+	public PageRank setResultLimit(final int resultLimit) {
+		this.resultLimit = resultLimit;
+		return this;
+	}
+
+	/**
+	 * Set the weighting factor used in spreading the score from node to node.
+	 *
+	 * @param weight the weighting factor
+	 * @return this object
+	 */
+	public PageRank setWeight(final double weight) {
+		this.weight = weight;
+		return this;
+	}
+
+	/**
+	 * Set the function to calculate the weight of each cooccurrence.
+	 *
+	 * @param weightingFunction the weighting function
+	 * @return this object
+	 */
+	public PageRank setWeightingFunction(final WeightingFunction weightingFunction) {
+		this.weightingFunction = weightingFunction;
+		return this;
+	}
 }

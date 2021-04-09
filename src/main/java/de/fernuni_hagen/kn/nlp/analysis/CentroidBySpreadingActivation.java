@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
-import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -21,32 +20,28 @@ import java.util.stream.Collectors;
  */
 public class CentroidBySpreadingActivation extends UseCase {
 
-	private final Config config;
+	private WeightingFunction weightingFunction = WeightingFunction.DICE;
+	private List<String> query;
 
-	CentroidBySpreadingActivation(final Config config) {
-		this.config = config;
-	}
+	private Result result;
 
-	/**
-	 * CentroidBySpreadingActivation config.
-	 */
-	public static class Config extends UseCaseConfig {
-		private WeightingFunction weightingFunction;
-		private List<String> query;
+	public class Result extends UseCase.Result {
+		private final String centroid;
 
-		public WeightingFunction getWeightingFunction() {
-			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		Result(final String centroid) {
+			this.centroid = centroid;
+			print(centroid);
 		}
 
-		public List<String> getQuery() {
-			return query;
+		public String getCentroid() {
+			return centroid;
 		}
 	}
 
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var centroid = calculate(dbReader);
-		print(centroid);
+		result = new Result(centroid);
 	}
 
 	/**
@@ -56,8 +51,8 @@ public class CentroidBySpreadingActivation extends UseCase {
 	 * @return the centroid or null, if the query is too diverse
 	 */
 	public String calculate(final DBReader db) {
-		final var significances = db.getSignificances(WeightingFunction.DICE);
-		final var cleanedQuery = cleanQuery(config.getQuery(), significances);
+		final var significances = db.getSignificances(weightingFunction);
+		final var cleanedQuery = cleanQuery(query, significances);
 		if (cleanedQuery == null) {
 			return null;
 		}
@@ -146,6 +141,33 @@ public class CentroidBySpreadingActivation extends UseCase {
 				.filter(e -> e.getValue().size() == query.size())
 				.min(Comparator.comparingDouble(e -> e.getValue().values().stream().mapToDouble(d -> d).sum()))
 				.map(Map.Entry::getKey);
+	}
+
+	@Override
+	public Result getResult() {
+		return result;
+	}
+
+	/**
+	 * Set the weighting function used to calculate the distance between nodes.
+	 *
+	 * @param weightingFunction the weighting function used to calculate the distance between nodes
+	 * @return this object
+	 */
+	public CentroidBySpreadingActivation setWeightingFunction(final WeightingFunction weightingFunction) {
+		this.weightingFunction = weightingFunction;
+		return this;
+	}
+
+	/**
+	 * Set the terms used to calculate the centroid.
+	 *
+	 * @param query the terms used to calculate the centroid
+	 * @return this object
+	 */
+	public CentroidBySpreadingActivation setQuery(final List<String> query) {
+		this.query = query;
+		return this;
 	}
 
 }

@@ -4,11 +4,16 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static de.fernuni_hagen.kn.nlp.Logger.logDuration;
 import static de.fernuni_hagen.kn.nlp.Logger.logStart;
+import static java.util.Map.Entry.comparingByValue;
 
 /**
  * A use case.
@@ -16,6 +21,9 @@ import static de.fernuni_hagen.kn.nlp.Logger.logStart;
  * @author Nils Wende
  */
 public abstract class UseCase {
+
+	private final StringWriter stringWriter = new StringWriter();
+	private final PrintWriter printWriter = new PrintWriter(stringWriter);
 
 	/**
 	 * Executes the use case by handing over a DBReader and a DBWriter.
@@ -57,8 +65,8 @@ public abstract class UseCase {
 	 * Prints the concrete use case's name.
 	 */
 	private void printName() {
-		System.out.print(getName());
-		System.out.println(":");
+		printWriter.print(getName());
+		printWriter.println(":");
 	}
 
 	/**
@@ -67,7 +75,7 @@ public abstract class UseCase {
 	 * @param o Object
 	 */
 	protected void print(final Object o) {
-		System.out.println(o);
+		printWriter.println(o);
 	}
 
 	/**
@@ -77,8 +85,8 @@ public abstract class UseCase {
 	 * @param args   arguments
 	 */
 	protected void printf(final String format, final Object... args) {
-		System.out.printf(format, args);
-		System.out.println();
+		printWriter.printf(format, args);
+		printWriter.println();
 	}
 
 	/**
@@ -129,6 +137,20 @@ public abstract class UseCase {
 	}
 
 	/**
+	 * Limit the scores to n entries.
+	 *
+	 * @param scores Map
+	 * @param limit  limit
+	 * @return limited Map
+	 */
+	protected static Map<String, Double> topNScores(final Map<String, Double> scores, final int limit) {
+		return scores.entrySet().stream()
+				.sorted(comparingByValue(Comparator.reverseOrder()))
+				.limit(limit)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
+	/**
 	 * Creates a new UseCase instance from its config.
 	 * For this to work the config has to be declared inside the concrete UseCase class.
 	 *
@@ -141,6 +163,26 @@ public abstract class UseCase {
 			return (UseCase) useCaseClass.getConstructor(configClass.getClass()).newInstance(configClass);
 		} catch (final Exception e) {
 			throw new UncheckedException(e);
+		}
+	}
+
+	/**
+	 * Returns the use case's result.
+	 *
+	 * @return the use case's result
+	 */
+	// must be overridden in every subclass to return the concrete result type
+	public abstract Result getResult();
+
+	/**
+	 * The basic use case result.
+	 * Will usually be overridden by a use case implementation to return a more specific result.
+	 */
+	public class Result {
+		@Override
+		public String toString() {
+			printWriter.flush();
+			return stringWriter.toString();
 		}
 	}
 

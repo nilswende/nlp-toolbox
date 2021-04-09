@@ -2,13 +2,14 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Nils Wende
@@ -28,31 +29,34 @@ class BooleanRetrievalTest {
 		return dbReader;
 	}
 
-	private BooleanRetrieval.Config mockConfig(final String... query) {
-		final BooleanRetrieval.Config config = Mockito.mock(BooleanRetrieval.Config.class);
-		Mockito.when(config.query).thenReturn(List.of(query));
-		return config;
-	}
-
 	@Test
 	void and() {
-		final var config = mockConfig("t1", "t2");
-		final var actual = new BooleanRetrieval(config).and(dbReader);
-		Assertions.assertEquals(Set.of("d1"), actual);
+		final var booleanRetrieval = new BooleanRetrieval()
+				.setExpression("and")
+				.setQuery(List.of("t1", "t2"));
+		booleanRetrieval.execute(dbReader);
+		final var result = booleanRetrieval.getResult();
+		assertEquals(Set.of("d1"), result.getDocuments().keySet());
 	}
 
 	@Test
 	void or() {
-		final var config = mockConfig("t1", "t2");
-		final var actual = new BooleanRetrieval(config).or(dbReader);
-		Assertions.assertEquals(2L, actual.get("d1"));
-		Assertions.assertEquals(1L, actual.get("d2"));
+		final var booleanRetrieval = new BooleanRetrieval()
+				.setExpression("or")
+				.setQuery(List.of("t1", "t2"));
+		booleanRetrieval.execute(dbReader);
+		final var result = booleanRetrieval.getResult();
+		assertEquals(2L, result.getDocuments().get("d1"));
+		assertEquals(1L, result.getDocuments().get("d2"));
 	}
 
 	@Test
 	void not() {
-		final var config = mockConfig("t1");
-		final var actual = new BooleanRetrieval(config).not(dbReader);
-		Assertions.assertEquals(Set.of("d2"), actual);
+		final var booleanRetrieval = new BooleanRetrieval()
+				.setExpression("not")
+				.setQuery(List.of("t1"));
+		booleanRetrieval.execute(dbReader);
+		final var result = booleanRetrieval.getResult();
+		assertEquals(Set.of("d2"), result.getDocuments().keySet());
 	}
 }

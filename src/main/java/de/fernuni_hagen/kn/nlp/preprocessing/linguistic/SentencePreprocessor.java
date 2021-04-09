@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 
 import java.util.List;
@@ -62,18 +61,20 @@ public class SentencePreprocessor {
 	/**
 	 * Creates a linguistic preprocessor.
 	 *
-	 * @param config  Preprocessor.Config
-	 * @param factory PreprocessingFactory
+	 * @param removePhrases      true if phrases should be removed
+	 * @param extractPhrases     true if phrases should be extracted
+	 * @param preprocessingSteps preprocessing steps
+	 * @param factory            PreprocessingFactory
 	 * @return a linguistic preprocessor
 	 */
-	public static SentencePreprocessor from(final Preprocessor.Config config, final PreprocessingFactory factory) {
-		if (config.removePhrases()) {
-			return new UnphrasedSentencePreprocessor(config.getPreprocessingSteps(), factory);
+	public static SentencePreprocessor from(final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+		if (removePhrases) {
+			return new UnphrasedSentencePreprocessor(preprocessingSteps, factory);
 		}
-		if (config.extractPhrases()) {
-			return new PhrasedSentencePreprocessor(config.getPreprocessingSteps(), factory);
+		if (extractPhrases) {
+			return new PhrasedSentencePreprocessor(preprocessingSteps, factory);
 		}
-		return new SentencePreprocessor(config.getPreprocessingSteps(), factory);
+		return new SentencePreprocessor(preprocessingSteps, factory);
 	}
 
 }

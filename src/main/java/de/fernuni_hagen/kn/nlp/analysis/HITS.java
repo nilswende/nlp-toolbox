@@ -2,15 +2,11 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
-import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparingDouble;
-import static java.util.Map.Entry.comparingByValue;
 
 /**
  * Uses the HITS algorithm to find hubs and authorities in a graph.
@@ -19,71 +15,53 @@ import static java.util.Map.Entry.comparingByValue;
  */
 public class HITS extends UseCase {
 
-	protected final Config config;
+	int iterations = 50;
+	int resultLimit = Integer.MAX_VALUE;
+	WeightingFunction weightingFunction = WeightingFunction.DICE;
 
-	public HITS(final Config config) {
-		this.config = config;
-	}
+	Result result;
 
-	/**
-	 * HITS config.
-	 */
-	public static class Config extends UseCaseConfig {
-		private boolean directed;
-		private int iterations;
-		private int resultLimit;
-		private WeightingFunction weightingFunction;
+	public class Result extends UseCase.Result {
+		private final Set<String> terms;
+		private final Map<String, Double> authorityScores;
+		private final Map<String, Double> hubScores;
 
-		public boolean directed() {
-			return directed;
+		Result(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs) {
+			this.terms = terms;
+			this.authorityScores = resultLimit == 0 ? auths : topNScores(auths, resultLimit);
+			this.hubScores = resultLimit == 0 ? hubs : topNScores(hubs, resultLimit);
+			authorityScores.forEach((term, score) -> printf("Authority score of %s: %s", term, score));
+			hubScores.forEach((term, score) -> printf("Hub score of %s: %s", term, score));
 		}
 
-		public int getIterations() {
-			return iterations == 0 ? 50 : iterations;
+		public Set<String> getTerms() {
+			return terms;
 		}
 
-		public int getResultLimit() {
-			return resultLimit == 0 ? Integer.MAX_VALUE : resultLimit;
+		public Map<String, Double> getAuthorityScores() {
+			return authorityScores;
 		}
 
-		public WeightingFunction getWeightingFunction() {
-			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		public Map<String, Double> getHubScores() {
+			return hubScores;
 		}
 	}
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		final var hits = calculate(dbReader);
-		hits.entrySet().stream()
-				.sorted(comparingByValue(comparingDouble(Scores::getAuthorityScore).reversed()))
-				.limit(config.getResultLimit())
-				.forEach(e -> printf("Authority score of %s: %s", e.getKey(), e.getValue().getAuthorityScore()));
-		hits.entrySet().stream()
-				.sorted(comparingByValue(comparingDouble(Scores::getHubScore).reversed()))
-				.limit(config.getResultLimit())
-				.forEach(e -> printf("Hub score of %s: %s", e.getKey(), e.getValue().getHubScore()));
+		final Map<String, Map<String, Double>> linking = dbReader.getSignificances(weightingFunction);
+		calcScores(linking, linking);
 	}
 
-	/**
-	 * Uses the HITS algorithm to find hubs and authorities in a graph.
-	 *
-	 * @param db DB
-	 * @return HITS scores
-	 */
-	public Map<String, Scores> calculate(final DBReader db) {
-		final Map<String, Map<String, Double>> linking = db.getSignificances(config.getWeightingFunction());
-		return getStringScoresMap(linking, linking);
-	}
-
-	protected Map<String, Scores> getStringScoresMap(final Map<String, Map<String, Double>> auth2hubs, final Map<String, Map<String, Double>> hub2auths) {
+	protected void calcScores(final Map<String, Map<String, Double>> auth2hubs, final Map<String, Map<String, Double>> hub2auths) {
 		final Set<String> terms = getTerms(auth2hubs);
 		final Map<String, Double> auths = initMap(terms);
 		final Map<String, Double> hubs = initMap(terms);
-		for (int i = 0; i < config.getIterations(); i++) {
+		for (int i = 0; i < iterations; i++) {
 			calcScore(auths, auth2hubs, hubs);
 			calcScore(hubs, hub2auths, auths);
 		}
-		return createResultMap(terms, auths, hubs);
+		result = new Result(terms, auths, hubs);
 	}
 
 	protected Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
@@ -115,38 +93,41 @@ public class HITS extends UseCase {
 				.sum();
 	}
 
-	private Map<String, Scores> createResultMap(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs) {
-		return terms.stream().collect(Collectors.toMap(t -> t, t -> new Scores(auths.get(t), hubs.get(t))));
+	@Override
+	public Result getResult() {
+		return result;
 	}
 
 	/**
-	 * Creates a new HITS instance from the given config.
+	 * Set the number of times the algorithm should be executed before returning.
 	 *
-	 * @param config HITS.Config
-	 * @return a new HITS instance
+	 * @param iterations the number of iterations
+	 * @return this object
 	 */
-	public static HITS from(final Config config) {
-		return config.directed() ? new DirectedHITS(config) : new HITS(config);
+	public HITS setIterations(final int iterations) {
+		this.iterations = iterations;
+		return this;
 	}
 
 	/**
-	 * DTO for the HITS scores.
+	 * Set the number of terms with the highest score that should be returned.
+	 *
+	 * @param resultLimit the number of terms
+	 * @return this object
 	 */
-	public static class Scores {
-		private final double authorityScore, hubScore;
-
-		Scores(final double authorityScore, final double hubScore) {
-			this.authorityScore = authorityScore;
-			this.hubScore = hubScore;
-		}
-
-		public double getAuthorityScore() {
-			return authorityScore;
-		}
-
-		public double getHubScore() {
-			return hubScore;
-		}
+	public HITS setResultLimit(final int resultLimit) {
+		this.resultLimit = resultLimit;
+		return this;
 	}
 
+	/**
+	 * Set the function to calculate the weight of each cooccurrence.
+	 *
+	 * @param weightingFunction the weighting function
+	 * @return this object
+	 */
+	public HITS setWeightingFunction(final WeightingFunction weightingFunction) {
+		this.weightingFunction = weightingFunction;
+		return this;
+	}
 }

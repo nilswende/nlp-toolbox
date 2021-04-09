@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
-import de.fernuni_hagen.kn.nlp.config.UseCaseConfig;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -18,32 +17,28 @@ import java.util.Map;
  */
 public class CentroidByMinAvgDistance extends UseCase {
 
-	private final Config config;
+	private WeightingFunction weightingFunction = WeightingFunction.DICE;
+	private List<String> query;
 
-	CentroidByMinAvgDistance(final Config config) {
-		this.config = config;
-	}
+	private Result result;
 
-	/**
-	 * CentroidByMinAvgDistance config.
-	 */
-	public static class Config extends UseCaseConfig {
-		private WeightingFunction weightingFunction;
-		private List<String> query;
+	public class Result extends UseCase.Result {
+		private final String centroid;
 
-		public WeightingFunction getWeightingFunction() {
-			return weightingFunction == null ? WeightingFunction.DICE : weightingFunction;
+		Result(final String centroid) {
+			this.centroid = centroid;
+			print(centroid);
 		}
 
-		public List<String> getQuery() {
-			return query;
+		public String getCentroid() {
+			return centroid;
 		}
 	}
 
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var centroid = calculate(dbReader);
-		print(centroid);
+		result = new Result(centroid);
 	}
 
 	/**
@@ -53,11 +48,11 @@ public class CentroidByMinAvgDistance extends UseCase {
 	 * @return the centroid or null, if the query is too diverse
 	 */
 	public String calculate(final DBReader db) {
-		final List<String> query = config.getQuery();
+		final List<String> query = this.query;
 		if (query == null || query.size() <= 1) {
 			return null;
 		}
-		final var significances = db.getSignificances(config.getWeightingFunction());
+		final var significances = db.getSignificances(weightingFunction);
 
 		final var distances = Maps.invertValues(significances);
 		return findCentroid(query, distances);
@@ -82,6 +77,33 @@ public class CentroidByMinAvgDistance extends UseCase {
 			}
 		}
 		return centroid;
+	}
+
+	@Override
+	public Result getResult() {
+		return result;
+	}
+
+	/**
+	 * Set the weighting function used to calculate the distance between nodes.
+	 *
+	 * @param weightingFunction the weighting function
+	 * @return this object
+	 */
+	public CentroidByMinAvgDistance setWeightingFunction(final WeightingFunction weightingFunction) {
+		this.weightingFunction = weightingFunction;
+		return this;
+	}
+
+	/**
+	 * Set the terms used to calculate the centroid.
+	 *
+	 * @param query the terms used to calculate the centroid
+	 * @return this object
+	 */
+	public CentroidByMinAvgDistance setQuery(final List<String> query) {
+		this.query = query;
+		return this;
 	}
 
 }
