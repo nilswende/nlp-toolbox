@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -24,11 +25,15 @@ public class PageRank extends UseCase {
 
 	private Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
 		private final Map<String, Double> scores;
 
-		Result(final Map<String, Double> scores) {
-			this.scores = resultLimit == 0 ? scores : topNScores(scores, resultLimit);
+		Result(final Map<String, Double> scores, final int resultLimit) {
+			this.scores = resultLimit == 0 ? scores : Maps.topN(scores, resultLimit);
+		}
+
+		@Override
+		protected void printResult() {
 			this.scores.forEach((term, score) -> printf("PageRank of %s: %s", term, score));
 		}
 
@@ -47,7 +52,7 @@ public class PageRank extends UseCase {
 			calculate(pageRanks, significances);
 		}
 		final var normalizedPageRanks = normalize(pageRanks);
-		result = new Result(normalizedPageRanks);
+		result = new Result(normalizedPageRanks, resultLimit);
 	}
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {

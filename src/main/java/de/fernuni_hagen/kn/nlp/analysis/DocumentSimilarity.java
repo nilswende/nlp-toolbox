@@ -26,11 +26,15 @@ public class DocumentSimilarity extends UseCase {
 
 	private Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
 		private final Map<String, Map<String, Double>> similarities;
 
 		Result(final Map<String, Map<String, Double>> similarities) {
 			this.similarities = similarities;
+		}
+
+		@Override
+		protected void printResult() {
 			printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
 		}
 

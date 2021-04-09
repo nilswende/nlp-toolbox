@@ -7,11 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.Map.Entry.comparingByValue;
 
 /**
  * A use case.
@@ -19,9 +15,6 @@ import static java.util.Map.Entry.comparingByValue;
  * @author Nils Wende
  */
 public abstract class UseCase {
-
-	private final StringWriter stringWriter = new StringWriter();
-	private final PrintWriter printWriter = new PrintWriter(stringWriter);
 
 	/**
 	 * Executes the use case by handing over a DBReader and a DBWriter.
@@ -54,91 +47,6 @@ public abstract class UseCase {
 
 	}
 
-	private String getName() {
-		return this.getClass().getSimpleName();
-	}
-
-	/**
-	 * Prints the object.
-	 *
-	 * @param o Object
-	 */
-	protected void print(final Object o) {
-		printWriter.println(o);
-	}
-
-	/**
-	 * Prints the format.
-	 *
-	 * @param format format string
-	 * @param args   arguments
-	 */
-	protected void printf(final String format, final Object... args) {
-		printWriter.printf(format, args);
-		printWriter.println();
-	}
-
-	/**
-	 * Prints the concrete use case's name and the collection.
-	 *
-	 * @param collection   the collection
-	 * @param emptyMessage message if the collection is empty
-	 * @param format       message for each collection entry
-	 */
-	protected void printfCollection(final Collection<?> collection, final String emptyMessage, final String format) {
-		if (collection.isEmpty()) {
-			print(emptyMessage);
-		} else {
-			collection.forEach(e -> printf(format, e));
-		}
-	}
-
-	/**
-	 * Prints the concrete use case's name and the map.
-	 *
-	 * @param map          the map
-	 * @param emptyMessage message if the map is empty
-	 * @param format       message for each map entry
-	 */
-	protected void printfMap(final Map<?, ?> map, final String emptyMessage, final String format) {
-		if (map.isEmpty()) {
-			print(emptyMessage);
-		} else {
-			map.forEach((k, v) -> printf(format, k, v));
-		}
-	}
-
-	/**
-	 * Prints the concrete use case's name and the map.
-	 *
-	 * @param map          the map
-	 * @param emptyMessage message if the map is empty
-	 * @param format       message for each inner map entry
-	 * @param <K>          inner key type
-	 * @param <V>          value type
-	 */
-	protected <K, V> void printfMapMap(final Map<?, Map<K, V>> map, final String emptyMessage, final String format) {
-		if (map.isEmpty()) {
-			print(emptyMessage);
-		} else {
-			map.forEach((k1, m) -> m.forEach((k2, v) -> printf(format, k1, k2, v)));
-		}
-	}
-
-	/**
-	 * Limit the scores to n entries.
-	 *
-	 * @param scores Map
-	 * @param limit  limit
-	 * @return limited Map
-	 */
-	protected static Map<String, Double> topNScores(final Map<String, Double> scores, final int limit) {
-		return scores.entrySet().stream()
-				.sorted(comparingByValue(Comparator.reverseOrder()))
-				.limit(limit)
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-	}
-
 	/**
 	 * Returns the use case's result.
 	 *
@@ -151,16 +59,103 @@ public abstract class UseCase {
 	 * The basic use case result.
 	 * Will usually be overridden by a use case implementation to return a more specific result.
 	 */
-	public class Result {
+	public static class Result {
 		private Duration duration;
+		private PrintWriter printWriter;
 
 		@Override
 		public String toString() {
+			final StringWriter stringWriter = new StringWriter();
+			printWriter = new PrintWriter(stringWriter);
 			printWriter.println("start " + getName());
-			printWriter.println("  end " + getName());
-			printWriter.println(String.format("duration: %d s %d ms", duration.toSecondsPart(), duration.toMillisPart()));
+			printResult();
+			printWriter.println("end " + getName());
+			printWriter.println(String.format("%s duration: %d s %d ms", getName(), duration.toSecondsPart(), duration.toMillisPart()));
 			printWriter.flush();
+			printWriter = null;
 			return stringWriter.toString();
+		}
+
+		/**
+		 * Hook method to print the specific result's contents.
+		 */
+		protected void printResult() {
+
+		}
+
+		private String getName() {
+			return this.getClass().getEnclosingClass().getSimpleName();
+		}
+
+		/**
+		 * Prints the object.
+		 *
+		 * @param o Object
+		 */
+		protected void print(final Object o) {
+			printWriter.println(o);
+		}
+
+		/**
+		 * Prints the format.
+		 *
+		 * @param format format string
+		 * @param args   arguments
+		 */
+		protected void printf(final String format, final Object... args) {
+			printWriter.printf(format, args);
+			printWriter.println();
+		}
+
+		/**
+		 * Prints the concrete use case's name and the collection.
+		 *
+		 * @param collection   the collection
+		 * @param emptyMessage message if the collection is empty
+		 * @param format       message for each collection entry
+		 */
+		protected void printfCollection(final Collection<?> collection, final String emptyMessage, final String format) {
+			if (collection.isEmpty()) {
+				print(emptyMessage);
+			} else {
+				collection.forEach(e -> printf(format, e));
+			}
+		}
+
+		/**
+		 * Prints the concrete use case's name and the map.
+		 *
+		 * @param map          the map
+		 * @param emptyMessage message if the map is empty
+		 * @param format       message for each map entry
+		 */
+		protected void printfMap(final Map<?, ?> map, final String emptyMessage, final String format) {
+			if (map.isEmpty()) {
+				print(emptyMessage);
+			} else {
+				map.forEach((k, v) -> printf(format, k, v));
+			}
+		}
+
+		/**
+		 * Prints the concrete use case's name and the map.
+		 *
+		 * @param map          the map
+		 * @param emptyMessage message if the map is empty
+		 * @param format       message for each inner map entry
+		 * @param <K>          inner key type
+		 * @param <V>          value type
+		 */
+		protected <K, V> void printfMapMap(final Map<?, Map<K, V>> map, final String emptyMessage, final String format) {
+			if (map.isEmpty()) {
+				print(emptyMessage);
+			} else {
+				map.forEach((k1, m) -> m.forEach((k2, v) -> printf(format, k1, k2, v)));
+			}
+		}
+
+		public Duration getDuration() {
+			return duration;
 		}
 
 		void setDuration(final long start, final long end) {

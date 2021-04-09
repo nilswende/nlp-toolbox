@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.utils;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -169,6 +170,20 @@ public final class Maps {
 			copy.put(k, inner);
 		});
 		return copy;
+	}
+
+	/**
+	 * Limit the map to the top n entries.
+	 *
+	 * @param map   Map
+	 * @param limit limit
+	 * @return limited Map
+	 */
+	public static Map<String, Double> topN(final Map<String, Double> map, final int limit) {
+		return map.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+				.limit(limit)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 }

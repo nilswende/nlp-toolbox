@@ -22,11 +22,15 @@ public class CentroidByMinAvgDistance extends UseCase {
 
 	private Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
 		private final String centroid;
 
 		Result(final String centroid) {
 			this.centroid = centroid;
+		}
+
+		@Override
+		protected void printResult() {
 			print(centroid);
 		}
 

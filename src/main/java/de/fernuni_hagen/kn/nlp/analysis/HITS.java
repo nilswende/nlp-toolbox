@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,15 +22,19 @@ public class HITS extends UseCase {
 
 	Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
 		private final Set<String> terms;
 		private final Map<String, Double> authorityScores;
 		private final Map<String, Double> hubScores;
 
-		Result(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs) {
+		Result(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs, final int resultLimit) {
 			this.terms = terms;
-			this.authorityScores = resultLimit == 0 ? auths : topNScores(auths, resultLimit);
-			this.hubScores = resultLimit == 0 ? hubs : topNScores(hubs, resultLimit);
+			this.authorityScores = resultLimit == 0 ? auths : Maps.topN(auths, resultLimit);
+			this.hubScores = resultLimit == 0 ? hubs : Maps.topN(hubs, resultLimit);
+		}
+
+		@Override
+		protected void printResult() {
 			authorityScores.forEach((term, score) -> printf("Authority score of %s: %s", term, score));
 			hubScores.forEach((term, score) -> printf("Hub score of %s: %s", term, score));
 		}
@@ -61,7 +66,7 @@ public class HITS extends UseCase {
 			calcScore(auths, auth2hubs, hubs);
 			calcScore(hubs, hub2auths, auths);
 		}
-		result = new Result(terms, auths, hubs);
+		result = new Result(terms, auths, hubs, resultLimit);
 	}
 
 	protected Set<String> getTerms(final Map<String, Map<String, Double>> linking) {

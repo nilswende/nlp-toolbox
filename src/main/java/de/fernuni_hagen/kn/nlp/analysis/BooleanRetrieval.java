@@ -20,11 +20,15 @@ public class BooleanRetrieval extends UseCase {
 
 	private Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
 		private final Map<String, Long> documents;
 
 		Result(final Map<String, Long> documents) {
 			this.documents = documents;
+		}
+
+		@Override
+		protected void printResult() {
 			printfMap(documents, "No matches found", "Document '%s' contains %s query terms");
 		}
 

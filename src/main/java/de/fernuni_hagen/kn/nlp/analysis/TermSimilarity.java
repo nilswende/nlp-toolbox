@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
+import de.fernuni_hagen.kn.nlp.utils.Maps;
 import org.apache.commons.collections4.SetUtils;
 
 import java.util.Map;
@@ -22,11 +23,19 @@ public class TermSimilarity extends UseCase {
 
 	private Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
+		private final String term1;
+		private final String term2;
 		private final double similarity;
 
-		public Result(final double similarity) {
+		public Result(final String term1, final String term2, final double similarity) {
+			this.term1 = term1;
+			this.term2 = term2;
 			this.similarity = similarity;
+		}
+
+		@Override
+		protected void printResult() {
 			printf("Similarity between '%s' and '%s': %s", term1, term2, similarity);
 		}
 
@@ -43,11 +52,11 @@ public class TermSimilarity extends UseCase {
 		final var commonTerms = SetUtils.intersection(cooccTerms1, cooccTerms2).size();
 		final var similarity = commonTerms == 0 ? 0
 				: weightingFunction.calculate(cooccTerms1.size(), cooccTerms2.size(), commonTerms, 1, 1);
-		result = new Result(similarity);
+		result = new Result(term1, term2, similarity);
 	}
 
 	private Set<String> getMostSignificantCooccs(final String term, final Map<String, Map<String, Double>> significances) {
-		return topNScores(significances.getOrDefault(term, Map.of()), compareFirstN).keySet();
+		return Maps.topN(significances.getOrDefault(term, Map.of()), compareFirstN).keySet();
 	}
 
 	@Override

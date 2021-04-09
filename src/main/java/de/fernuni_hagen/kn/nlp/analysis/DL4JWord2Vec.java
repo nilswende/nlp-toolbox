@@ -25,7 +25,7 @@ public class DL4JWord2Vec extends UseCase {
 
 	private Result result;
 
-	public class Result extends UseCase.Result {
+	public static class Result extends UseCase.Result {
 		Result() {
 		}
 	}
