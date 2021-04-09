@@ -26,6 +26,9 @@ public class DocumentSimilarity extends UseCase {
 
 	private Result result;
 
+	/**
+	 * Document similarity result.
+	 */
 	public static class Result extends UseCase.Result {
 		private final Map<String, Map<String, Double>> similarities;
 

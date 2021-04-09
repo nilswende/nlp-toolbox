@@ -20,6 +20,9 @@ public class BooleanRetrieval extends UseCase {
 
 	private Result result;
 
+	/**
+	 * Boolean retrieval result.
+	 */
 	public static class Result extends UseCase.Result {
 		private final Map<String, Long> documents;
 

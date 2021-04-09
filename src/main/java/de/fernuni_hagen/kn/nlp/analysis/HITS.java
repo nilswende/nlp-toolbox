@@ -22,6 +22,9 @@ public class HITS extends UseCase {
 
 	Result result;
 
+	/**
+	 * HITS result.
+	 */
 	public static class Result extends UseCase.Result {
 		private final Set<String> terms;
 		private final Map<String, Double> authorityScores;

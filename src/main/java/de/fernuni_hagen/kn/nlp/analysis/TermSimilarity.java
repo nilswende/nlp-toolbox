@@ -23,6 +23,9 @@ public class TermSimilarity extends UseCase {
 
 	private Result result;
 
+	/**
+	 * Term similarity result.
+	 */
 	public static class Result extends UseCase.Result {
 		private final String term1;
 		private final String term2;

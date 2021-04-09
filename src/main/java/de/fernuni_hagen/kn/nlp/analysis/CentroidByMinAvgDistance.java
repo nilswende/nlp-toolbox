@@ -22,6 +22,9 @@ public class CentroidByMinAvgDistance extends UseCase {
 
 	private Result result;
 
+	/**
+	 * Centroid result.
+	 */
 	public static class Result extends UseCase.Result {
 		private final String centroid;
 

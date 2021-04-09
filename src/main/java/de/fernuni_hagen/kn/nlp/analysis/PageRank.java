@@ -25,6 +25,9 @@ public class PageRank extends UseCase {
 
 	private Result result;
 
+	/**
+	 * PageRank result.
+	 */
 	public static class Result extends UseCase.Result {
 		private final Map<String, Double> scores;
 
