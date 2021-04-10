@@ -114,20 +114,28 @@ public abstract class DBTest {
 		writer.addSentence(List.of("b", "a"));
 		writer.addSentence(List.of("a", "f"));
 
-		final var frequencies = reader.getTermFrequencies();
-		assertEquals(2, frequencies.size(), frequencies.toString());
-		var doc = frequencies.get("1");
-		assertEquals(5, doc.size(), doc.toString());
-		assertEquals(1, doc.get("a"));
-		assertEquals(2, doc.get("b"));
-		assertEquals(2, doc.get("c"));
-		assertEquals(1, doc.get("d"));
-		assertEquals(1, doc.get("e"));
-		doc = frequencies.get("2");
-		assertEquals(3, doc.size(), doc.toString());
-		assertEquals(2, doc.get("a"));
-		assertEquals(1, doc.get("b"));
-		assertEquals(1, doc.get("f"));
+		final var term2doc = reader.getTermFrequencies();
+		assertEquals(6, term2doc.size(), term2doc.toString());
+		var term = term2doc.get("a");
+		assertEquals(2, term.size(), term.toString());
+		assertEquals(1, term.get("1"));
+		assertEquals(2, term.get("2"));
+		term = term2doc.get("b");
+		assertEquals(2, term.size(), term.toString());
+		assertEquals(2, term.get("1"));
+		assertEquals(1, term.get("2"));
+		term = term2doc.get("c");
+		assertEquals(1, term.size(), term.toString());
+		assertEquals(2, term.get("1"));
+		term = term2doc.get("d");
+		assertEquals(1, term.size(), term.toString());
+		assertEquals(1, term.get("1"));
+		term = term2doc.get("e");
+		assertEquals(1, term.size(), term.toString());
+		assertEquals(1, term.get("1"));
+		term = term2doc.get("f");
+		assertEquals(1, term.size(), term.toString());
+		assertEquals(1, term.get("2"));
 	}
 
 	@Test

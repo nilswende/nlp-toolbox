@@ -83,7 +83,7 @@ public class InMemoryReader implements DBReader {
 		final var map = new HashMap<String, Map<String, Long>>();
 		db.getData().forEach(
 				(k, v) -> v.getDocuments().forEach(
-						(d, n) -> map.computeIfAbsent(d, x -> new HashMap<>()).put(k, n)
+						(d, n) -> map.computeIfAbsent(k, x -> new HashMap<>()).put(d, n)
 				));
 		return map;
 	}

@@ -35,8 +35,18 @@ public class AppConfig {
 		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
 	}
 
+	public AppConfig setBaseDir(String baseDir) {
+		this.baseDir = baseDir;
+		return this;
+	}
+
 	public Path getDbDir() {
 		return Path.of(getBaseDir(), defaultIfNull(dbDir, "db"));
+	}
+
+	public AppConfig setDbDir(String dbDir) {
+		this.dbDir = dbDir;
+		return this;
 	}
 
 	public Path getInMemoryDbDir() {
@@ -51,12 +61,21 @@ public class AppConfig {
 		return db == null ? DB_IN_MEMORY : db;
 	}
 
+	public AppConfig setDb(String db) {
+		this.db = db;
+		return this;
+	}
+
 	public boolean persistInMemoryDb() {
 		return persistInMemoryDb;
+	}
+
+	public AppConfig setPersistInMemoryDb(boolean persistInMemoryDb) {
+		this.persistInMemoryDb = persistInMemoryDb;
+		return this;
 	}
 
 	public static Path getDefaultConfigFilePath() {
 		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
 	}
-
 }

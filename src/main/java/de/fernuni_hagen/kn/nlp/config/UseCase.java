@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * A use case.
+ * A use case of the NLPToolbox.
  *
  * @author Nils Wende
  */
@@ -48,9 +48,9 @@ public abstract class UseCase {
 	}
 
 	/**
-	 * Returns the use case's result.
+	 * Returns this use case's result.
 	 *
-	 * @return the use case's result
+	 * @return this use case's result
 	 */
 	// must be overridden in every subclass to return the concrete result type
 	public abstract Result getResult();
