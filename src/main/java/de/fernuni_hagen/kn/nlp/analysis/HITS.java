@@ -42,14 +42,29 @@ public class HITS extends UseCase {
 			hubScores.forEach((term, score) -> printf("Hub score of %s: %s", term, score));
 		}
 
+		/**
+		 * Returns the set of all terms in the graph.
+		 *
+		 * @return the set of all terms
+		 */
 		public Set<String> getTerms() {
 			return terms;
 		}
 
+		/**
+		 * Returns the calculated authority scores.
+		 *
+		 * @return the calculated authority scores
+		 */
 		public Map<String, Double> getAuthorityScores() {
 			return authorityScores;
 		}
 
+		/**
+		 * Returns the calculated hub scores.
+		 *
+		 * @return the calculated hub scores
+		 */
 		public Map<String, Double> getHubScores() {
 			return hubScores;
 		}
@@ -57,10 +72,16 @@ public class HITS extends UseCase {
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		final Map<String, Map<String, Double>> linking = dbReader.getSignificances(weightingFunction);
-		calcScores(linking, linking);
+		final Map<String, Map<String, Double>> graph = dbReader.getSignificances(weightingFunction);
+		calcScores(graph, graph);
 	}
 
+	/**
+	 * Calculates the scores for each direction.
+	 *
+	 * @param auth2hubs traversal direction from authority nodes to hub nodes
+	 * @param hub2auths traversal direction from hub nodes to authority nodes
+	 */
 	protected void calcScores(final Map<String, Map<String, Double>> auth2hubs, final Map<String, Map<String, Double>> hub2auths) {
 		final Set<String> terms = getTerms(auth2hubs);
 		final Map<String, Double> auths = initMap(terms);
@@ -72,8 +93,14 @@ public class HITS extends UseCase {
 		result = new Result(terms, auths, hubs, resultLimit);
 	}
 
-	protected Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
-		return linking.keySet();
+	/**
+	 * Returns the set of all terms in the graph.
+	 *
+	 * @param graph the graph whose distinct nodes will be extracted
+	 * @return the set of all terms
+	 */
+	protected Set<String> getTerms(final Map<String, Map<String, Double>> graph) {
+		return graph.keySet();
 	}
 
 	private Map<String, Double> initMap(final Set<String> terms) {

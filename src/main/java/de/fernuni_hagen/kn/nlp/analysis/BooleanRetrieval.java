@@ -35,6 +35,11 @@ public class BooleanRetrieval extends UseCase {
 			printfMap(documents, "No matches found", "Document '%s' contains %s query terms");
 		}
 
+		/**
+		 * Returns the found documents and their respective number of matched query terms.
+		 *
+		 * @return the found documents
+		 */
 		public Map<String, Long> getDocuments() {
 			return documents;
 		}

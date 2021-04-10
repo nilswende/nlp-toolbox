@@ -40,6 +40,11 @@ public class CentroidBySpreadingActivation extends UseCase {
 			print(centroid);
 		}
 
+		/**
+		 * Returns the centroid or null, if the query is too diverse.
+		 *
+		 * @return the centroid
+		 */
 		public String getCentroid() {
 			return centroid;
 		}
@@ -54,11 +59,11 @@ public class CentroidBySpreadingActivation extends UseCase {
 	/**
 	 * Finds the centroid of the given query set (most frequent terms).
 	 *
-	 * @param db DB
+	 * @param dbReader DBReader
 	 * @return the centroid or null, if the query is too diverse
 	 */
-	public String calculate(final DBReader db) {
-		final var significances = db.getSignificances(weightingFunction);
+	private String calculate(final DBReader dbReader) {
+		final var significances = dbReader.getSignificances(weightingFunction);
 		final var cleanedQuery = cleanQuery(query, significances);
 		if (cleanedQuery == null) {
 			return null;

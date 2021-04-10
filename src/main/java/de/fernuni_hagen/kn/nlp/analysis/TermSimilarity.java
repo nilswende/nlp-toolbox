@@ -42,6 +42,11 @@ public class TermSimilarity extends UseCase {
 			printf("Similarity between '%s' and '%s': %s", term1, term2, similarity);
 		}
 
+		/**
+		 * Returns the similarity between the terms.
+		 *
+		 * @return the similarity
+		 */
 		public double getSimilarity() {
 			return similarity;
 		}

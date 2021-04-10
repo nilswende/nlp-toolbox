@@ -37,6 +37,11 @@ public class CentroidByMinAvgDistance extends UseCase {
 			print(centroid);
 		}
 
+		/**
+		 * Returns the centroid or null, if the query is too diverse.
+		 *
+		 * @return the centroid
+		 */
 		public String getCentroid() {
 			return centroid;
 		}
@@ -51,15 +56,15 @@ public class CentroidByMinAvgDistance extends UseCase {
 	/**
 	 * Finds the centroid of the given query set (most frequent terms).
 	 *
-	 * @param db DB
+	 * @param dbReader DBReader
 	 * @return the centroid or null, if the query is too diverse
 	 */
-	public String calculate(final DBReader db) {
+	private String calculate(final DBReader dbReader) {
 		final List<String> query = this.query;
 		if (query == null || query.size() <= 1) {
 			return null;
 		}
-		final var significances = db.getSignificances(weightingFunction);
+		final var significances = dbReader.getSignificances(weightingFunction);
 
 		final var distances = Maps.invertValues(significances);
 		return findCentroid(query, distances);

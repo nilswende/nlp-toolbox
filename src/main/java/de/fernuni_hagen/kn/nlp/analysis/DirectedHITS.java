@@ -21,8 +21,8 @@ public class DirectedHITS extends HITS {
 	}
 
 	@Override
-	protected Set<String> getTerms(final Map<String, Map<String, Double>> linking) {
-		return Maps.getKeys(linking);
+	protected Set<String> getTerms(final Map<String, Map<String, Double>> graph) {
+		return Maps.getKeys(graph);
 	}
 
 }

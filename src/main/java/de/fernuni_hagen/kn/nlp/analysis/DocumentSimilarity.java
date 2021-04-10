@@ -41,6 +41,11 @@ public class DocumentSimilarity extends UseCase {
 			printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
 		}
 
+		/**
+		 * Returns the similarities between every document.
+		 *
+		 * @return the similarities
+		 */
 		public Map<String, Map<String, Double>> getSimilarities() {
 			return similarities;
 		}

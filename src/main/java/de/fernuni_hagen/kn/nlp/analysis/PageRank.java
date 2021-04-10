@@ -40,6 +40,11 @@ public class PageRank extends UseCase {
 			this.scores.forEach((term, score) -> printf("PageRank of %s: %s", term, score));
 		}
 
+		/**
+		 * Returns the calculated PageRank scores.
+		 *
+		 * @return the calculated PageRank scores
+		 */
 		public Map<String, Double> getScores() {
 			return scores;
 		}
