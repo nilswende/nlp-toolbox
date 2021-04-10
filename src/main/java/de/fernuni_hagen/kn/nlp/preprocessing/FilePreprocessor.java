@@ -16,7 +16,7 @@ import java.nio.file.Path;
  */
 public class FilePreprocessor extends Preprocessor {
 
-	private Path inputDir = Path.of(AppConfig.DEFAULT_BASE_DIR, "input");
+	private String inputDir = Path.of(AppConfig.DEFAULT_BASE_DIR, "input").toString();
 
 	private Result result;
 
@@ -31,7 +31,7 @@ public class FilePreprocessor extends Preprocessor {
 	 */
 	@Override
 	public void execute(final DBWriter dbWriter) {
-		try (final var paths = Files.walk(inputDir)) {
+		try (final var paths = Files.walk(Path.of(inputDir))) {
 			paths.filter(p -> Files.isRegularFile(p))
 					.forEach(p -> preprocess(p, dbWriter));
 		} catch (final IOException e) {
@@ -55,7 +55,7 @@ public class FilePreprocessor extends Preprocessor {
 		return result;
 	}
 
-	public Preprocessor setInputDir(final Path inputDir) {
+	public FilePreprocessor setInputDir(final String inputDir) {
 		this.inputDir = inputDir;
 		return this;
 	}
