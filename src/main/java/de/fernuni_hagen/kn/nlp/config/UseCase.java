@@ -57,12 +57,17 @@ public abstract class UseCase {
 
 	/**
 	 * The basic use case result.<br>
-	 * Must be overridden by every use case implementation to return a more specific result (including the use case's name).
+	 * Must be implemented by every use case implementation to be able to return a more specific result (including the use case's name).
 	 */
 	public static abstract class Result {
 		private Duration duration;
 		private PrintWriter printWriter;
 
+		/**
+		 * Returns a string representation of this result's content.
+		 *
+		 * @return a string representation of this result's content
+		 */
 		@Override
 		public String toString() {
 			final StringWriter stringWriter = new StringWriter();
@@ -154,6 +159,11 @@ public abstract class UseCase {
 			}
 		}
 
+		/**
+		 * Returns the time spent executing this result's use case.
+		 *
+		 * @return the time spent
+		 */
 		public Duration getDuration() {
 			return duration;
 		}
