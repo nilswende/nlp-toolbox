@@ -56,10 +56,10 @@ public abstract class UseCase {
 	public abstract Result getResult();
 
 	/**
-	 * The basic use case result.
-	 * Will usually be overridden by a use case implementation to return a more specific result.
+	 * The basic use case result.<br>
+	 * Must be overridden by every use case implementation to return a more specific result (including the use case's name).
 	 */
-	public static class Result {
+	public static abstract class Result {
 		private Duration duration;
 		private PrintWriter printWriter;
 

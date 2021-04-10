@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
@@ -14,10 +14,10 @@ public interface DocumentConverter {
 	/**
 	 * Converts the document to a plain text file.
 	 *
-	 * @param reader document in any format
-	 * @param name   document name
+	 * @param input document in any format
+	 * @param name  document name
 	 * @return text file
 	 */
-	Path convert(Reader reader, String name);
+	Path convert(InputStream input, String name);
 
 }

@@ -12,6 +12,12 @@ public class ClearDatabase extends UseCase {
 
 	private Result result;
 
+	/**
+	 * ClearDatabase result.
+	 */
+	public static class Result extends UseCase.Result {
+	}
+
 	@Override
 	public void execute(final DBWriter dbWriter) {
 		dbWriter.deleteAll();

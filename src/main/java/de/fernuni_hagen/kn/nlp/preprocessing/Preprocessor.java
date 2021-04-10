@@ -2,16 +2,14 @@ package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.config.UseCase;
+import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
-import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +23,11 @@ import java.util.stream.Stream;
  */
 public class Preprocessor extends UseCase {
 
-	private Reader input;
+	private InputStream input;
 	private String documentName;
 	private boolean keepTempFiles;
 	private int sentenceFileSizeLimitBytes = Integer.MAX_VALUE;
+	private boolean continueAfterReachingFileSizeLimit;
 	private boolean extractPhrases;
 	private boolean removePhrases;
 	private boolean useBaseFormReduction;
@@ -40,18 +39,28 @@ public class Preprocessor extends UseCase {
 	private Result result;
 
 	/**
+	 * Preprocessor result.
+	 */
+	public static class Result extends UseCase.Result {
+	}
+
+	/**
 	 * Executes the preprocessing of a document.
 	 */
 	@Override
-	public void execute(final DBWriter db) {
-		final var documentConverter = new TikaDocumentConverter(sentenceFileSizeLimitBytes);
-		final var tempFile = documentConverter.convert(input, documentName);
-		db.addDocument(documentName);
-		preprocess(tempFile).forEach(db::addSentence);
-		if (!keepTempFiles) {
-			deleteTempFile(tempFile);
-		}
+	public void execute(final DBWriter dbWriter) {
+		preprocess(dbWriter);
 		result = new Result();
+	}
+
+	void preprocess(final DBWriter dbWriter) {
+		final var documentConverter = new TikaDocumentConverter(sentenceFileSizeLimitBytes, continueAfterReachingFileSizeLimit);
+		final var tempFile = documentConverter.convert(input, documentName);
+		dbWriter.addDocument(documentName);
+		preprocess(tempFile).forEach(dbWriter::addSentence);
+		if (!keepTempFiles) {
+			FileHelper.deleteFile(tempFile);
+		}
 	}
 
 	/**
@@ -86,20 +95,12 @@ public class Preprocessor extends UseCase {
 		return steps;
 	}
 
-	private void deleteTempFile(final Path tempFile) {
-		try {
-			Files.delete(tempFile);
-		} catch (final IOException e) {
-			throw new UncheckedException(e);
-		}
-	}
-
 	@Override
 	public Result getResult() {
 		return result;
 	}
 
-	public Preprocessor setInput(final Reader input) {
+	public Preprocessor setInput(final InputStream input) {
 		this.input = input;
 		return this;
 	}
@@ -116,6 +117,11 @@ public class Preprocessor extends UseCase {
 
 	public Preprocessor setSentenceFileSizeLimitBytes(final int sentenceFileSizeLimitBytes) {
 		this.sentenceFileSizeLimitBytes = sentenceFileSizeLimitBytes;
+		return this;
+	}
+
+	public Preprocessor setContinueAfterReachingFileSizeLimit(final boolean continueAfterReachingFileSizeLimit) {
+		this.continueAfterReachingFileSizeLimit = continueAfterReachingFileSizeLimit;
 		return this;
 	}
 

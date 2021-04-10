@@ -3,14 +3,13 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.WriteOutContentHandler;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,20 +21,22 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
+	private static final Path DIR = Path.of("data", "sentencefiles");
 	private final int sentenceFileSizeLimitBytes;
-	public static final Path DIR = Path.of("data", "sentencefiles");
+	private final boolean continueAfterReachingFileSizeLimit;
 
-	public TikaDocumentConverter(final int sentenceFileSizeLimitBytes) {
+	public TikaDocumentConverter(final int sentenceFileSizeLimitBytes, final boolean continueAfterReachingFileSizeLimit) {
 		this.sentenceFileSizeLimitBytes = sentenceFileSizeLimitBytes;
+		this.continueAfterReachingFileSizeLimit = continueAfterReachingFileSizeLimit;
 	}
 
 	@Override
-	public Path convert(final Reader reader, final String name) {
+	public Path convert(final InputStream input, final String name) {
 		final Path tempFile = getTempFile(name);
 		try {
 			Files.createDirectories(DIR);
 			try (final var writer = Files.newBufferedWriter(tempFile, AppConfig.DEFAULT_CHARSET)) {
-				parseInput(reader, writer);
+				parseInput(input, writer, name);
 				return tempFile;
 			}
 		} catch (final IOException e) {
@@ -47,21 +48,24 @@ public class TikaDocumentConverter implements DocumentConverter {
 		return Path.of(DIR.resolve(name).toString() + ".txt");
 	}
 
-	private void parseInput(final Reader reader, final Writer writer) {
+	private void parseInput(final InputStream input, final Writer writer, final String name) {
+		final var writeOutContentHandler = new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes);
+		final var handler = new BodyContentHandler(writeOutContentHandler);
+		final var metadata = new Metadata();
 		try {
-			final var stream = new ReaderInputStream(reader, AppConfig.DEFAULT_CHARSET);
-			final var handler = new BodyContentHandler(new WriteOutContentHandler(writer, sentenceFileSizeLimitBytes));
-			final var metadata = new Metadata();
-			new AutoDetectParser().parse(stream, handler, metadata);
+			new AutoDetectParser().parse(input, handler, metadata);
 		} catch (final Exception e) {
-			handleException(e);
+			handleException(e, writeOutContentHandler, name);
 		}
 	}
 
-	private void handleException(final Exception e) {
-		// WriteLimitReachedException is private
-		if ("WriteLimitReachedException".equals(e.getClass().getSimpleName())) {
-			System.out.println(e.getMessage());
+	private void handleException(final Exception e, final WriteOutContentHandler handler, final String name) {
+		if (handler.isWriteLimitReached(e)) {
+			final var message = "size limit for file '" + name + "' reached";
+			if (!continueAfterReachingFileSizeLimit) {
+				throw new UncheckedException(message, e);
+			}
+			System.out.println(message + ", continuing");
 		} else {
 			throw new UncheckedException(e);
 		}
