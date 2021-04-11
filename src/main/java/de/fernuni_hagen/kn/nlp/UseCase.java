@@ -1,7 +1,5 @@
 package de.fernuni_hagen.kn.nlp;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
@@ -58,7 +56,7 @@ public abstract class UseCase {
 	 */
 	public static abstract class Result {
 		private Duration duration;
-		private PrintWriter printWriter;
+		private StringBuilder sb;
 
 		/**
 		 * Returns a string representation of this result's content.
@@ -67,15 +65,12 @@ public abstract class UseCase {
 		 */
 		@Override
 		public String toString() {
-			final StringWriter stringWriter = new StringWriter();
-			printWriter = new PrintWriter(stringWriter);
-			printWriter.println("start " + getName());
+			sb = new StringBuilder();
+			println("start " + getName());
 			printResult();
-			printWriter.println("end " + getName());
-			printWriter.println(String.format("%s duration: %d s %d ms", getName(), duration.toSecondsPart(), duration.toMillisPart()));
-			printWriter.flush();
-			printWriter = null;
-			return stringWriter.toString();
+			println("end " + getName());
+			println(String.format("%s duration: %d s %d ms", getName(), duration.toSecondsPart(), duration.toMillisPart()));
+			return sb.toString();
 		}
 
 		/**
@@ -89,13 +84,17 @@ public abstract class UseCase {
 			return this.getClass().getDeclaringClass().getSimpleName();
 		}
 
+		private void println(final Object o) {
+			sb.append(o).append(System.lineSeparator());
+		}
+
 		/**
 		 * Prints the object.
 		 *
 		 * @param o Object
 		 */
 		protected void print(final Object o) {
-			printWriter.println(o);
+			println(o);
 		}
 
 		/**
@@ -105,8 +104,7 @@ public abstract class UseCase {
 		 * @param args   arguments
 		 */
 		protected void printf(final String format, final Object... args) {
-			printWriter.printf(format, args);
-			printWriter.println();
+			println(String.format(format, args));
 		}
 
 		/**
