@@ -1,5 +1,6 @@
-package de.fernuni_hagen.kn.nlp.config;
+package de.fernuni_hagen.kn.nlp.config.parser;
 
+import de.fernuni_hagen.kn.nlp.UseCase;
 import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidByMinAvgDistance;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
  *
  * @author Nils Wende
  */
-public enum UseCases {
+enum UseCases {
 	CLEAR_DATABASE(ClearDatabase.class),
 	PREPROCESSING(Preprocessor.class),
 	FILE_PREPROCESSING(FilePreprocessor.class),

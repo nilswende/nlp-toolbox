@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.config.UseCase;
+import de.fernuni_hagen.kn.nlp.UseCase;
 
 /**
  * Clears the database.

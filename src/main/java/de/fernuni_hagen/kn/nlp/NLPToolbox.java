@@ -1,9 +1,8 @@
 package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
-import de.fernuni_hagen.kn.nlp.config.ConfigParser;
-import de.fernuni_hagen.kn.nlp.config.JsonConfigParser;
-import de.fernuni_hagen.kn.nlp.config.UseCase;
+import de.fernuni_hagen.kn.nlp.config.parser.ConfigParser;
+import de.fernuni_hagen.kn.nlp.config.parser.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 
 import java.util.List;

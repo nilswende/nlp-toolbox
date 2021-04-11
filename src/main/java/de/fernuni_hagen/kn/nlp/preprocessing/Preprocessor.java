@@ -1,15 +1,18 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
-import de.fernuni_hagen.kn.nlp.config.UseCase;
+import de.fernuni_hagen.kn.nlp.UseCase;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
+import org.apache.commons.io.input.ReaderInputStream;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +106,10 @@ public class Preprocessor extends UseCase {
 	public Preprocessor setInput(final InputStream input) {
 		this.input = input;
 		return this;
+	}
+
+	public Preprocessor setInput(final String input) {
+		return setInput(new ReaderInputStream(new StringReader(input), AppConfig.DEFAULT_CHARSET));
 	}
 
 	public Preprocessor setDocumentName(final String documentName) {

@@ -1,7 +1,4 @@
-package de.fernuni_hagen.kn.nlp.config;
-
-import de.fernuni_hagen.kn.nlp.DBReader;
-import de.fernuni_hagen.kn.nlp.DBWriter;
+package de.fernuni_hagen.kn.nlp;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

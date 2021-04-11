@@ -1,5 +1,7 @@
-package de.fernuni_hagen.kn.nlp.config;
+package de.fernuni_hagen.kn.nlp.config.parser;
 
+import de.fernuni_hagen.kn.nlp.UseCase;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;

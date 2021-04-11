@@ -1,8 +1,10 @@
-package de.fernuni_hagen.kn.nlp.config;
+package de.fernuni_hagen.kn.nlp.config.parser;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import de.fernuni_hagen.kn.nlp.UseCase;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import de.fernuni_hagen.kn.nlp.utils.Utils;
