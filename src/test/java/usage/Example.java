@@ -21,7 +21,7 @@ public class Example {
 	public static void main(final String[] args) {
 		final var docText = String.join(StringUtils.SPACE, args);
 		// create the app config
-		final var appConfig = new AppConfig().setWorkingDir("").setDbDir("any");
+		final var appConfig = new AppConfig();
 		// create the use case steps
 		final var preprocessor = new Preprocessor(docText, "any");
 		final var pageRank = new PageRank().setResultLimit(5);

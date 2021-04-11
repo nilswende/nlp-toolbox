@@ -107,12 +107,7 @@ public class Preprocessor extends UseCase {
 		final var tempFile = documentConverter.convert(input, documentName);
 		dbWriter.addDocument(documentName);
 		preprocess(tempFile).forEach(dbWriter::addSentence);
-		if (keepTempFiles) {
-			return tempFile;
-		} else {
-			FileHelper.deleteFile(tempFile);
-			return null;
-		}
+		return keepTempFile(tempFile);
 	}
 
 	/**
@@ -145,6 +140,15 @@ public class Preprocessor extends UseCase {
 			steps.add(PreprocessingFactory::createBaseFormReducer);
 		}
 		return steps;
+	}
+
+	private Path keepTempFile(final Path tempFile) {
+		if (keepTempFiles) {
+			return tempFile;
+		} else {
+			FileHelper.deleteFile(tempFile);
+			return null;
+		}
 	}
 
 	@Override

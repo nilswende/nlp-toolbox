@@ -6,6 +6,8 @@ import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 
+import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
+
 /**
  * Neo4j graph database.<br>
  * <a href="https://neo4j.com/docs/java-reference/4.2/javadocs/">Neo4j Javadocs</a><br>
@@ -16,14 +18,15 @@ import org.neo4j.graphdb.Transaction;
  */
 public class Neo4J {
 
-	private static final String DEFAULT_DATABASE_NAME = "neo4j";
 	private final GraphDatabaseService graphDb;
 
+	/**
+	 * Starts Neo4J.
+	 *
+	 * @param config AppConfig
+	 */
 	public Neo4J(final AppConfig config) {
-		final var managementService = new DatabaseManagementServiceBuilder(config.getNeo4JDbDir())
-//				.setConfig(BoltConnector.enabled, true)
-//				.setConfig(BoltConnector.listen_address, new SocketAddress("localhost", 7687))
-				.build();
+		final var managementService = new DatabaseManagementServiceBuilder(config.getNeo4JDbDir()).build();
 		graphDb = managementService.database(DEFAULT_DATABASE_NAME);
 		stopDbOnShutdown(managementService);
 		createUniqueConstraints();
@@ -33,7 +36,7 @@ public class Neo4J {
 		Runtime.getRuntime().addShutdownHook(new Thread(managementService::shutdown));
 	}
 
-	// also creates a single-property index on the constrained property
+	// implicitly creates a single-property index on the constrained property
 	private void createUniqueConstraints() {
 		try (final Transaction tx = graphDb.beginTx()) {
 			createUniqueNameConstraint(Labels.TERM, tx);
@@ -66,6 +69,11 @@ public class Neo4J {
 		}
 	}
 
+	/**
+	 * Returns the Neo4J GraphDatabaseService.
+	 *
+	 * @return GraphDatabaseService
+	 */
 	public GraphDatabaseService getGraphDb() {
 		return graphDb;
 	}

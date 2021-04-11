@@ -28,7 +28,7 @@ public class FilePreprocessor extends Preprocessor {
 	public static class Result extends Preprocessor.Result {
 		private final List<String> documentNames;
 
-		public Result(final List<String> documentNames, final List<Path> tempFiles) {
+		Result(final List<String> documentNames, final List<Path> tempFiles) {
 			super(tempFiles);
 			this.documentNames = documentNames;
 		}
@@ -68,8 +68,7 @@ public class FilePreprocessor extends Preprocessor {
 	}
 
 	private List<Path> getDocuments() {
-		final var inputDir = this.inputDir == null ? Path.of(appConfig.getWorkingDir(), "input") : this.inputDir;
-		try (final var paths = Files.walk(inputDir)) {
+		try (final var paths = Files.walk(getInputDir())) {
 			return paths.filter(p -> Files.isRegularFile(p))
 					.collect(Collectors.toList());
 		} catch (final IOException e) {
@@ -88,6 +87,10 @@ public class FilePreprocessor extends Preprocessor {
 	@Override
 	public Result getResult() {
 		return result;
+	}
+
+	private Path getInputDir() {
+		return this.inputDir == null ? Path.of(appConfig.getWorkingDir(), "input") : this.inputDir;
 	}
 
 	/**
