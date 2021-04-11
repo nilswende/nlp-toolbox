@@ -14,68 +14,94 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class AppConfig {
 
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-	public static final String DEFAULT_BASE_DIR = "data";
-	private static final String DEFAULT_CONFIG_DIR = "config";
-	private static final String DEFAULT_CONFIG_FILENAME = "config.json";
-	public static final String DB_IN_MEMORY = "im";
-	public static final String DB_NEO4J = "neo4j";
+	private static final String DEFAULT_WORKING_DIR = "data";
 
-	/*
-	 * It is important that this class and all other config classes contain no final fields,
-	 * since GSON will not be able to correctly overwrite them.
-	 * If a default value is needed, handle it in the getter.
-	 */
-
-	private String baseDir;
+	private String workingDir;
 	private String dbDir;
-	private String db;
+	private DbType db;
 	private boolean persistInMemoryDb;
 
-	public String getBaseDir() {
-		return defaultIfNull(baseDir, DEFAULT_BASE_DIR);
+	/**
+	 * Database type.
+	 */
+	public enum DbType {
+		IN_MEMORY("im"), NEO4J("neo4j");
+		private final String dir;
+
+		DbType(final String dir) {
+			this.dir = dir;
+		}
+
+		public String getDir() {
+			return dir;
+		}
 	}
 
-	public AppConfig setBaseDir(String baseDir) {
-		this.baseDir = baseDir;
-		return this;
+	public String getWorkingDir() {
+		return defaultIfNull(workingDir, DEFAULT_WORKING_DIR);
 	}
 
 	public Path getDbDir() {
-		return Path.of(getBaseDir(), defaultIfNull(dbDir, "db"));
-	}
-
-	public AppConfig setDbDir(String dbDir) {
-		this.dbDir = dbDir;
-		return this;
+		return Path.of(getWorkingDir(), defaultIfNull(dbDir, "db"));
 	}
 
 	public Path getInMemoryDbDir() {
-		return getDbDir().resolve(DB_IN_MEMORY);
+		return getDbDir().resolve(getDb().getDir());
 	}
 
 	public Path getNeo4JDbDir() {
-		return getDbDir().resolve(DB_NEO4J);
+		return getDbDir().resolve(getDb().getDir());
 	}
 
-	public String getDb() {
-		return db == null ? DB_IN_MEMORY : db;
-	}
-
-	public AppConfig setDb(String db) {
-		this.db = db;
-		return this;
+	public DbType getDb() {
+		return db == null ? DbType.IN_MEMORY : db;
 	}
 
 	public boolean persistInMemoryDb() {
 		return persistInMemoryDb;
 	}
 
-	public AppConfig setPersistInMemoryDb(boolean persistInMemoryDb) {
-		this.persistInMemoryDb = persistInMemoryDb;
+	/**
+	 * Set the working directory.
+	 *
+	 * @param workingDir the working directory
+	 * @return this object
+	 */
+	public AppConfig setWorkingDir(final String workingDir) {
+		this.workingDir = workingDir;
 		return this;
 	}
 
-	public static Path getDefaultConfigFilePath() {
-		return Path.of(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILENAME);
+	/**
+	 * Set the database directory.
+	 *
+	 * @param dbDir the database directory
+	 * @return this object
+	 */
+	public AppConfig setDbDir(final String dbDir) {
+		this.dbDir = dbDir;
+		return this;
+	}
+
+	/**
+	 * Set the database.
+	 *
+	 * @param db the database type
+	 * @return this object
+	 */
+	public AppConfig setDb(final DbType db) {
+		this.db = db;
+		return this;
+	}
+
+	/**
+	 * Set true, if the in memory db should be persisted (if used at all), false otherwise.
+	 *
+	 * @param persistInMemoryDb true, if the in memory db should be persisted (if used at all)
+	 * @return this object
+	 */
+	public AppConfig setPersistInMemoryDb(final boolean persistInMemoryDb) {
+		this.persistInMemoryDb = persistInMemoryDb;
+		return this;
 	}
 }

@@ -1,5 +1,7 @@
 package de.fernuni_hagen.kn.nlp;
 
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
@@ -11,13 +13,17 @@ import java.util.Map;
  */
 public abstract class UseCase {
 
+	protected AppConfig appConfig;
+
 	/**
 	 * Executes the use case by handing over a DBReader and a DBWriter.
 	 *
-	 * @param dbReader DBReader
-	 * @param dbWriter DBWriter
+	 * @param appConfig AppConfig
+	 * @param dbReader  DBReader
+	 * @param dbWriter  DBWriter
 	 */
-	public void execute(final DBReader dbReader, final DBWriter dbWriter) {
+	public void execute(AppConfig appConfig, final DBReader dbReader, final DBWriter dbWriter) {
+		this.appConfig = appConfig;
 		final var start = System.nanoTime();
 		execute(dbReader);
 		execute(dbWriter);

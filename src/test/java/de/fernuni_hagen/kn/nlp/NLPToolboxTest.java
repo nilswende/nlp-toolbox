@@ -17,7 +17,7 @@ class NLPToolboxTest {
 
 	@Test
 	void asLibrary() {
-		final var appConfig = new AppConfig().setBaseDir("").setDbDir("test");
+		final var appConfig = new AppConfig().setWorkingDir("").setDbDir("test");
 		final var preprocessor = new Preprocessor(
 				"text of words with multiple words",
 				"1");

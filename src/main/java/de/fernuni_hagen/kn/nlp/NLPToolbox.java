@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public class NLPToolbox {
 
-	private final DBFactory dbFactory;
+	private final AppConfig appConfig;
 	private final List<UseCase> useCases;
 
 	/**
@@ -40,17 +40,18 @@ public class NLPToolbox {
 			throw new IllegalArgumentException("missing use case: " + useCases);
 		}
 		this.useCases = useCases;
-		dbFactory = DBFactory.from(appConfig);
+		this.appConfig = appConfig;
 	}
 
 	/**
-	 * Runs the NLPToolbox with the supplied use cases.
+	 * Runs the NLPToolbox with the supplied use cases.<br>
 	 * After this, each use case will contain a {@link UseCase.Result} object which consequently contains that use case's results.
 	 */
 	public void run() {
+		final var dbFactory = DBFactory.from(appConfig);
 		final var dbReader = dbFactory.getReader();
 		final var dbWriter = dbFactory.getWriter();
-		useCases.forEach(useCase -> useCase.execute(dbReader, dbWriter));
+		useCases.forEach(useCase -> useCase.execute(appConfig, dbReader, dbWriter));
 	}
 
 }

@@ -18,7 +18,7 @@ public class DBTestNeo4J extends DBTest {
 
 	static {
 		final var mock = Mockito.mock(AppConfig.class);
-		Mockito.when(mock.getDb()).thenReturn(AppConfig.DB_NEO4J);
+		Mockito.when(mock.getDb()).thenReturn(AppConfig.DbType.NEO4J);
 		final var path = Path.of("test", "neo4j");
 		System.out.println(path.toAbsolutePath());
 		Mockito.when(mock.getNeo4JDbDir()).thenReturn(path);

@@ -23,7 +23,7 @@ public class DBTestIm extends DBTest {
 
 	static {
 		final var mock = Mockito.mock(AppConfig.class);
-		Mockito.when(mock.getDb()).thenReturn(AppConfig.DB_IN_MEMORY);
+		Mockito.when(mock.getDb()).thenReturn(AppConfig.DbType.IN_MEMORY);
 		Mockito.when(mock.getInMemoryDbDir()).thenReturn(Path.of(""));
 		dbFactory = DBFactory.from(mock);
 	}

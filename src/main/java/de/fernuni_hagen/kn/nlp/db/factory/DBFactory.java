@@ -38,12 +38,14 @@ public abstract class DBFactory {
 
 	public static DBFactory from(final AppConfig config) {
 		final var db = config.getDb();
-		if (AppConfig.DB_IN_MEMORY.equalsIgnoreCase(db)) {
-			return new InMemoryDBFactory(config);
-		} else if (AppConfig.DB_NEO4J.equalsIgnoreCase(db)) {
-			return new Neo4JDBFactory(config);
+		switch (db) {
+			case IN_MEMORY:
+				return new InMemoryDBFactory(config);
+			case NEO4J:
+				return new Neo4JDBFactory(config);
+			default:
+				throw new IllegalArgumentException("Unsupported DB: " + db);
 		}
-		throw new IllegalArgumentException("Unsupported DB: " + db);
 	}
 
 }

@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
@@ -21,7 +22,6 @@ import java.nio.file.Path;
  */
 public class TikaDocumentConverter implements DocumentConverter {
 
-	private static final Path DIR = Path.of("data", "sentencefiles");
 	private final int sentenceFileSizeLimitBytes;
 	private final boolean continueAfterReachingFileSizeLimit;
 
@@ -34,7 +34,6 @@ public class TikaDocumentConverter implements DocumentConverter {
 	public Path convert(final InputStream input, final String name) {
 		final Path tempFile = getTempFile(name);
 		try {
-			Files.createDirectories(DIR);
 			try (final var writer = Files.newBufferedWriter(tempFile, AppConfig.DEFAULT_CHARSET)) {
 				parseInput(input, writer, name);
 				return tempFile;
@@ -45,7 +44,8 @@ public class TikaDocumentConverter implements DocumentConverter {
 	}
 
 	private Path getTempFile(final String name) {
-		return Path.of(DIR.resolve(name).toString() + ".txt");
+		final var tempDirectory = FileUtils.getTempDirectory().toPath();
+		return Path.of(tempDirectory.resolve(name).toString() + ".txt");
 	}
 
 	private void parseInput(final InputStream input, final Writer writer, final String name) {
