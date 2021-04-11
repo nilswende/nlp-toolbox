@@ -72,9 +72,9 @@ public abstract class UseCase {
 		@Override
 		public String toString() {
 			sb = new StringBuilder();
-			println("start " + getUseCaseName());
+			println("Start " + getUseCaseName());
 			printResult();
-			println("end " + getUseCaseName());
+			println("End " + getUseCaseName());
 			println(String.format("%s duration: %d s %d ms", getUseCaseName(), duration.toSecondsPart(), duration.toMillisPart()));
 			return sb.toString();
 		}

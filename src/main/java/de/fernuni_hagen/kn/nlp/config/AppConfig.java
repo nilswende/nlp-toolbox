@@ -73,7 +73,7 @@ public class AppConfig {
 	}
 
 	/**
-	 * Set the database directory.
+	 * Set the database directory (relative to the working directory).
 	 *
 	 * @param dbDir the database directory
 	 * @return this object
