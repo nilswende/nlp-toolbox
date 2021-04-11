@@ -45,6 +45,7 @@ public class NLPToolbox {
 
 	/**
 	 * Runs the NLPToolbox with the supplied use cases.
+	 * After this, each use case will contain a {@link UseCase.Result} object which consequently contains that use case's results.
 	 */
 	public void run() {
 		final var dbReader = dbFactory.getReader();
