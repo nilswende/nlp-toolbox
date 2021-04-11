@@ -59,12 +59,12 @@ public class JsonConfigParser extends ConfigParser {
 
 	@Override
 	protected List<UseCase> createUseCases(final List<String> useCaseValues) {
-		return joinJsonParts(useCaseValues).stream()
+		final var json = joinJsonParts(useCaseValues).stream()
 				.map(this::getJson)
-				.map(this::asJsonArray)
-				.peek(System.out::println)
-				.flatMap(this::getUseCaseConfigs)
-				.collect(Collectors.toList());
+				.collect(Collectors.joining(", "));
+		final var jsonArray = asJsonArray(json);
+		System.out.println(jsonArray);
+		return getUseCaseConfigs(jsonArray).collect(Collectors.toList());
 	}
 
 	private List<String> joinJsonParts(final List<String> useCaseValues) {
@@ -118,8 +118,8 @@ public class JsonConfigParser extends ConfigParser {
 		return json.stripLeading().startsWith("[") ? json : "[" + json + "]";
 	}
 
-	private Stream<UseCase> getUseCaseConfigs(final String arg) {
-		final var jsonArray = JsonParser.parseString(arg).getAsJsonArray();
+	private Stream<UseCase> getUseCaseConfigs(final String arrayStr) {
+		final var jsonArray = JsonParser.parseString(arrayStr).getAsJsonArray();
 		return Utils.stream(jsonArray)
 				.map(JsonElement::toString)
 				.map(this::getUseCase);

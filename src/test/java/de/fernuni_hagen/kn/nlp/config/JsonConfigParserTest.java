@@ -99,7 +99,7 @@ class JsonConfigParserTest extends TempFileTest {
 	void throwIfNonExistingUseCaseName() {
 		Assertions.assertThrows(IllegalArgumentException.class,
 				() -> new JsonConfigParser(new String[]{
-						"-u", "{namee:nonExistingUseCase}"
+						"-u", "{namee:existingUseCase}"
 				}));
 	}
 }
