@@ -1,5 +1,6 @@
-package de.fernuni_hagen.kn.nlp;
+package usage;
 
+import de.fernuni_hagen.kn.nlp.NLPToolbox;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;

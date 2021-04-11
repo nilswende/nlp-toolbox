@@ -1,0 +1,39 @@
+package usage;
+
+import de.fernuni_hagen.kn.nlp.NLPToolbox;
+import de.fernuni_hagen.kn.nlp.UseCase;
+import de.fernuni_hagen.kn.nlp.analysis.HITS;
+import de.fernuni_hagen.kn.nlp.analysis.PageRank;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
+import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
+
+import java.util.List;
+
+/**
+ * @author Nils Wende
+ */
+public class Full {
+
+	public static void main(final String[] args) {
+		// create the app config
+		final var appConfig = new AppConfig();
+		// create the use case steps
+		final var clearDatabase = new ClearDatabase();
+		final var preprocessor = new FilePreprocessor()
+				.setKeepTempFiles(false)
+				.setExtractPhrases(true)
+				.setUseBaseFormReduction(true)
+				.setFilterNouns(true)
+				.setRemoveStopWords(true)
+				.setNormalizeCase(true);
+		final var pageRank = new PageRank().setResultLimit(25);
+		final var hits = new HITS().setResultLimit(25);
+		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
+		// run the NLPToolbox
+		new NLPToolbox(appConfig, useCases).run();
+		// process the results
+		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+	}
+
+}
