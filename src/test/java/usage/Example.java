@@ -23,9 +23,7 @@ public class Example {
 		// create the app config
 		final var appConfig = new AppConfig().setBaseDir("").setDbDir("any");
 		// create the use case steps
-		final var preprocessor = new Preprocessor()
-				.setInput(docText)
-				.setDocumentName("any");
+		final var preprocessor = new Preprocessor(docText, "any");
 		final var pageRank = new PageRank().setResultLimit(5);
 		// run the NLPToolbox
 		new NLPToolbox(appConfig, preprocessor, pageRank).run();

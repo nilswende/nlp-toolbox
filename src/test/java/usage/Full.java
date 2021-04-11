@@ -10,6 +10,8 @@ import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 
 import java.util.List;
 
+import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
+
 /**
  * @author Nils Wende
  */
@@ -27,13 +29,14 @@ public class Full {
 				.setFilterNouns(true)
 				.setRemoveStopWords(true)
 				.setNormalizeCase(true);
-		final var pageRank = new PageRank().setResultLimit(25);
-		final var hits = new HITS().setResultLimit(25);
+		final var pageRank = new PageRank().setResultLimit(10);
+		final var hits = new HITS().setResultLimit(10);
 		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
 		// run the NLPToolbox
 		new NLPToolbox(appConfig, useCases).run();
 		// process the results
 		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+		logCurrentThreadCpuTime();
 	}
 
 }

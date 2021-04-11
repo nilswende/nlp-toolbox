@@ -42,6 +42,33 @@ public class Preprocessor extends UseCase {
 	private Result result;
 
 	/**
+	 * Creates a Preprocessor. The mandatory arguments must be set by other means.
+	 */
+	Preprocessor() {
+	}
+
+	/**
+	 * Creates a Preprocessor with mandatory arguments.
+	 *
+	 * @param input        the document to process
+	 * @param documentName the document name
+	 */
+	public Preprocessor(final String input, final String documentName) {
+		this(new ReaderInputStream(new StringReader(input), AppConfig.DEFAULT_CHARSET), documentName);
+	}
+
+	/**
+	 * Creates a Preprocessor with mandatory arguments.
+	 *
+	 * @param input        the document to process
+	 * @param documentName the document name
+	 */
+	public Preprocessor(final InputStream input, final String documentName) {
+		this.input = input;
+		this.documentName = documentName;
+	}
+
+	/**
 	 * Preprocessor result.
 	 */
 	public static class Result extends UseCase.Result {
@@ -103,16 +130,12 @@ public class Preprocessor extends UseCase {
 		return result;
 	}
 
-	public Preprocessor setInput(final InputStream input) {
+	Preprocessor setInput(final InputStream input) {
 		this.input = input;
 		return this;
 	}
 
-	public Preprocessor setInput(final String input) {
-		return setInput(new ReaderInputStream(new StringReader(input), AppConfig.DEFAULT_CHARSET));
-	}
-
-	public Preprocessor setDocumentName(final String documentName) {
+	Preprocessor setDocumentName(final String documentName) {
 		this.documentName = documentName;
 		return this;
 	}
