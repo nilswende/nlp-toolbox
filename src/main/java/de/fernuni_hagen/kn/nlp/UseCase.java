@@ -66,10 +66,10 @@ public abstract class UseCase {
 		@Override
 		public String toString() {
 			sb = new StringBuilder();
-			println("start " + getName());
+			println("start " + getUseCaseName());
 			printResult();
-			println("end " + getName());
-			println(String.format("%s duration: %d s %d ms", getName(), duration.toSecondsPart(), duration.toMillisPart()));
+			println("end " + getUseCaseName());
+			println(String.format("%s duration: %d s %d ms", getUseCaseName(), duration.toSecondsPart(), duration.toMillisPart()));
 			return sb.toString();
 		}
 
@@ -80,7 +80,12 @@ public abstract class UseCase {
 
 		}
 
-		private String getName() {
+		/**
+		 * Returns the name of this result's use case.
+		 *
+		 * @return the name of this result's use case
+		 */
+		public String getUseCaseName() {
 			return this.getClass().getDeclaringClass().getSimpleName();
 		}
 
