@@ -35,4 +35,9 @@ class Neo4JDBFactory extends DBFactory {
 		return db;
 	}
 
+	@Override
+	public void close() {
+		db.shutdown();
+	}
+
 }

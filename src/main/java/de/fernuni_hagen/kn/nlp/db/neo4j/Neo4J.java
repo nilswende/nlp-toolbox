@@ -10,6 +10,7 @@ import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAM
 
 /**
  * Neo4j graph database.<br>
+ * See:<br>
  * <a href="https://neo4j.com/docs/java-reference/4.2/javadocs/">Neo4j Javadocs</a><br>
  * <a href="https://neo4j.com/docs/java-reference/current/java-embedded/">Using Neo4j embedded in Java applications</a><br>
  * <a href="https://neo4j.com/docs/cypher-manual/4.2/">Neo4j Cypher Manual v4.2</a><br>
@@ -18,22 +19,18 @@ import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAM
  */
 public class Neo4J {
 
+	private final DatabaseManagementService managementService;
 	private final GraphDatabaseService graphDb;
 
 	/**
-	 * Starts Neo4J.
+	 * Starts the default Neo4J database.
 	 *
 	 * @param config AppConfig
 	 */
 	public Neo4J(final AppConfig config) {
-		final var managementService = new DatabaseManagementServiceBuilder(config.getNeo4JDbDir()).build();
+		managementService = new DatabaseManagementServiceBuilder(config.getNeo4JDbDir()).build();
 		graphDb = managementService.database(DEFAULT_DATABASE_NAME);
-		stopDbOnShutdown(managementService);
 		createUniqueConstraints();
-	}
-
-	private static void stopDbOnShutdown(final DatabaseManagementService managementService) {
-		Runtime.getRuntime().addShutdownHook(new Thread(managementService::shutdown));
 	}
 
 	// implicitly creates a single-property index on the constrained property
@@ -76,6 +73,13 @@ public class Neo4J {
 	 */
 	public GraphDatabaseService getGraphDb() {
 		return graphDb;
+	}
+
+	/**
+	 * Shuts the DBMS down.
+	 */
+	public void shutdown() {
+		managementService.shutdown();
 	}
 
 }

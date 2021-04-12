@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +16,23 @@ import java.util.TreeMap;
 public class InMemoryDB {
 
 	public static final String JSON_FILE = "data.json.gz";
+	private final AppConfig config;
 	private final Content content;
 	private String currentDoc;
 	private int sentenceCount;
 
+	/**
+	 * Starts the in-memory database.
+	 *
+	 * @param config AppConfig
+	 */
 	public InMemoryDB(final AppConfig config) {
-		final var path = config.getInMemoryDbDir().resolve(JSON_FILE);
-		content = InMemoryDeserializer.deserialize(path);
-		if (config.persistInMemoryDb()) {
-			InMemorySerializer.persistOnShutdown(path, content);
-		}
+		this.config = config;
+		content = InMemoryDeserializer.deserialize(getDbFilePath(config));
+	}
+
+	private Path getDbFilePath(final AppConfig config) {
+		return config.getInMemoryDbDir().resolve(JSON_FILE);
 	}
 
 	/**
@@ -103,6 +111,11 @@ public class InMemoryDB {
 		return content.getData();
 	}
 
+	/**
+	 * Returns the mapping of all documents to their sentences.
+	 *
+	 * @return the mapping of all documents to their sentences
+	 */
 	public Map<String, List<List<String>>> getDoc2Sentences() {
 		return content.getDoc2Sentences();
 	}
@@ -123,6 +136,15 @@ public class InMemoryDB {
 	 */
 	public long getSentencesCount() {
 		return content.getDoc2Sentences().values().stream().mapToLong(List::size).sum();
+	}
+
+	/**
+	 * Shuts the DBMS down.
+	 */
+	public void shutdown() {
+		if (config.persistInMemoryDb()) {
+			InMemorySerializer.persist(getDbFilePath(config), content);
+		}
 	}
 
 	/**
@@ -160,10 +182,18 @@ public class InMemoryDB {
 		}
 	}
 
+	/**
+	 * All database content.
+	 */
 	static class Content {
 		private Map<String, Values> data;
 		private Map<String, List<List<String>>> doc2Sentences;
 
+		/**
+		 * Creates an empty database.
+		 *
+		 * @return an empty database
+		 */
 		public static Content init() {
 			final var content = new Content();
 			content.data = new TreeMap<>();
@@ -171,14 +201,27 @@ public class InMemoryDB {
 			return content;
 		}
 
+		/**
+		 * Returns the values a term in the database is mapped to.
+		 *
+		 * @return the values a term in the database is mapped to
+		 */
 		public Map<String, Values> getData() {
 			return data;
 		}
 
+		/**
+		 * Returns the mapping of all documents to their sentences.
+		 *
+		 * @return the mapping of all documents to their sentences
+		 */
 		public Map<String, List<List<String>>> getDoc2Sentences() {
 			return doc2Sentences;
 		}
 
+		/**
+		 * Clears the database.
+		 */
 		public void clear() {
 			data.clear();
 			doc2Sentences.clear();

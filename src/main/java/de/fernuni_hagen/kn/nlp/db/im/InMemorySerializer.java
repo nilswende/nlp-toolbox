@@ -30,7 +30,14 @@ class InMemorySerializer {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> persist(path, content)));
 	}
 
-	private static void persist(final Path path, final Content content) {
+	/**
+	 * Persists the in-memory database.
+	 *
+	 * @param path    the target file
+	 * @param content the in-memory database's state
+	 * @throws UncheckedException if there's an IO exception while writing the file
+	 */
+	public static void persist(final Path path, final Content content) {
 		try (final var writer = new OutputStreamWriter(
 				new GZIPOutputStream(new BufferedOutputStream(Files.newOutputStream(path))),
 				StandardCharsets.UTF_8)) {

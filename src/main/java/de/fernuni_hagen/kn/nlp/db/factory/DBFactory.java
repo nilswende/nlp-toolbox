@@ -11,7 +11,10 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
  *
  * @author Nils Wende
  */
-public abstract class DBFactory {
+public abstract class DBFactory implements AutoCloseable {
+
+	DBFactory() {
+	}
 
 	/**
 	 * Returns a DBReader instance for the current database.
@@ -36,6 +39,12 @@ public abstract class DBFactory {
 	 */
 	public abstract Object getDb();
 
+	/**
+	 * Creates a new factory for the database specified in the config.
+	 *
+	 * @param config AppConfig
+	 * @return a new factory
+	 */
 	public static DBFactory from(final AppConfig config) {
 		final var db = config.getDb();
 		switch (db) {
@@ -47,5 +56,11 @@ public abstract class DBFactory {
 				throw new IllegalArgumentException("Unsupported DB: " + db);
 		}
 	}
+
+	/**
+	 * Closes the factory and shuts down the associated database.
+	 */
+	@Override
+	public abstract void close();
 
 }
