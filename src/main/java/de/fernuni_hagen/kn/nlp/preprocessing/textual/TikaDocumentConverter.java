@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
-import de.fernuni_hagen.kn.nlp.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.preprocessing.DocumentConverter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.metadata.Metadata;

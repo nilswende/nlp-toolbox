@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp;
+package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import java.io.InputStream;
 import java.nio.file.Path;
