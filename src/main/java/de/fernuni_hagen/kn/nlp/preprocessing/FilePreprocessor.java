@@ -90,7 +90,7 @@ public class FilePreprocessor extends Preprocessor {
 	}
 
 	private Path getInputDir() {
-		return this.inputDir == null ? Path.of(appConfig.getWorkingDir(), "input") : this.inputDir;
+		return this.inputDir == null ? appConfig.getWorkingDir().resolve("input") : this.inputDir;
 	}
 
 	/**
