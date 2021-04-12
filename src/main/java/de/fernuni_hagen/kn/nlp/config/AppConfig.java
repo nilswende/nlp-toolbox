@@ -13,11 +13,14 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
  */
 public class AppConfig {
 
+	/**
+	 * The default charset, which is used for all reads/writes on bytes controlled by this application.
+	 */
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-	private static final String DEFAULT_WORKING_DIR = "data";
+	private static final Path DEFAULT_WORKING_DIR = Path.of("data");
 
-	private String workingDir;
-	private String dbDir;
+	private Path workingDir;
+	private Path dbDir;
 	private DbType db;
 	private boolean persistInMemoryDb;
 
@@ -26,23 +29,23 @@ public class AppConfig {
 	 */
 	public enum DbType {
 		IN_MEMORY("im"), NEO4J("neo4j");
-		private final String dir;
+		private final Path dir;
 
 		DbType(final String dir) {
-			this.dir = dir;
+			this.dir = Path.of(dir);
 		}
 
-		public String getDir() {
+		public Path getDir() {
 			return dir;
 		}
 	}
 
-	public String getWorkingDir() {
+	public Path getWorkingDir() {
 		return defaultIfNull(workingDir, DEFAULT_WORKING_DIR);
 	}
 
 	public Path getDbDir() {
-		return Path.of(getWorkingDir(), defaultIfNull(dbDir, "db"));
+		return getWorkingDir().resolve(defaultIfNull(dbDir, Path.of("db")));
 	}
 
 	public Path getInMemoryDbDir() {
@@ -68,18 +71,18 @@ public class AppConfig {
 	 * @return this object
 	 */
 	public AppConfig setWorkingDir(final String workingDir) {
-		this.workingDir = workingDir;
+		this.workingDir = Path.of(workingDir);
 		return this;
 	}
 
 	/**
-	 * Set the database directory (relative to the working directory).
+	 * Set the database directory (will be relative to the working directory).
 	 *
 	 * @param dbDir the database directory
 	 * @return this object
 	 */
 	public AppConfig setDbDir(final String dbDir) {
-		this.dbDir = dbDir;
+		this.dbDir = Path.of(dbDir);
 		return this;
 	}
 
@@ -95,9 +98,9 @@ public class AppConfig {
 	}
 
 	/**
-	 * Set true, if the in memory db should be persisted (if used at all), false otherwise.
+	 * Set true, if the in-memory db should be persisted (if used at all), false otherwise.
 	 *
-	 * @param persistInMemoryDb true, if the in memory db should be persisted (if used at all)
+	 * @param persistInMemoryDb true, if the in-memory db should be persisted (if used at all)
 	 * @return this object
 	 */
 	public AppConfig setPersistInMemoryDb(final boolean persistInMemoryDb) {

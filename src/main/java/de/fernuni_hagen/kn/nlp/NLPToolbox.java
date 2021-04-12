@@ -39,8 +39,8 @@ public class NLPToolbox {
 		if (useCases == null || useCases.isEmpty() || useCases.stream().anyMatch(Objects::isNull)) {
 			throw new IllegalArgumentException("missing use case: " + useCases);
 		}
-		this.useCases = useCases;
 		this.appConfig = appConfig;
+		this.useCases = useCases;
 	}
 
 	/**
