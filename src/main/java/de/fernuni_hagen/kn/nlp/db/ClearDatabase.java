@@ -16,6 +16,8 @@ public class ClearDatabase extends UseCase {
 	 * ClearDatabase result.
 	 */
 	public static class Result extends UseCase.Result {
+		Result() {
+		}
 	}
 
 	@Override

@@ -14,6 +14,9 @@ import java.util.stream.Stream;
  */
 public class SentencePreprocessor {
 
+	/**
+	 * The PreprocessingFactory.
+	 */
 	protected final PreprocessingFactory factory;
 	private final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps;
 
@@ -40,6 +43,12 @@ public class SentencePreprocessor {
 				.filter(s -> !s.isEmpty());
 	}
 
+	/**
+	 * Create {@link Sentence} instances from the sentence strings.
+	 *
+	 * @param sentences sentence strings
+	 * @return {@link Sentence} instances
+	 */
 	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
 		return sentences
 				.map(factory.createTagger())

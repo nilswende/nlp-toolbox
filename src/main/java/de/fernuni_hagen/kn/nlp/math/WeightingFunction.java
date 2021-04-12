@@ -11,7 +11,7 @@ public enum WeightingFunction {
 	 */
 	JACCARD {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			return (kij / (double) (ki + kj - kij));
 		}
 	},
@@ -20,7 +20,7 @@ public enum WeightingFunction {
 	 */
 	DICE {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			return 2 * (kij / (double) (ki + kj));
 		}
 	},
@@ -29,7 +29,7 @@ public enum WeightingFunction {
 	 */
 	MUTUAL_INFORMATION {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			return Math.log10((k * kij) / (double) (ki * kj));
 		}
 	},
@@ -38,7 +38,7 @@ public enum WeightingFunction {
 	 */
 	LOG_LIKELIHOOD {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			return nLogN(k) - nLogN(ki) - nLogN(kj) + nLogN(kij)
 					+ nLogN(k - ki - kj + kij)
 					+ nLogN(ki - kij) + nLogN(kj - kij)
@@ -54,7 +54,7 @@ public enum WeightingFunction {
 	 */
 	POISSON {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			final var div = (ki * kj) / (double) k;
 			return (factorialLog10((int) kij) - kij * Math.log10(div) + div) / Math.log10(k);
 		}
@@ -64,7 +64,7 @@ public enum WeightingFunction {
 	 */
 	ASSN {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			return kij / (double) kmax;
 		}
 	},
@@ -73,20 +73,20 @@ public enum WeightingFunction {
 	 */
 	NONE {
 		@Override
-		public double calculate(final long ki, final long kj, final long kij, final long k, long kmax) {
+		public double calculate(final long ki, final long kj, final long kij, final long k, final long kmax) {
 			return 1.0;
 		}
 	};
 
 	/**
-	 * Calculates the significance of {@code kij} in regard to {@code ki}, {@code kj} and {@code k}.
+	 * Calculates the significance of the terms ti and tj.
 	 *
 	 * @param ki   number of sentences that contain the term ti
 	 * @param kj   number of sentences that contain the term tj
 	 * @param kij  number of sentences that contain both the term ti and tj
 	 * @param k    total number of sentences
 	 * @param kmax maximum number of sentences that contain any term
-	 * @return the significance coefficient of kij
+	 * @return the significance coefficient
 	 */
 	public abstract double calculate(long ki, long kj, long kij, long k, long kmax);
 

@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public abstract class UseCase {
 
+	/**
+	 * The AppConfig.
+	 */
 	protected AppConfig appConfig;
 
 	/**
@@ -22,7 +25,7 @@ public abstract class UseCase {
 	 * @param dbReader  DBReader
 	 * @param dbWriter  DBWriter
 	 */
-	public void execute(AppConfig appConfig, final DBReader dbReader, final DBWriter dbWriter) {
+	public void execute(final AppConfig appConfig, final DBReader dbReader, final DBWriter dbWriter) {
 		this.appConfig = appConfig;
 		final var start = System.nanoTime();
 		execute(dbReader);

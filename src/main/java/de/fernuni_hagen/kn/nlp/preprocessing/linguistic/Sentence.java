@@ -12,6 +12,9 @@ import java.util.stream.Stream;
  */
 public class Sentence {
 
+	/**
+	 * The tagged terms.
+	 */
 	protected final List<TaggedTerm> terms;
 
 	/**
@@ -34,7 +37,13 @@ public class Sentence {
 		return new Sentence(newTerms);
 	}
 
-	protected List<TaggedTerm> mapTerms(final UnaryOperator<Stream<TaggedTerm>> mapper) {
+	/**
+	 * Apply the mapper to the terms.
+	 *
+	 * @param mapper creating the new terms from the old ones
+	 * @return transformed terms
+	 */
+	final List<TaggedTerm> mapTerms(final UnaryOperator<Stream<TaggedTerm>> mapper) {
 		return mapper.apply(terms.stream()).collect(Collectors.toList());
 	}
 

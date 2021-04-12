@@ -58,7 +58,7 @@ public interface GraphSearcher {
 	}
 
 	/**
-	 * Returns if the given node is connected to all of the other given nodes.
+	 * Returns true, if the given node is connected to all of the other given nodes, false otherwise.
 	 *
 	 * @param node          the node
 	 * @param nodes         the nodes whose connection we want to check

@@ -15,6 +15,9 @@ import java.util.Map;
  */
 public class StatementPrinter {
 
+	/**
+	 * Set true to print to a file.
+	 */
 	private static final boolean PRINT = false;
 	private static final PrintStream stream;
 
@@ -28,11 +31,26 @@ public class StatementPrinter {
 		}
 	}
 
+	private StatementPrinter() {
+		throw new AssertionError("no init");
+	}
+
+	/**
+	 * Prints the statement.
+	 *
+	 * @param stmt the statement
+	 */
 	public static void print(final String stmt) {
 		stream.print(stmt);
 		stream.println(";");
 	}
 
+	/**
+	 * Prints the statement and its parameters.
+	 *
+	 * @param stmt   the statement
+	 * @param params the parameters
+	 */
 	public static void print(final String stmt, final Map<String, Object> params) {
 		printParams(params);
 		print(stmt);

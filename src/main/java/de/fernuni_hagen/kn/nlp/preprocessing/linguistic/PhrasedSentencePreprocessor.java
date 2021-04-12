@@ -34,7 +34,15 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		return createSentence(taggedTerms, sentence, extractedPhrases);
 	}
 
-	protected Sentence createSentence(List<TaggedTerm> taggedTerms, String sentence, List<String> extractedPhrases) {
+	/**
+	 * Create a {@link Sentence} instance from the sentence string.
+	 *
+	 * @param taggedTerms      tagged terms
+	 * @param sentence         sentence string
+	 * @param extractedPhrases extracted phrases
+	 * @return a {@link Sentence} instance
+	 */
+	protected Sentence createSentence(final List<TaggedTerm> taggedTerms, final String sentence, final List<String> extractedPhrases) {
 		return new PhrasedSentence(taggedTerms, sentence, extractedPhrases);
 	}
 

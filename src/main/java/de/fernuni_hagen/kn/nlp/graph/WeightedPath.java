@@ -37,10 +37,20 @@ public class WeightedPath {
 		return weight != Double.POSITIVE_INFINITY;
 	}
 
+	/**
+	 * Returns the path ordered from start to end.
+	 *
+	 * @return the path ordered from start to end
+	 */
 	public List<String> getPath() {
 		return path;
 	}
 
+	/**
+	 * Returns the total weight of the path ({@link Double#POSITIVE_INFINITY} for empty paths).
+	 *
+	 * @return the total weight of the path
+	 */
 	public double getWeight() {
 		return weight;
 	}

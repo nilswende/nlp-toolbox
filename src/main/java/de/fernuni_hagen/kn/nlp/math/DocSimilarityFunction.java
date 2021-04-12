@@ -46,7 +46,7 @@ public enum DocSimilarityFunction {
 	}
 
 	/**
-	 * Calculates the significance of {@code kij} in regard to {@code ki}, {@code kj} and {@code k}.
+	 * Calculates the similarity of the two document vectors.
 	 *
 	 * @param d1 document vector containing the term weights of document one
 	 * @param d2 document vector containing the term weights of document two

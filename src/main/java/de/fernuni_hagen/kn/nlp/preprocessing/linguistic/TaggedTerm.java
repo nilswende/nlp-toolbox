@@ -70,19 +70,39 @@ public class TaggedTerm {
 		return tag.startsWith(tagset.getProperNounTag());
 	}
 
+	/**
+	 * Returns a string representation of the tagged term.
+	 *
+	 * @return a string representation of the tagged term
+	 */
 	@Override
 	public String toString() {
 		return term + tagset.getTagSeparator() + tag;
 	}
 
+	/**
+	 * Returns the term.
+	 *
+	 * @return the term
+	 */
 	public String getTerm() {
 		return term;
 	}
 
+	/**
+	 * Returns the tag.
+	 *
+	 * @return the tag
+	 */
 	public String getTag() {
 		return tag;
 	}
 
+	/**
+	 * Returns the tagset used for tagging.
+	 *
+	 * @return the tagset
+	 */
 	public Tagset getTagset() {
 		return tagset;
 	}
