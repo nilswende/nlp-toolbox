@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.db.DB;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.TreeMap;
  *
  * @author Nils Wende
  */
-public class InMemoryDB {
+public class InMemoryDB implements DB {
 
 	public static final String JSON_FILE = "data.json.gz";
 	private final AppConfig config;
@@ -138,9 +139,7 @@ public class InMemoryDB {
 		return content.getDoc2Sentences().values().stream().mapToLong(List::size).sum();
 	}
 
-	/**
-	 * Shuts the DBMS down.
-	 */
+	@Override
 	public void shutdown() {
 		if (config.persistInMemoryDb()) {
 			InMemorySerializer.persist(getDbFilePath(config), content);

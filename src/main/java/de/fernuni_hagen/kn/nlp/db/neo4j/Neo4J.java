@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.db.DB;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -17,7 +18,7 @@ import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAM
  *
  * @author Nils Wende
  */
-public class Neo4J {
+public class Neo4J implements DB {
 
 	private final DatabaseManagementService managementService;
 	private final GraphDatabaseService graphDb;
@@ -75,9 +76,7 @@ public class Neo4J {
 		return graphDb;
 	}
 
-	/**
-	 * Shuts the DBMS down.
-	 */
+	@Override
 	public void shutdown() {
 		managementService.shutdown();
 	}

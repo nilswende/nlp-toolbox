@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.db.factory;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.db.DB;
 
 /**
  * Defines a factory for the database (Abstract Factory Pattern).<br>
@@ -37,7 +38,7 @@ public abstract class DBFactory implements AutoCloseable {
 	 *
 	 * @return the concrete database
 	 */
-	public abstract Object getDb();
+	public abstract DB getDb();
 
 	/**
 	 * Creates a new factory for the database specified in the config.
@@ -61,6 +62,8 @@ public abstract class DBFactory implements AutoCloseable {
 	 * Closes the factory and shuts down the associated database.
 	 */
 	@Override
-	public abstract void close();
+	public void close() {
+		getDb().shutdown();
+	}
 
 }
