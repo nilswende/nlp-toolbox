@@ -24,13 +24,13 @@ class PhraseIteratorTest {
 	void next(final String sentence, final List<String> phrases, final List<String> expected) {
 		final var iterator = new PhraseIterator(sentence, phrases);
 		final var actual = new ArrayList<String>();
-		int pos = -1;
+		int i = -1;
 		while (iterator.hasNext()) {
 			final var next = iterator.next();
 			actual.add(next);
-			final var position = iterator.position();
-			assertEquals(sentence.indexOf(next, pos + 1), position);
-			pos = position;
+			final var index = iterator.getIndex();
+			assertEquals(sentence.indexOf(next, i + 1), index);
+			i = index;
 		}
 		assertEquals(expected, actual);
 	}

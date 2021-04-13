@@ -31,26 +31,35 @@ class PhrasedSentenceTest {
 						List.of("0", "1", "2", "3", "4"),
 						List.of()),
 				// single phrase
-				arguments("ph 0 1 2 3 4",
+				arguments("aa 0 1 2 3 4",
 						List.of("0", "1", "2", "3", "4"),
-						List.of("ph")),
-				arguments("0 1 ph 2 3 4",
+						List.of("aa")),
+				arguments("0 1 aa 2 3 4",
 						List.of("0", "1", "2", "3", "4"),
-						List.of("ph")),
-				arguments("0 1 2 3 4 ph",
+						List.of("aa")),
+				arguments("0 1 2 3 4 aa",
 						List.of("0", "1", "2", "3", "4"),
-						List.of("ph")),
+						List.of("aa")),
 				// single phrase, duplicate terms
-				arguments("0 1 1 ph 2 3 3 4",
+				arguments("0 1 1 aa 2 3 3 4",
 						List.of("0", "1", "1", "2", "3", "3", "4"),
-						List.of("ph")),
+						List.of("aa")),
 				// multiple phrases
-				arguments("0 1 gg 2 3 4 ph",
+				arguments("0 1 bb 2 3 4 aa",
 						List.of("0", "1", "2", "3", "4"),
-						List.of("ph", "gg")),
-				arguments("0 1 ph gg 2 3 4 ph",
+						List.of("aa", "bb")),
+				arguments("0 1 aa bb 2 3 4 aa",
 						List.of("0", "1", "2", "3", "4"),
-						List.of("ph", "gg"))
+						List.of("aa", "bb")),
+				arguments("aa 0 1 bb 2 3 4 bb",
+						List.of("0", "1", "2", "3", "4"),
+						List.of("aa", "bb")),
+				arguments("aa 0 bb 0",
+						List.of("0", "0"),
+						List.of("aa", "bb")),
+				arguments("aa 0 1 1 bb 2 3 cc 4 5 1 6",
+						List.of("0", "1", "1", "2", "3", "4", "5", "1", "6"),
+						List.of("aa", "bb", "cc"))
 		);
 	}
 
@@ -70,20 +79,20 @@ class PhrasedSentenceTest {
 	static Stream<Arguments> getContentRemoved() {
 		return Stream.of(
 				// single phrase
-				arguments("0 1 1 ph 2 3 3 4",
+				arguments("0 1 1 aa 2 3 3 4",
 						List.of("0", "3", "3", "4"),
-						List.of("ph"),
-						"0 ph 3 3 4"),
+						List.of("aa"),
+						"0 aa 3 3 4"),
 				// multiple phrase
-				arguments("gg 0 1 1 ph 2 3 3 4 gg",
+				arguments("bb 0 1 1 aa 2 3 3 4 bb",
 						List.of("0", "3", "3", "4"),
-						List.of("ph", "gg"),
-						"gg 0 ph 3 3 4 gg"),
+						List.of("aa", "bb"),
+						"bb 0 aa 3 3 4 bb"),
 				// single term gets e.g. mistagged and removed
-				arguments("gg 0 1 1 ph 2 3 3 4 gg",
+				arguments("bb 0 1 1 aa 2 3 3 4 bb",
 						List.of("0", "1", "3", "3", "4"),
-						List.of("ph", "gg"),
-						"gg 0 1 ph 3 3 4 gg")
+						List.of("aa", "bb"),
+						"bb 0 1 aa 3 3 4 bb")
 		);
 	}
 }

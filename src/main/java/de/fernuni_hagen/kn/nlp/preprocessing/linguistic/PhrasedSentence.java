@@ -55,9 +55,9 @@ public class PhrasedSentence extends Sentence {
 		final var phraseIterator = new PhraseIterator(sentence, phrases);
 		while (phraseIterator.hasNext()) {
 			final var phrase = phraseIterator.next();
-			final var position = phraseIterator.position();
+			final var index = phraseIterator.getIndex();
 
-			final int termPos = lastTermBefore(position);
+			final int termPos = lastTermBefore(index);
 			if (termPos != -1) {
 				final int pos = termPos + 1;
 				addTerms(list, start, pos);
@@ -69,12 +69,17 @@ public class PhrasedSentence extends Sentence {
 		return list.stream();
 	}
 
-	private int lastTermBefore(final int position) {
+	private int lastTermBefore(final int phraseIndex) {
 		int termPos = -1;
+		int current = -1;
 		int max = 0;
 		for (int i = 0; i < terms.size(); i++) {
 			final TaggedTerm t = terms.get(i);
-			final var index = sentence.lastIndexOf(t.getTerm(), position);
+			current = sentence.indexOf(t.getTerm(), current + 1);
+			final var index = sentence.lastIndexOf(t.getTerm(), phraseIndex);
+			if (current > index) {
+				break;
+			}
 			if (index >= max) {
 				termPos = i;
 				max = index;

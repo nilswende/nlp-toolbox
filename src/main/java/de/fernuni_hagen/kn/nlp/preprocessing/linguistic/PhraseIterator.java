@@ -136,11 +136,11 @@ public class PhraseIterator implements Iterator<String> {
 	}
 
 	/**
-	 * Returns the position of the current phrase in the sentence.
+	 * Returns the index of the current phrase in the sentence.
 	 *
-	 * @return the position of the current phrase in the sentence
+	 * @return the index of the current phrase in the sentence
 	 */
-	public int position() {
+	public int getIndex() {
 		return pos;
 	}
 
