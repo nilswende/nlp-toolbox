@@ -58,11 +58,9 @@ public class FilePreprocessor extends Preprocessor {
 		final var tempFiles = new ArrayList<Path>();
 		for (final Path document : getDocuments()) {
 			final var name = document.getFileName().toString();
-			final var tempFile = preprocess(document, name, dbWriter);
+			final var result = preprocess(document, name, dbWriter);
 			names.add(name);
-			if (tempFile != null) {
-				tempFiles.add(tempFile);
-			}
+			tempFiles.addAll(result.getTempFiles());
 		}
 		result = new Result(names, tempFiles);
 	}
@@ -76,7 +74,7 @@ public class FilePreprocessor extends Preprocessor {
 		}
 	}
 
-	private Path preprocess(final Path path, final String name, final DBWriter dbWriter) {
+	private Preprocessor.Result preprocess(final Path path, final String name, final DBWriter dbWriter) {
 		try (final var input = FileHelper.newBufferedInputStream(path)) {
 			return setInput(input).setDocumentName(name).preprocess(dbWriter);
 		} catch (final IOException e) {

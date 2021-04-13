@@ -8,6 +8,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
+import de.fernuni_hagen.kn.nlp.preprocessing.textual.SavingSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
 import org.apache.commons.io.input.ReaderInputStream;
 
@@ -29,6 +30,7 @@ public class Preprocessor extends UseCase {
 	private InputStream input;
 	private String documentName;
 	private boolean keepTempFiles;
+	private boolean saveSentenceFile;
 	private int sentenceFileSizeLimitBytes = Integer.MAX_VALUE;
 	private boolean continueAfterReachingFileSizeLimit;
 	private boolean extractPhrases;
@@ -98,27 +100,33 @@ public class Preprocessor extends UseCase {
 	 */
 	@Override
 	public void execute(final DBWriter dbWriter) {
-		final var tempFile = preprocess(dbWriter);
-		result = new Result(tempFile == null ? List.of() : List.of(tempFile));
+		result = preprocess(dbWriter);
 	}
 
-	Path preprocess(final DBWriter dbWriter) {
+	Result preprocess(final DBWriter dbWriter) {
 		final var documentConverter = new TikaDocumentConverter(sentenceFileSizeLimitBytes, continueAfterReachingFileSizeLimit);
 		final var tempFile = documentConverter.convert(input, documentName);
 		dbWriter.addDocument(documentName);
-		preprocess(tempFile).forEach(dbWriter::addSentence);
-		return keepTempFile(tempFile);
+		final var sentenceFile = FileHelper.getTempFile(documentName + ".s");
+		preprocess(tempFile, sentenceFile).forEach(dbWriter::addSentence);
+		deleteTempFiles(tempFile, sentenceFile);
+		return new Result(keepTempFiles ? (saveSentenceFile ? List.of(tempFile, sentenceFile) : List.of(tempFile)) : List.of());
 	}
 
 	/**
 	 * Executes the linguistic preprocessing of a document.
 	 *
-	 * @param textFile the document to be processed
+	 * @param textFile     the document to be processed
+	 * @param sentenceFile the sentence file for saving
 	 * @return stream of the sentences inside the document
 	 */
-	private Stream<Sentence> preprocess(final Path textFile) {
+	private Stream<Sentence> preprocess(final Path textFile, final Path sentenceFile) {
 		final var factory = PreprocessingFactory.from(textFile);
-		final var sentences = factory.createSentenceExtractor().extract(textFile);
+		var sentenceExtractor = factory.createSentenceExtractor();
+		if (saveSentenceFile) {
+			sentenceExtractor = new SavingSentenceExtractor(sentenceExtractor, FileHelper.newPrintWriter(sentenceFile));
+		}
+		final var sentences = sentenceExtractor.extract(textFile);
 		return SentencePreprocessor.from(removePhrases, extractPhrases, getPreprocessingSteps(), factory).processSentences(sentences);
 	}
 
@@ -142,12 +150,9 @@ public class Preprocessor extends UseCase {
 		return steps;
 	}
 
-	private Path keepTempFile(final Path tempFile) {
-		if (keepTempFiles) {
-			return tempFile;
-		} else {
-			FileHelper.deleteFile(tempFile);
-			return null;
+	private void deleteTempFiles(final Path... files) {
+		if (!keepTempFiles) {
+			FileHelper.deleteFiles(files);
 		}
 	}
 
@@ -186,6 +191,17 @@ public class Preprocessor extends UseCase {
 	 */
 	public Preprocessor setKeepTempFiles(final boolean keepTempFiles) {
 		this.keepTempFiles = keepTempFiles;
+		return this;
+	}
+
+	/**
+	 * Set true, if a sentence file should be saved (e. g. sentence files), false otherwise.
+	 *
+	 * @param saveSentenceFile true, if a sentence file should be saved
+	 * @return this object
+	 */
+	public Preprocessor setSaveSentenceFile(final boolean saveSentenceFile) {
+		this.saveSentenceFile = saveSentenceFile;
 		return this;
 	}
 
