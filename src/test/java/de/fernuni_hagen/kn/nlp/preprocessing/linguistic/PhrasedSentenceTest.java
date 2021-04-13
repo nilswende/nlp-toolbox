@@ -26,6 +26,9 @@ class PhrasedSentenceTest {
 
 	static Stream<Arguments> getContent() {
 		return Stream.of(
+				arguments("",
+						List.of(),
+						List.of()),
 				// no phrases
 				arguments("0 1 2 3 4",
 						List.of("0", "1", "2", "3", "4"),
