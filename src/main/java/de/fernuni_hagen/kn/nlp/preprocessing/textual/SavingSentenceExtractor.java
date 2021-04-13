@@ -30,12 +30,12 @@ public class SavingSentenceExtractor implements SentenceExtractor {
 	@Override
 	public Stream<String> extract(final Path textFile) {
 		final var sentences = extractor.extract(textFile);
-		return sentences.peek(this::print).onClose(writer::close);
+		return sentences.peek(writer::println).onClose(this::close);
 	}
 
-	private void print(String sentence) {
-		writer.println(sentence);
+	private void close() {
 		writer.flush();
+		writer.close();
 	}
 
 }

@@ -108,7 +108,9 @@ public class Preprocessor extends UseCase {
 		final var tempFile = documentConverter.convert(input, documentName);
 		dbWriter.addDocument(documentName);
 		final var sentenceFile = FileHelper.getTempFile(documentName + ".s");
-		preprocess(tempFile, sentenceFile).forEach(dbWriter::addSentence);
+		try (final var sentences = preprocess(tempFile, sentenceFile)) {
+			sentences.forEach(dbWriter::addSentence);
+		}
 		deleteTempFiles(tempFile, sentenceFile);
 		return new Result(keepTempFiles ? (saveSentenceFile ? List.of(tempFile, sentenceFile) : List.of(tempFile)) : List.of());
 	}
