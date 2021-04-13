@@ -226,6 +226,7 @@ $RECYCLE.BIN/
 
 .project
 .classpath
+log4j.out
 target
 data/
 javadoc/
