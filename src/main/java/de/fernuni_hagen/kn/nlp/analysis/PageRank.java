@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Calculates the PageRanks for all terms in the DB.
+ * Calculates the PageRanks of a graph.
  *
  * @author Nils Wende
  */

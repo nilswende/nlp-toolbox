@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Executes the preprocessing of a document.
+ * Executes the preprocessing of a document and writes the processed terms into the database.
  *
  * @author Nils Wende
  */

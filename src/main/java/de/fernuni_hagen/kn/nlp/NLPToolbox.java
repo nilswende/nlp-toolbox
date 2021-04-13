@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Main class of the Hagen NLPToolbox.
+ * Hagen NLPToolbox is a collection of text mining tools.
  *
  * @author Nils Wende
  */

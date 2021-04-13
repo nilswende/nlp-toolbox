@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Executes the preprocessing of file documents.
+ * Executes the preprocessing of file documents and writes the processed terms into the database.
  *
  * @author Nils Wende
  */
