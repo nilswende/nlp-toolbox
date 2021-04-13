@@ -195,9 +195,9 @@ public class Preprocessor extends UseCase {
 	}
 
 	/**
-	 * Set true, if a sentence file should be saved (e. g. sentence files), false otherwise.
+	 * Set true, if the sentence file should be saved, false otherwise.
 	 *
-	 * @param saveSentenceFile true, if a sentence file should be saved
+	 * @param saveSentenceFile true, if the sentence file should be saved
 	 * @return this object
 	 */
 	public Preprocessor setSaveSentenceFile(final boolean saveSentenceFile) {
