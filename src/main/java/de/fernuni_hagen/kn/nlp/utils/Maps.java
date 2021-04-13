@@ -44,8 +44,8 @@ public final class Maps {
 	 * @return all outer and inner keys
 	 */
 	public static <K, V> Set<K> getKeys(final Map<K, Map<K, V>> map) {
-		final var keys = new HashSet<>(map.keySet());
-		map.values().stream().map(Map::keySet).forEach(keys::addAll);
+		final var keys = getInnerKeys(map);
+		keys.addAll(map.keySet());
 		return keys;
 	}
 
@@ -174,7 +174,7 @@ public final class Maps {
 	}
 
 	/**
-	 * Limit the map to the top n entries.
+	 * Limit the map to the top n entries by value.
 	 *
 	 * @param map   Map
 	 * @param limit limit
