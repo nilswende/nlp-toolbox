@@ -104,8 +104,7 @@ public class Preprocessor extends UseCase {
 	}
 
 	Result preprocess(final DBWriter dbWriter) {
-		final var documentConverter = new TikaDocumentConverter(sentenceFileSizeLimitBytes, continueAfterReachingFileSizeLimit);
-		final var tempFile = documentConverter.convert(input, documentName);
+		final var tempFile = convertDocument();
 		dbWriter.addDocument(documentName);
 		final var sentenceFile = FileHelper.getTempFile(documentName + ".s");
 		try (final var sentences = preprocess(tempFile, sentenceFile)) {
@@ -113,6 +112,11 @@ public class Preprocessor extends UseCase {
 		}
 		deleteTempFiles(tempFile, sentenceFile);
 		return new Result(keepTempFiles ? (saveSentenceFile ? List.of(tempFile, sentenceFile) : List.of(tempFile)) : List.of());
+	}
+
+	private Path convertDocument() {
+		final var documentConverter = new TikaDocumentConverter(sentenceFileSizeLimitBytes, continueAfterReachingFileSizeLimit);
+		return documentConverter.convert(input, documentName);
 	}
 
 	/**
