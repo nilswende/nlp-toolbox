@@ -58,10 +58,9 @@ public class PhrasedSentence extends Sentence {
 			final int index = phraseIterator.getIndex();
 
 			final int termPos = lastTermBefore(index);
-			if (termPos != -1) {
-				final int pos = termPos + 1;
-				addTerms(list, start, pos);
-				start = pos;
+			if (termPos != 0) {
+				addTerms(list, start, termPos);
+				start = termPos;
 			}
 			list.add(phrase);
 		}
@@ -76,11 +75,11 @@ public class PhrasedSentence extends Sentence {
 			final var term = terms.get(i).getTerm();
 			final int index = startToPhrase.indexOf(term, current + 1);
 			if (index == -1) {
-				return i - 1;
+				return i;
 			}
 			current = index;
 		}
-		return terms.size() - 1;
+		return terms.size();
 	}
 
 	private void addTerms(final List<String> list, final int start, final int pos) {
