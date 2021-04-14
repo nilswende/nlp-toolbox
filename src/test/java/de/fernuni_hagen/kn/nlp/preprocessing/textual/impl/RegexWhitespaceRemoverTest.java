@@ -27,7 +27,8 @@ class RegexWhitespaceRemoverTest {
 				arguments("abc\nabc", "abc abc"),
 				arguments("abc  abc", "abc abc"),
 				arguments("abc \nabc", "abc abc"),
-				//arguments("\nabc\nabc", "abc abc"), // should only apply to the start of the text
+				arguments("\nabc\nabc", "abc abc"), // should only apply to the start of the text
+				arguments("\n abc\nabc", "abc abc"),
 				arguments("abc\n \nabc", "abc\nabc"),
 				arguments("abc\n \n \nabc", "abc\nabc"),
 				arguments("abc \n\nabc", "abc\nabc"),

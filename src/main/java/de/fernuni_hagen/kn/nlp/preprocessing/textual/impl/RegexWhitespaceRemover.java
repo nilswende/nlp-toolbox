@@ -28,16 +28,18 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 		final var sb = new StringBuilder(chars.length());
 		for (int i = 0; i < split.length; i++) {
 			final String s = split[i];
-			sb.append(s.strip());
-			if (i < split.length - 1) {
-				final var next = split[i + 1];
-				if (next.isEmpty() || Character.isWhitespace(next.charAt(0))) {
-					sb.append(StringUtils.LF);
-					while (i < split.length - 1 && split[i + 1].isBlank()) {
-						i++;
+			if (!s.isBlank()) {
+				sb.append(s.strip());
+				if (i < split.length - 1) {
+					final var next = split[i + 1];
+					if (next.isEmpty() || Character.isWhitespace(next.charAt(0))) {
+						sb.append(StringUtils.LF);
+						while (i < split.length - 1 && split[i + 1].isBlank()) {
+							i++;
+						}
+					} else {
+						sb.append(StringUtils.SPACE);
 					}
-				} else {
-					sb.append(StringUtils.SPACE);
 				}
 			}
 		}
