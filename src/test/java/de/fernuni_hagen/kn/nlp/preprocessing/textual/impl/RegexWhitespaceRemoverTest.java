@@ -25,8 +25,16 @@ class RegexWhitespaceRemoverTest {
 		return Stream.of(//
 				arguments("abc abc", "abc abc"),
 				arguments("abc\nabc", "abc abc"),
-				arguments("abc\r\nabc\r\n", "abc abc"),
-				arguments("abc\nabc \r\n", "abc abc")
+				arguments("abc  abc", "abc abc"),
+				arguments("abc \nabc", "abc abc"),
+				//arguments("\nabc\nabc", "abc abc"), // should only apply to the start of the text
+				arguments("abc\n \nabc", "abc\nabc"),
+				arguments("abc\n \n \nabc", "abc\nabc"),
+				arguments("abc \n\nabc", "abc\nabc"),
+				arguments("abc \n abc", "abc\nabc"),
+				arguments("abc \n abc\n \n", "abc\nabc\n"),
+				// CRLF
+				arguments("abc\r\nabc", "abc abc")
 		);
 	}
 

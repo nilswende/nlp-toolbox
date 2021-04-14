@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceExtractor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -30,7 +31,12 @@ public class SavingSentenceExtractor implements SentenceExtractor {
 	@Override
 	public Stream<String> extract(final Path textFile) {
 		final var sentences = extractor.extract(textFile);
-		return sentences.peek(writer::println).onClose(this::close);
+		return sentences.peek(this::println).onClose(this::close);
+	}
+
+	public void println(final Object o) {
+		writer.print(o);
+		writer.print(StringUtils.LF);
 	}
 
 	private void close() {

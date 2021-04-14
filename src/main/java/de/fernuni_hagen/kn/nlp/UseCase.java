@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -99,7 +100,7 @@ public abstract class UseCase {
 		}
 
 		private void println(final Object o) {
-			sb.append(o).append(System.lineSeparator());
+			sb.append(o).append(StringUtils.LF);
 		}
 
 		/**
