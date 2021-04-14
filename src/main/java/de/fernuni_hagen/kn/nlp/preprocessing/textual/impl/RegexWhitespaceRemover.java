@@ -25,6 +25,10 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 
 	private CharSequence reduceWhitespaces(final CharSequence chars) {
 		final var split = LINEBREAK.split(chars);
+		return split.length == 1 ? split[0].strip() : reduceWhitespaces(chars, split);
+	}
+
+	private CharSequence reduceWhitespaces(final CharSequence chars, final String[] split) {
 		final var sb = new StringBuilder(chars.length());
 		for (int i = 0; i < split.length; i++) {
 			final String s = split[i];
