@@ -5,7 +5,8 @@ import de.fernuni_hagen.kn.nlp.preprocessing.textual.WhitespaceRemover;
 import java.util.regex.Pattern;
 
 /**
- * Removes excess whitespace from a CharSequence using a regular expression.
+ * Removes excess whitespace from a CharSequence using a regular expression.<br>
+ * Tries to emulate the whitespace removal of de.texttech.cc.Text2Satz as closely as possible.
  *
  * @author Nils Wende
  */
@@ -68,20 +69,20 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 		return sb;
 	}
 
-	private void stripTrailing(final StringBuilder chars) {
-		int end = chars.length() - 1;
-		while (end >= 0 && Character.isWhitespace(chars.charAt(end))) {
-			end--;
-		}
-		chars.setLength(end + 1);
-	}
-
 	private int getWhitespaceEnd(final CharSequence chars, final int i) {
 		int end = i + 1;
 		while (end < chars.length() && Character.isWhitespace(chars.charAt(end))) {
 			end++;
 		}
 		return end;
+	}
+
+	private void stripTrailing(final StringBuilder chars) {
+		int end = chars.length() - 1;
+		while (end >= 0 && Character.isWhitespace(chars.charAt(end))) {
+			end--;
+		}
+		chars.setLength(end + 1);
 	}
 
 }
