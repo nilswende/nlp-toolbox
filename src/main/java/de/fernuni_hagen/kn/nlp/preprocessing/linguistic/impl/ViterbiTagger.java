@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -28,6 +29,22 @@ public class ViterbiTagger implements Tagger {
 				tagset.getLexicon(),
 				tagset.getTransitions(),
 				false);
+		setExtern();
+		tagger.setReplaceNumbers(false);
+		tagger.setUseInternalTok(true);
+	}
+
+	private void setExtern() { // improve abysmal performance
+		final var clazz = tagger.getClass();
+		try {
+			final var extern = clazz.getDeclaredField("extern");
+			extern.setAccessible(true);
+			extern.set(tagger, false);
+			extern.setAccessible(false);
+			tagger.setExtern(false);
+		} catch (final NoSuchFieldException | IllegalAccessException e) {
+			throw new UncheckedException(e);
+		}
 	}
 
 	@Override
