@@ -257,7 +257,7 @@ public class Text2Satz {
 		if (verbose) {
 			System.err.println("[Text2Satz] Processing file: " + sourceFilepath);
 		}
-		int j = 0;
+		int next = 0;
 		StringBuffer stringbuffer = null;
 		String sourceFiletype = "";
 		String tmpFilepath = "text2satz.tmp";
@@ -352,34 +352,35 @@ public class Text2Satz {
 			for (int end = sentenceBoundary.next(); end != BreakIterator.DONE; start = end, end = sentenceBoundary.next()) {
 				int j2 = 0;
 				for (int length = end - start; length > 0; length--) {
-					int charFromSentence = (char) bufferedinputstream.read();
+					final char read = (char) bufferedinputstream.read();
+					int charFromSentence = read;
 					bytesReadFromIn++;
 					if (charFromSentence == '\n' || charFromSentence == '\r' || bytesReadFromIn2 == 0) {
 						if (bytesReadFromIn2 <= bytesReadFromIn) {
 							bytesReadFromIn2 = skipToInPosition(bufferedinputstream2, bytesReadFromIn, bytesReadFromIn2);
 							stringbuffer.delete(0, stringbuffer.length());
-							j = (char) bufferedinputstream2.read();
+							next = (char) bufferedinputstream2.read();
 						}
-						while (j == '\n' || j == '\r') { // skip linebreaks
-							j = (char) bufferedinputstream2.read();
+						while (next == '\n' || next == '\r') { // skip linebreaks
+							next = (char) bufferedinputstream2.read();
 							bytesReadFromIn2++;
 						}
-						if (j == ' ') {
-							stringbuffer.append((char) j);
-							j = (char) bufferedinputstream2.read();
+						if (next == ' ') {
+							stringbuffer.append((char) next);
+							next = (char) bufferedinputstream2.read();
 							bytesReadFromIn2++;
-							stringbuffer.append((char) j);
+							stringbuffer.append((char) next);
 						}
 						if (stringbuffer.toString().compareTo(" <") == 0) {
 							stringbuffer.delete(0, stringbuffer.length());
 							int j3 = 0;
 							do { // read up to 24 chars from in2 until '>', '\n' or EOF
-								if ((j = bufferedinputstream2.read()) == '>' || j <= 0) {
+								if ((next = bufferedinputstream2.read()) == '>' || next <= 0) {
 									break;
 								}
 								bytesReadFromIn2++;
-								stringbuffer.append((char) j);
-							} while (++j3 <= 25 && j != '\n');
+								stringbuffer.append((char) next);
+							} while (++j3 <= 25 && next != '\n');
 							bytesReadFromIn2++;
 							if (stringbuffer.toString().compareTo("quelle") == 0) {
 								dataoutputstream.writeBytes("\n <" + stringbuffer + ">");
@@ -396,7 +397,7 @@ public class Text2Satz {
 								}
 								success++;
 								dataoutputstream.writeBytes("<name>" + database + (success + 1) + "</name><name_lang>" + stringbuffer + "</name_lang></quelle>\n");
-							} else if (j == '>') {
+							} else if (next == '>') {
 								dataoutputstream.writeBytes("\n <" + stringbuffer + ">");
 								bytesReadFromIn2 += writeRestOfLine(dataoutputstream, bufferedinputstream2) + 1;
 							} else {
@@ -445,16 +446,16 @@ public class Text2Satz {
 					if (charFromSentence == '-') {
 						skipToPosition(bufferedinputstream2, bytesReadFromIn - bytesReadFromIn2);
 						bytesReadFromIn2 = bytesReadFromIn + 1;
-						j = bufferedinputstream2.read();
-						if (j == '\n' || j == '\r') {
+						next = bufferedinputstream2.read();
+						if (next == '\n' || next == '\r') {
 							int k3 = bufferedinputstream2.read();
 							bytesReadFromIn2++;
-							if ((k3 == '\n' || k3 == '\r') && j != k3) {
+							if ((k3 == '\n' || k3 == '\r') && next != k3) {
 								k3 = bufferedinputstream2.read();
 								bytesReadFromIn2++;
 							}
-							j = k3;
-							if (!Character.isLowerCase((char) j)) {
+							next = k3;
+							if (!Character.isLowerCase((char) next)) {
 								if (seenWhitespace) {
 									dataoutputstream.write(' ');
 								}
@@ -491,10 +492,10 @@ public class Text2Satz {
 						bytesReadFromIn1 = wordBoundary.current();
 						if (!abbreviations.contains(stringbuffer.toString()) && !skipLinebreaks) {
 							do {
-								j = (char) bufferedinputstream1.read();
+								next = (char) bufferedinputstream1.read();
 								bytesReadFromIn1++;
-							} while (sentenceEndChar((char) j));
-							if (j != ',') {
+							} while (sentenceEndChar((char) next));
+							if (next != ',') {
 								dataoutputstream.write('\n');
 								skipLinebreaks = true;
 								seenWhitespace = false;
@@ -778,7 +779,7 @@ public class Text2Satz {
 		text2satz.readAbbrevs(s);
 		int j = getopt.getOptind();
 		if (j < args.length) {
-			for (j = j; j < args.length; j++) {
+			for (; j < args.length; j++) {
 				text2satz.processText(args[j]);
 			}
 
