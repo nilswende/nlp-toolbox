@@ -2,6 +2,8 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -28,10 +30,12 @@ public abstract class UseCase {
 	 */
 	public void execute(final AppConfig appConfig, final DBReader dbReader, final DBWriter dbWriter) {
 		this.appConfig = appConfig;
-		final var start = System.nanoTime();
+		final var start = System.currentTimeMillis();
 		execute(dbReader);
 		execute(dbWriter);
-		getResult().setDuration(start, System.nanoTime());
+		final var result = getResult();
+		result.setStart(start);
+		result.setEnd(System.currentTimeMillis());
 	}
 
 	/**
@@ -65,7 +69,7 @@ public abstract class UseCase {
 	 * Must be implemented by every use case implementation to be able to return a more specific result (including the use case's name).
 	 */
 	public static abstract class Result {
-		private Duration duration;
+		private long start, end;
 		private StringBuilder sb;
 
 		/**
@@ -76,9 +80,11 @@ public abstract class UseCase {
 		@Override
 		public String toString() {
 			sb = new StringBuilder();
-			println("Start " + getUseCaseName());
+			final var formatter = DateTimeFormat.forPattern("(dd.MM.yyyy HH:mm:ss)");
+			println(formatter.print(getStart()) + " Start " + getUseCaseName());
 			printResult();
-			println("End " + getUseCaseName());
+			println(formatter.print(getEnd()) + " End " + getUseCaseName());
+			final var duration = getDuration();
 			println(String.format("%s duration: %d s %d ms", getUseCaseName(), duration.toSecondsPart(), duration.toMillisPart()));
 			return sb.toString();
 		}
@@ -169,17 +175,39 @@ public abstract class UseCase {
 			}
 		}
 
+		void setStart(final long start) {
+			this.start = start;
+		}
+
+		void setEnd(final long end) {
+			this.end = end;
+		}
+
+		/**
+		 * Returns the start time.
+		 *
+		 * @return the start time
+		 */
+		public LocalDateTime getStart() {
+			return new LocalDateTime(start);
+		}
+
+		/**
+		 * Returns the end time.
+		 *
+		 * @return the end time
+		 */
+		public LocalDateTime getEnd() {
+			return new LocalDateTime(end);
+		}
+
 		/**
 		 * Returns the time spent executing this result's use case.
 		 *
 		 * @return the time spent
 		 */
 		public Duration getDuration() {
-			return duration;
-		}
-
-		void setDuration(final long start, final long end) {
-			this.duration = Duration.ofNanos(end - start);
+			return Duration.ofMillis(end - start);
 		}
 	}
 
