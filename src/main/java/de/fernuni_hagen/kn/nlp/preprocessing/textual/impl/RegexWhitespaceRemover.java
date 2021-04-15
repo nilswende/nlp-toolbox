@@ -43,14 +43,8 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 						sb.append(LF);
 					} else {
 						sb.append(chars, start, i);
-						if (wsLength == 1) {
+						if (wsLength == 1 || (wsLength == 2 && !LINEBREAKS.matcher(chars).region(i, wsEnd).matches())) {
 							sb.append(SPACE);
-						} else if (wsLength == 2) {
-							if (LINEBREAKS.matcher(chars).region(i, wsEnd).matches()) {
-								sb.append(LF);
-							} else {
-								sb.append(SPACE);
-							}
 						} else {
 							sb.append(LF);
 						}
