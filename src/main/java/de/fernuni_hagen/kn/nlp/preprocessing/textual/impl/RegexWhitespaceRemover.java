@@ -26,13 +26,13 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 		int start = 0;
 		for (int i = 0; i < chars.length(); i++) {
 			final var c = chars.charAt(i);
-			if (c == SPACE || c == LF || Character.isWhitespace(c)) {
+			if (Character.isWhitespace(c)) {
 				final int wsEnd = getWhitespaceEnd(chars, i);
 				final var wsLength = wsEnd - i;
 				if (wsLength != 1 || c != SPACE) {
 					if (sb == null) {
 						sb = new StringBuilder(chars.length());
-						sb.append(chars, start, i);
+						sb.append(chars, 0, i);
 						start = i;
 					}
 					if (i != 0 && chars.charAt(i - 1) == '-') {
