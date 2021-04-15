@@ -27,28 +27,33 @@ class RegexWhitespaceRemoverTest {
 				arguments("abc\nabc", "abc abc"),
 				arguments("abc  abc", "abc abc"),
 				arguments("abc \nabc", "abc abc"),
+				arguments("abc\n abc", "abc abc"),
+				arguments("abc\n\nabc", "abc\nabc"),
 				arguments("abc\n \nabc", "abc\nabc"),
 				arguments("abc\n \n \nabc", "abc\nabc"),
 				arguments("abc \n\nabc", "abc\nabc"),
 				arguments("abc \n abc", "abc\nabc"),
-				arguments("abc \n abc\n \n", "abc\nabc\n"),
 				// CRLF
 				arguments("abc\r\nabc", "abc abc"),
 				// start of the text
-				arguments("\nabc\nabc", "abc abc"),
-				arguments("\n abc\nabc", "abc abc"),
+				arguments(" abc\nabc", " abc abc"),
+				arguments("\nabc\nabc", "\nabc abc"),
+				arguments("\n abc\nabc", "\nabc abc"),
+				arguments("\n\n abc\nabc", "\nabc abc"),
 				// hyphen
 				arguments("abc-abc", "abc-abc"),
 				arguments("abc-\n \nabc", "abc-abc"),
 				arguments("abc -\n\nabc", "abc -abc"),
-				arguments("abc-\nabc", "abcabc"),
 				arguments("abc- abc", "abc- abc"),
+				arguments("abc-\nabc", "abcabc"),
 				arguments("abc-\nAbc", "abc-Abc"), // seems language-specific
 				arguments("abc-\n\nabc", "abc-abc"),
 				arguments("abc--\n\nabc", "abc--abc"),
 				arguments("abc\n-abc", "abc -abc"),
 				arguments("abc\n \n-abc", "abc\n-abc"),
-				arguments("abc \n\n-abc", "abc\n-abc")
+				arguments("abc \n\n-abc", "abc\n-abc"),
+				// end of sentence
+				arguments("abc. ", "abc.")
 		);
 	}
 

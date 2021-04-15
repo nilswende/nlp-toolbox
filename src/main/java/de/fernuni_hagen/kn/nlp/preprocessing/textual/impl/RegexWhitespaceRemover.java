@@ -1,7 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.textual.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.WhitespaceRemover;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
@@ -12,48 +11,77 @@ import java.util.regex.Pattern;
  */
 public class RegexWhitespaceRemover implements WhitespaceRemover {
 
-	private static final Pattern H_WHITESPACE = Pattern.compile("\\h+");
-	private static final Pattern LINEBREAK = Pattern.compile("\\R");
+	private static final Pattern LINEBREAKS = Pattern.compile("\\R{2}");
+	private static final char LF = '\n';
+	private static final char SPACE = ' ';
 
 	@Override
 	public String removeWhitespace(final CharSequence chars) {
-		var tmp = chars;
-		tmp = H_WHITESPACE.matcher(tmp).replaceAll(StringUtils.SPACE);
-		tmp = reduceWhitespaces(tmp);
-		return tmp.toString();
+		return reduceWhitespaces(chars).toString();
 	}
 
 	private CharSequence reduceWhitespaces(final CharSequence chars) {
-		final var lines = LINEBREAK.split(chars);
-		return lines.length == 1 ? lines[0].strip() : reduceWhitespaces(chars, lines);
-	}
-
-	private CharSequence reduceWhitespaces(final CharSequence chars, final String[] lines) {
-		final var sb = new StringBuilder(chars.length());
-		for (int i = 0, length = lines.length; i < length; i++) {
-			final String line = lines[i];
-			if (!line.isBlank()) {
-				final var stripped = line.strip();
-				sb.append(stripped);
-				if (i < length - 1) {
-					final var next = lines[i + 1];
-					final var whitespaceNext = next.isEmpty() || Character.isWhitespace(next.charAt(0));
-					if (stripped.endsWith("-")) {
-						if (!whitespaceNext && Character.isLowerCase(next.charAt(0))) {
+		StringBuilder sb = null;
+		int start = 0;
+		for (int i = 0; i < chars.length(); i++) {
+			final var c = chars.charAt(i);
+			if (c == SPACE || c == LF || Character.isWhitespace(c)) {
+				final int wsEnd = getWhitespaceEnd(chars, i);
+				final var wsLength = wsEnd - i;
+				if (wsLength != 1 || c != SPACE) {
+					if (sb == null) {
+						sb = new StringBuilder(chars.length());
+						sb.append(chars, start, i);
+						start = i;
+					}
+					if (i != 0 && chars.charAt(i - 1) == '-') {
+						if (wsLength == 1 && i + wsLength < chars.length() && Character.isLowerCase(chars.charAt(i + wsLength))) {
 							sb.setLength(sb.length() - 1);
 						}
-					} else if (whitespaceNext) {
-						sb.append(StringUtils.LF);
+					} else if (i == 0) {
+						sb.append(LF);
 					} else {
-						sb.append(StringUtils.SPACE);
+						sb.append(chars, start, i);
+						if (wsLength == 1) {
+							sb.append(SPACE);
+						} else if (wsLength == 2) {
+							if (LINEBREAKS.matcher(chars).region(i, wsEnd).matches()) {
+								sb.append(LF);
+							} else {
+								sb.append(SPACE);
+							}
+						} else {
+							sb.append(LF);
+						}
 					}
-					while (i < length - 1 && lines[i + 1].isBlank()) {
-						i++;
-					}
+					i += wsLength;
+					start = wsEnd;
 				}
 			}
 		}
+		if (sb == null) {
+			sb = new StringBuilder(chars);
+		} else {
+			sb.append(chars, start, chars.length());
+		}
+		stripTrailing(sb);
 		return sb;
+	}
+
+	private void stripTrailing(final StringBuilder chars) {
+		int end = chars.length() - 1;
+		while (end >= 0 && Character.isWhitespace(chars.charAt(end))) {
+			end--;
+		}
+		chars.setLength(end + 1);
+	}
+
+	private int getWhitespaceEnd(final CharSequence chars, final int i) {
+		int end = i + 1;
+		while (end < chars.length() && Character.isWhitespace(chars.charAt(end))) {
+			end++;
+		}
+		return end;
 	}
 
 }
