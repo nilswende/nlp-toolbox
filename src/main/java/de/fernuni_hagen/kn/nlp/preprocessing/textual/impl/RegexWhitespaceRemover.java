@@ -33,16 +33,21 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 		for (int i = 0; i < split.length; i++) {
 			final String s = split[i];
 			if (!s.isBlank()) {
-				sb.append(s.strip());
+				final var strip = s.strip();
+				sb.append(strip);
 				if (i < split.length - 1) {
 					final var next = split[i + 1];
-					if (next.isEmpty() || Character.isWhitespace(next.charAt(0))) {
-						sb.append(StringUtils.LF);
-						while (i < split.length - 1 && split[i + 1].isBlank()) {
-							i++;
+					if (strip.endsWith("-")) {
+						if (!next.isEmpty() && !Character.isWhitespace(next.charAt(0)) && Character.isLowerCase(next.charAt(0))) {
+							sb.setLength(sb.length() - 1);
 						}
+					} else if (next.isEmpty() || Character.isWhitespace(next.charAt(0))) {
+						sb.append(StringUtils.LF);
 					} else {
 						sb.append(StringUtils.SPACE);
+					}
+					while (i < split.length - 1 && split[i + 1].isBlank()) {
+						i++;
 					}
 				}
 			}
