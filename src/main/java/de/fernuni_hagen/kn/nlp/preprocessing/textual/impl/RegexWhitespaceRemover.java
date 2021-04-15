@@ -37,11 +37,12 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 				sb.append(strip);
 				if (i < split.length - 1) {
 					final var next = split[i + 1];
+					final var whitespaceNext = next.isEmpty() || Character.isWhitespace(next.charAt(0));
 					if (strip.endsWith("-")) {
-						if (!next.isEmpty() && !Character.isWhitespace(next.charAt(0)) && Character.isLowerCase(next.charAt(0))) {
+						if (!whitespaceNext && Character.isLowerCase(next.charAt(0))) {
 							sb.setLength(sb.length() - 1);
 						}
-					} else if (next.isEmpty() || Character.isWhitespace(next.charAt(0))) {
+					} else if (whitespaceNext) {
 						sb.append(StringUtils.LF);
 					} else {
 						sb.append(StringUtils.SPACE);
