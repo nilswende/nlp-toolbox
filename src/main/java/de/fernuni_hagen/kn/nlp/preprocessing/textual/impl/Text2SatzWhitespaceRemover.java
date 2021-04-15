@@ -18,10 +18,6 @@ public class Text2SatzWhitespaceRemover implements WhitespaceRemover {
 
 	@Override
 	public String removeWhitespace(final CharSequence chars) {
-		return reduceWhitespaces(chars).toString();
-	}
-
-	private CharSequence reduceWhitespaces(final CharSequence chars) {
 		StringBuilder sb = null;
 		int start = 0;
 		for (int i = 0; i < chars.length(); i++) {
@@ -60,7 +56,7 @@ public class Text2SatzWhitespaceRemover implements WhitespaceRemover {
 			sb.append(chars, start, chars.length());
 		}
 		stripTrailing(sb);
-		return sb;
+		return sb.toString();
 	}
 
 	private int getWhitespaceEnd(final CharSequence chars, final int i) {
