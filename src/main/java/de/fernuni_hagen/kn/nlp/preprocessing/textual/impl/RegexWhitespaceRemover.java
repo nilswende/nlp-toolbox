@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  * Removes excess whitespace from a CharSequence using a regular expression.<br>
- * Tries to emulate the whitespace removal of de.texttech.cc.Text2Satz as closely as possible.
+ * Tries to emulate the whitespace removal of {@code de.texttech.cc.Text2Satz} as closely as possible.
  *
  * @author Nils Wende
  */
