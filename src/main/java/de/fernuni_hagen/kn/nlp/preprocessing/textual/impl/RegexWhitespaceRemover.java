@@ -24,21 +24,21 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 	}
 
 	private CharSequence reduceWhitespaces(final CharSequence chars) {
-		final var split = LINEBREAK.split(chars);
-		return split.length == 1 ? split[0].strip() : reduceWhitespaces(chars, split);
+		final var lines = LINEBREAK.split(chars);
+		return lines.length == 1 ? lines[0].strip() : reduceWhitespaces(chars, lines);
 	}
 
-	private CharSequence reduceWhitespaces(final CharSequence chars, final String[] split) {
+	private CharSequence reduceWhitespaces(final CharSequence chars, final String[] lines) {
 		final var sb = new StringBuilder(chars.length());
-		for (int i = 0; i < split.length; i++) {
-			final String s = split[i];
-			if (!s.isBlank()) {
-				final var strip = s.strip();
-				sb.append(strip);
-				if (i < split.length - 1) {
-					final var next = split[i + 1];
+		for (int i = 0, length = lines.length; i < length; i++) {
+			final String line = lines[i];
+			if (!line.isBlank()) {
+				final var stripped = line.strip();
+				sb.append(stripped);
+				if (i < length - 1) {
+					final var next = lines[i + 1];
 					final var whitespaceNext = next.isEmpty() || Character.isWhitespace(next.charAt(0));
-					if (strip.endsWith("-")) {
+					if (stripped.endsWith("-")) {
 						if (!whitespaceNext && Character.isLowerCase(next.charAt(0))) {
 							sb.setLength(sb.length() - 1);
 						}
@@ -47,7 +47,7 @@ public class RegexWhitespaceRemover implements WhitespaceRemover {
 					} else {
 						sb.append(StringUtils.SPACE);
 					}
-					while (i < split.length - 1 && split[i + 1].isBlank()) {
+					while (i < length - 1 && lines[i + 1].isBlank()) {
 						i++;
 					}
 				}
