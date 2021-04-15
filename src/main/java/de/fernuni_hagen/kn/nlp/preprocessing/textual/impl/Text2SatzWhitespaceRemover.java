@@ -5,12 +5,12 @@ import de.fernuni_hagen.kn.nlp.preprocessing.textual.WhitespaceRemover;
 import java.util.regex.Pattern;
 
 /**
- * Removes excess whitespace from a CharSequence using a regular expression.<br>
+ * Removes excess whitespace from a CharSequence.<br>
  * Tries to emulate the whitespace removal of {@code de.texttech.cc.Text2Satz} as closely as possible.
  *
  * @author Nils Wende
  */
-public class RegexWhitespaceRemover implements WhitespaceRemover {
+public class Text2SatzWhitespaceRemover implements WhitespaceRemover {
 
 	private static final Pattern LINEBREAKS = Pattern.compile("\\R{2}");
 	private static final char LF = '\n';

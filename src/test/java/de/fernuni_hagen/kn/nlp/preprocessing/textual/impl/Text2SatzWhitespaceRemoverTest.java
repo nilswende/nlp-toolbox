@@ -12,12 +12,12 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class RegexWhitespaceRemoverTest {
+class Text2SatzWhitespaceRemoverTest {
 
 	@ParameterizedTest
 	@MethodSource
 	void test(final CharSequence input, final String expected) {
-		final var actual = new RegexWhitespaceRemover().removeWhitespace(input);
+		final var actual = new Text2SatzWhitespaceRemover().removeWhitespace(input);
 		assertEquals(expected, actual);
 	}
 

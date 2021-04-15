@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.TempFileTest;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.JLanILanguageExtractor;
-import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.RegexWhitespaceRemover;
+import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzWhitespaceRemover;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -26,7 +26,7 @@ class SimpleSentenceExtractorTest extends TempFileTest {
 		final String input = String.join(" ", sentences);
 		writeString(input);
 		final var languageExtractor = new JLanILanguageExtractor();
-		final var extractor = new SimpleSentenceExtractor(languageExtractor.extract(tempFile), new RegexWhitespaceRemover());
+		final var extractor = new SimpleSentenceExtractor(languageExtractor.extract(tempFile), new Text2SatzWhitespaceRemover());
 		final var strings = extractor.extract(tempFile).collect(Collectors.toList());
 		assertEquals(sentences, strings);
 	}
