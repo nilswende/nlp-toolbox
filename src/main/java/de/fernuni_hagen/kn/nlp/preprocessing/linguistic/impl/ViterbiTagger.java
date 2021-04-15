@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
+import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
@@ -18,6 +19,7 @@ public class ViterbiTagger implements Tagger {
 
 	private final Tagset tagset;
 	private final de.uni_leipzig.asv.toolbox.viterbitagger.Tagger tagger;
+	private final FileSaver fileSaver = new FileSaver("taggedSentences", false);
 
 	public ViterbiTagger(final Tagset tagset) {
 		this.tagset = tagset;
@@ -31,6 +33,7 @@ public class ViterbiTagger implements Tagger {
 	@Override
 	public List<TaggedTerm> apply(final String sentence) {
 		final var taggedSentence = tagger.tagSentence(sentence).stripLeading();
+		fileSaver.println(taggedSentence);
 		final var terms = taggedSentence.split(StringUtils.SPACE);
 		return Arrays.stream(terms)
 				.map(term -> TaggedTerm.from(term, tagset))

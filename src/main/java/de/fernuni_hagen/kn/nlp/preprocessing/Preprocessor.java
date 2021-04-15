@@ -8,7 +8,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
-import de.fernuni_hagen.kn.nlp.preprocessing.textual.SavingSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
 import org.apache.commons.io.input.ReaderInputStream;
 
@@ -127,12 +126,9 @@ public class Preprocessor extends UseCase {
 	 * @return stream of the sentences inside the document
 	 */
 	private Stream<Sentence> preprocess(final Path textFile, final Path sentenceFile) {
+		final var fileSaver = new FileSaver(sentenceFile, saveSentenceFile);
 		final var factory = PreprocessingFactory.from(textFile);
-		var sentenceExtractor = factory.createSentenceExtractor();
-		if (saveSentenceFile) {
-			sentenceExtractor = new SavingSentenceExtractor(sentenceExtractor, FileHelper.newPrintWriter(sentenceFile));
-		}
-		final var sentences = sentenceExtractor.extract(textFile);
+		final var sentences = factory.createSentenceExtractor().extract(textFile).peek(fileSaver::println);
 		return SentencePreprocessor.from(removePhrases, extractPhrases, getPreprocessingSteps(), factory).processSentences(sentences);
 	}
 
