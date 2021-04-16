@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * Hacks and workarounds for the ASV library.
+ * Utilities for the ASV library.
  *
  * @author Nils Wende
  */
