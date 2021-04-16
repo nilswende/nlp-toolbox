@@ -19,7 +19,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.RegexSentenceCleane
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ViterbiTagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.SimpleSentenceExtractor;
-import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzWhitespaceRemover;
+import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzSentenceSplitter;
 import te.utils.Parameters;
 
 import java.util.Locale;
@@ -66,7 +66,7 @@ public class DEFactory implements PreprocessingFactory {
 
 	@Override
 	public SentenceExtractor createSentenceExtractor() {
-		return new SimpleSentenceExtractor(LOCALE, new Text2SatzWhitespaceRemover());
+		return new SimpleSentenceExtractor(LOCALE, new Text2SatzSentenceSplitter());
 	}
 
 	@Override

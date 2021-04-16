@@ -18,7 +18,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.RegexSentenceCleane
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ViterbiTagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.SimpleSentenceExtractor;
-import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzWhitespaceRemover;
+import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzSentenceSplitter;
 import org.apache.commons.lang3.NotImplementedException;
 import te.utils.Parameters;
 
@@ -66,7 +66,7 @@ public class ENFactory implements PreprocessingFactory {
 
 	@Override
 	public SentenceExtractor createSentenceExtractor() {
-		return new SimpleSentenceExtractor(LOCALE, new Text2SatzWhitespaceRemover());
+		return new SimpleSentenceExtractor(LOCALE, new Text2SatzSentenceSplitter());
 	}
 
 	@Override
