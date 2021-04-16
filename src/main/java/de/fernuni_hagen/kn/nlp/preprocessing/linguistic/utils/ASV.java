@@ -1,5 +1,6 @@
-package de.fernuni_hagen.kn.nlp.utils;
+package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.utils;
 
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import de.uni_leipzig.asv.toolbox.viterbitagger.Tagger;
 import de.uni_leipzig.asv.toolbox.viterbitagger.Transitions_extern;
 
