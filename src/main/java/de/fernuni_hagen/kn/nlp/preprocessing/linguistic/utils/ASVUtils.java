@@ -12,9 +12,9 @@ import java.io.RandomAccessFile;
  *
  * @author Nils Wende
  */
-public class ASV {
+public class ASVUtils {
 
-	private ASV() {
+	private ASVUtils() {
 		throw new AssertionError("no init");
 	}
 

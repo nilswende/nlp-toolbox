@@ -4,7 +4,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.utils.ASV;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.utils.ASVUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class ViterbiTagger implements Tagger {
 				tagset.getLexicon(),
 				tagset.getTransitions(),
 				false);
-		ASV.setInternal(tagger);
+		ASVUtils.setInternal(tagger);
 		tagger.setReplaceNumbers(false);
 		tagger.setUseInternalTok(true);
 	}
