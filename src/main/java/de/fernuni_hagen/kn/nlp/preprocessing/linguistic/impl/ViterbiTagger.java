@@ -22,6 +22,11 @@ public class ViterbiTagger implements Tagger {
 	private final de.uni_leipzig.asv.toolbox.viterbitagger.Tagger tagger;
 	private final FileSaver fileSaver = new FileSaver("taggedSentences", false);
 
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param tagset the tagset used for tagging
+	 */
 	public ViterbiTagger(final Tagset tagset) {
 		this.tagset = tagset;
 		tagger = new de.uni_leipzig.asv.toolbox.viterbitagger.Tagger(
