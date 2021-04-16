@@ -6,8 +6,11 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -17,8 +20,10 @@ import java.util.stream.Stream;
  */
 public class SimpleSentenceExtractor implements SentenceExtractor {
 
+	private static final Pattern LINEBREAK = Pattern.compile("\\R+");
 	private final Locale locale;
 	private final WhitespaceRemover whitespaceRemover;
+	private Iterator<String> sentences;
 
 	public SimpleSentenceExtractor(final Locale locale, final WhitespaceRemover whitespaceRemover) {
 		this.locale = locale;
@@ -35,8 +40,19 @@ public class SimpleSentenceExtractor implements SentenceExtractor {
 	}
 
 	private String extractOneSentence(final LazySentenceSupplier sentenceSupplier) {
-		final var chars = sentenceSupplier.get();
-		return chars == null ? null : whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars));
+		if (sentences == null) {
+			final var chars = sentenceSupplier.get();
+			if (chars == null) {
+				return null;
+			}
+			final var split = LINEBREAK.split(whitespaceRemover.removeWhitespace(CharBuffer.wrap(chars)));
+			sentences = Arrays.asList(split).iterator();
+		}
+		if (sentences.hasNext()) {
+			return sentences.next();
+		}
+		sentences = null;
+		return extractOneSentence(sentenceSupplier);
 	}
 
 	private void close(final LazySentenceSupplier supplier) {
