@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.textual.SentenceSplitter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -21,9 +20,9 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 	@Override
 	public List<String> split(final CharSequence chars) {
 		final var sentences = new ArrayList<String>();
-		StringBuilder sb = null;
-		Matcher matcher = null;
 		final int length = chars.length();
+		final var sb = new StringBuilder(length);
+		final var matcher = LINEBREAK.matcher(chars);
 		int start = 0;
 		for (int i = 0; i < length; i++) {
 			final var c = chars.charAt(i);
@@ -31,10 +30,6 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 				final int wsEnd = getWhitespaceEnd(chars, i);
 				final var wsLength = wsEnd - i;
 				if (wsLength != 1 || c != SPACE) {
-					if (sb == null) {
-						sb = new StringBuilder(length);
-						matcher = LINEBREAK.matcher(chars);
-					}
 					sb.append(chars, start, i);
 					if (i != 0) {
 						if (chars.charAt(i - 1) == '-') {
@@ -54,9 +49,6 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 					start = wsEnd;
 				}
 			}
-		}
-		if (sb == null) {
-			return List.of(chars.toString().stripTrailing());
 		}
 		if (start < length) {
 			sb.append(chars, start, length);
