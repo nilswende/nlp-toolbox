@@ -14,10 +14,9 @@ import java.util.stream.Stream;
  */
 public class DEBaseFormReducer implements BaseFormReducer {
 
-	private final Zerleger2 reducer;
+	private final Zerleger2 reducer = new Zerleger2();
 
-	public DEBaseFormReducer() {
-		reducer = new Zerleger2();
+	{
 		final var path = Path.of("resources", "trees");
 		reducer.init(path.resolve("kompVVic.tree").toString(),
 				path.resolve("kompVHic.tree").toString(),
@@ -26,7 +25,11 @@ public class DEBaseFormReducer implements BaseFormReducer {
 
 	@Override
 	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
-		return sentence.map(t -> t.withTerm(reducer::grundFormReduktion));
+		return sentence.map(this::transform);
+	}
+
+	private TaggedTerm transform(final TaggedTerm term) {
+		return term.isProperNoun() ? term : term.withTerm(reducer::grundFormReduktion);
 	}
 
 }

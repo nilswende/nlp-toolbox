@@ -17,7 +17,11 @@ public class ENBaseFormReducer implements BaseFormReducer {
 
 	@Override
 	public Stream<TaggedTerm> apply(final Stream<TaggedTerm> sentence) {
-		return sentence.map(t -> t.withTerm(reducer::stem));
+		return sentence.map(this::transform);
+	}
+
+	private TaggedTerm transform(final TaggedTerm term) {
+		return term.isProperNoun() ? term : term.withTerm(reducer::stem);
 	}
 
 }
