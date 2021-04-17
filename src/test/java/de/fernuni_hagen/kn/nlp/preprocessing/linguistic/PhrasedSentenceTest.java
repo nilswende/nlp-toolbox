@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,7 +75,7 @@ class PhrasedSentenceTest {
 
 		final var phrasedSentence = new PhrasedSentence(tTerms, sentence, phrases);
 
-		assertEquals(expected, phrasedSentence.getContent().collect(Collectors.joining(StringUtils.SPACE)));
+		assertEquals(expected, String.join(StringUtils.SPACE, phrasedSentence.getContent()));
 	}
 
 	static Stream<Arguments> getContentRemoved() {
