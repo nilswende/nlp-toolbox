@@ -20,24 +20,24 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 	@Override
 	public List<String> split(final CharSequence chars) {
 		final var sentences = new ArrayList<String>();
-		final int length = chars.length();
-		final var sb = new StringBuilder(length);
+		final int end = chars.length();
+		final var sb = new StringBuilder(end);
 		final var matcher = LINEBREAK.matcher(chars);
 		int start = 0;
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < end; i++) {
 			final var c = chars.charAt(i);
 			if (Character.isWhitespace(c)) {
 				final int wsEnd = getWhitespaceEnd(chars, i);
-				final var wsLength = wsEnd - i;
+				final int wsLength = wsEnd - i;
 				if (wsLength != 1 || c != SPACE) {
 					sb.append(chars, start, i);
 					if (i != 0) {
 						if (chars.charAt(i - 1) == '-') {
-							if (wsLength == 1 && i + wsLength < length && Character.isLowerCase(chars.charAt(i + wsLength))) {
+							if (wsLength == 1 && i + wsLength < end && Character.isLowerCase(chars.charAt(i + wsLength))) {
 								sb.setLength(sb.length() - 1);
 							}
 						} else {
-							if (wsEnd != length && (wsLength == 1 || matcher.region(i, wsEnd).matches())) {
+							if (wsEnd != end && (wsLength == 1 || matcher.region(i, wsEnd).matches())) {
 								sb.append(SPACE);
 							} else {
 								sentences.add(sb.toString());
@@ -50,8 +50,8 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 				}
 			}
 		}
-		if (start < length) {
-			sb.append(chars, start, length);
+		if (start < end) {
+			sb.append(chars, start, end);
 			sentences.add(sb.toString().stripTrailing());
 		}
 		return sentences;
