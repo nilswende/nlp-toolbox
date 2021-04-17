@@ -30,18 +30,14 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 				if (wsLength != 1 || c != SPACE) {
 					if (sb == null) {
 						sb = new StringBuilder(chars.length());
-						sb.append(chars, 0, i);
-						start = i;
 					}
+					sb.append(chars, start, i);
 					if (i != 0) {
 						if (chars.charAt(i - 1) == '-') {
 							if (wsLength == 1 && i + wsLength < chars.length() && Character.isLowerCase(chars.charAt(i + wsLength))) {
 								sb.setLength(sb.length() - 1);
-							} else {
-								sb.append(chars, start, i);
 							}
 						} else {
-							sb.append(chars, start, i);
 							if (wsLength == 1 || (wsLength == 2 && !LINEBREAKS.matcher(chars).region(i, wsEnd).matches())) {
 								sb.append(SPACE);
 							} else {
