@@ -43,6 +43,7 @@ public class DBTestIm extends DBTest {
 		assertEquals(input.size(), data.size());
 		data.forEach((k, v) -> {
 			assertEquals(1, v.getCount());
+			assertEquals(1, v.getSentenceCount());
 
 			final var terms = new HashSet<>(input);
 			terms.remove(k);
@@ -54,18 +55,19 @@ public class DBTestIm extends DBTest {
 	@Test
 	void add2Sentences() {
 		final var input = List.of(
-				List.of("art", "competition", "game", "year"),
+				List.of("art", "art", "competition", "game", "year"),
 				List.of("art", "artist", "amateur")
 		);
 		input.forEach(writer::addSentence);
 
 		final var data = db.getData();
 
-		assertEquals(input.stream().mapToInt(List::size).sum() - 1, data.size());
+		assertEquals(6, data.size());
 
 		final var art = data.get("art");
-		assertEquals(2, art.getCount());
-		assertEquals(5, art.getCooccs().size());
+		assertEquals(3, art.getCount());
+		assertEquals(2, art.getSentenceCount());
+		assertEquals(6, art.getCooccs().size());
 
 		final var artist = data.get("artist");
 		assertEquals(2, artist.getCooccs().size());
@@ -73,5 +75,6 @@ public class DBTestIm extends DBTest {
 		assertEquals(3, game.getCooccs().size());
 
 		data.entrySet().stream().filter(e -> !e.getKey().equals("art")).forEach(e -> assertEquals(1, e.getValue().getCount()));
+		data.entrySet().stream().filter(e -> !e.getKey().equals("art")).forEach(e -> assertEquals(1, e.getValue().getSentenceCount()));
 	}
 }

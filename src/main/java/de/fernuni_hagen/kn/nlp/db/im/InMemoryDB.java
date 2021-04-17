@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * A simple in-memory database.
@@ -67,6 +69,7 @@ public class InMemoryDB implements DB {
 	public void addTerm(final String term) {
 		final var values = content.getData().computeIfAbsent(term, t -> new Values());
 		values.documents.merge(currentDoc, 1L, Long::sum);
+		values.sentences.add(currentDoc + sentenceCount);
 		content.getDoc2Sentences()
 				.get(currentDoc)
 				.get(sentenceCount - 1)
@@ -126,8 +129,21 @@ public class InMemoryDB implements DB {
 	 *
 	 * @return the maximum number of sentences that contain the same term
 	 */
-	public long getMaxSentencesCount() {
-		return content.getData().values().stream().mapToLong(Values::getCount).max().orElse(0L);
+	public long getMaxSentenceCount() {
+		return content.getData().values().stream()
+				.mapToLong(Values::getSentenceCount)
+				.max().orElse(0L);
+	}
+
+	/**
+	 * Returns the maximum number of occurrences of a term.
+	 *
+	 * @return the maximum number of occurrences of a term
+	 */
+	public long getMaxTermCount() {
+		return content.getData().values().stream()
+				.mapToLong(Values::getCount)
+				.max().orElse(0L);
 	}
 
 	/**
@@ -136,7 +152,9 @@ public class InMemoryDB implements DB {
 	 * @return the total number of sentences
 	 */
 	public long getSentencesCount() {
-		return content.getDoc2Sentences().values().stream().mapToLong(List::size).sum();
+		return content.getDoc2Sentences().values().stream()
+				.mapToLong(List::size)
+				.sum();
 	}
 
 	@Override
@@ -151,6 +169,7 @@ public class InMemoryDB implements DB {
 	 */
 	static class Values {
 		private final Map<String, Long> documents = new TreeMap<>();
+		private final Set<String> sentences = new TreeSet<>();
 		private final Map<String, Long> cooccs = new TreeMap<>();
 
 		/**
@@ -169,6 +188,15 @@ public class InMemoryDB implements DB {
 		 */
 		public Map<String, Long> getCooccs() {
 			return cooccs;
+		}
+
+		/**
+		 * Returns the total number of sentences that contain this term.
+		 *
+		 * @return the total number of sentences that contain this term
+		 */
+		public long getSentenceCount() {
+			return sentences.size();
 		}
 
 		/**
