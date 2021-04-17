@@ -140,14 +140,14 @@ public class Preprocessor extends UseCase {
 		if (removeAbbreviations) {
 			steps.add(PreprocessingFactory::createAbbreviationRemover);
 		}
-		if (removeStopWords) {
-			steps.add(PreprocessingFactory::createStopWordRemover);
-		}
 		if (normalizeCase) {
 			steps.add(PreprocessingFactory::createCaseNormalizer);
 		}
 		if (useBaseFormReduction) {
 			steps.add(PreprocessingFactory::createBaseFormReducer);
+		}
+		if (removeStopWords) {
+			steps.add(PreprocessingFactory::createStopWordRemover);
 		}
 		return steps;
 	}
