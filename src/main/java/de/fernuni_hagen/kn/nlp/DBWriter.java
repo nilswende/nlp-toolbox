@@ -39,7 +39,9 @@ public interface DBWriter {
 	 */
 	default void addSentence(final Sentence sentence) {
 		final var terms = sentence.getContent().collect(Collectors.toList());
-		addSentence(terms);
+		if (terms.size() > 1) {
+			addSentence(terms);
+		}
 	}
 
 }
