@@ -46,7 +46,7 @@ public class PhrasedSentence extends Sentence {
 	 * @return Stream
 	 */
 	@Override
-	public Stream<String> getContent() {
+	public List<String> getContent() {
 		if (phrases.isEmpty()) {
 			return super.getContent();
 		}
@@ -63,7 +63,7 @@ public class PhrasedSentence extends Sentence {
 			list.add(phrase);
 		}
 		addTerms(list, start, terms.size());
-		return list.stream();
+		return list;
 	}
 
 	private int lastTermBefore(final int phraseIndex) {

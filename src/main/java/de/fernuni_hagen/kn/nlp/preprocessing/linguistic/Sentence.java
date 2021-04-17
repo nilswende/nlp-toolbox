@@ -52,8 +52,8 @@ public class Sentence {
 	 *
 	 * @return Stream
 	 */
-	public Stream<String> getContent() {
-		return terms.stream().map(TaggedTerm::getTerm);
+	public List<String> getContent() {
+		return terms.stream().map(TaggedTerm::getTerm).collect(Collectors.toList());
 	}
 
 }

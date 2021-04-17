@@ -107,7 +107,7 @@ public class Preprocessor extends UseCase {
 		dbWriter.addDocument(documentName);
 		final var sentenceFile = FileHelper.getTempFile(documentName + ".s");
 		try (final var sentences = preprocess(tempFile, sentenceFile)) {
-			sentences.forEach(dbWriter::addSentence);
+			sentences.map(Sentence::getContent).filter(c -> c.size() > 1).forEach(dbWriter::addSentence);
 		}
 		deleteTempFiles(tempFile, sentenceFile);
 		return new Result(keepTempFiles ? (saveSentenceFile ? List.of(tempFile, sentenceFile) : List.of(tempFile)) : List.of());
