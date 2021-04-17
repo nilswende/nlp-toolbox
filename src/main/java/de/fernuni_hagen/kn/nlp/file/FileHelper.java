@@ -79,7 +79,21 @@ public final class FileHelper {
 	 * @throws IOException if an I/O error occurs opening or creating the file
 	 */
 	public static Writer newBufferedWriter(final Path path) throws IOException {
+		createParentDirectories(path);
 		return Files.newBufferedWriter(path, AppConfig.DEFAULT_CHARSET);
+	}
+
+	/**
+	 * Creates all nonexistent parent directories.
+	 *
+	 * @param path the file path
+	 * @throws IOException if an I/O error occurs
+	 */
+	private static void createParentDirectories(final Path path) throws IOException {
+		final var parent = path.getParent();
+		if (parent != null) {
+			Files.createDirectories(parent);
+		}
 	}
 
 	/**

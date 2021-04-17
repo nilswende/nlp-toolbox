@@ -17,13 +17,19 @@ public class FileSaver {
 	private final PrintWriter printWriter;
 
 	/**
-	 * Creates an instance from a file name.
+	 * Creates an instance from a file path.<br>
+	 * If path is just a file name, a temp file will be created for it, else the path will be used as is.
 	 *
-	 * @param name  file name
-	 * @param print true if text should be printed
+	 * @param pathString file path
+	 * @param print      true if text should be printed
 	 */
-	public FileSaver(final String name, final boolean print) {
-		this(FileHelper.getTempFile(name), print);
+	public FileSaver(final String pathString, final boolean print) {
+		this(getPath(pathString), print);
+	}
+
+	private static Path getPath(final String pathString) {
+		final var path = Path.of(pathString);
+		return path.getNameCount() == 1 ? FileHelper.getTempFile(pathString) : path;
 	}
 
 	/**
