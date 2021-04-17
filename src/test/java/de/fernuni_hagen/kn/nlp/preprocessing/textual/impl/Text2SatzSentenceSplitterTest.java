@@ -29,11 +29,11 @@ class Text2SatzSentenceSplitterTest {
 				arguments("abc  abc", List.of("abc abc")),
 				arguments("abc \nabc", List.of("abc abc")),
 				arguments("abc\n abc", List.of("abc abc")),
+				arguments("abc \n abc", List.of("abc abc")),
 				arguments("abc\n\nabc", List.of("abc", "abc")),
 				arguments("abc\n \nabc", List.of("abc", "abc")),
 				arguments("abc\n \n \nabc", List.of("abc", "abc")),
 				arguments("abc \n\nabc", List.of("abc", "abc")),
-				arguments("abc \n abc", List.of("abc", "abc")),
 				// CRLF
 				arguments("abc\r\nabc", List.of("abc abc")),
 				// Tab

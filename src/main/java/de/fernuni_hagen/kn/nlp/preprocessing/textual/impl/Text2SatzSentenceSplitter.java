@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class Text2SatzSentenceSplitter implements SentenceSplitter {
 
-	private static final Pattern LINEBREAKS = Pattern.compile("\\R{2}");
+	private static final Pattern LINEBREAK = Pattern.compile("\\h*\\R?\\h*");
 	private static final char SPACE = ' ';
 
 	@Override
@@ -38,7 +38,7 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 								sb.setLength(sb.length() - 1);
 							}
 						} else {
-							if (wsLength == 1 || (wsLength == 2 && !LINEBREAKS.matcher(chars).region(i, wsEnd).matches())) {
+							if (wsLength == 1 || LINEBREAK.matcher(chars).region(i, wsEnd).matches()) {
 								sb.append(SPACE);
 							} else {
 								sentences.add(sb.toString());
