@@ -49,13 +49,14 @@ class Text2SatzSentenceSplitterTest {
 				arguments("abc-\n \nabc", List.of("abc-abc")),
 				arguments("abc -\n\nabc", List.of("abc -abc")),
 				arguments("abc- abc", List.of("abc- abc")),
-				arguments("abc-\nabc", List.of("abcabc")),
-				arguments("abc-\nAbc", List.of("abc-Abc")), // seems language-specific
+				arguments("abc-\nabc", List.of("abcabc")), // seems language-specific
+				arguments("abc-\nAbc", List.of("abc-Abc")),
 				arguments("abc-\n\nabc", List.of("abc-abc")),
 				arguments("abc--\n\nabc", List.of("abc--abc")),
 				arguments("abc\n-abc", List.of("abc -abc")),
 				arguments("abc\n \n-abc", List.of("abc", "-abc")),
 				arguments("abc \n\n-abc", List.of("abc", "-abc")),
+				arguments("abc \n\nabc-\n\nabc", List.of("abc", "abc-abc")),
 				// end of sentence
 				arguments("abc. ", List.of("abc.")),
 				arguments("abc\nabc. ", List.of("abc abc.")),

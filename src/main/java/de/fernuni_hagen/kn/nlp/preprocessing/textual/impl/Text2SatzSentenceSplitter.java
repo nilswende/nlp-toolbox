@@ -37,6 +37,8 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 						if (chars.charAt(i - 1) == '-') {
 							if (wsLength == 1 && i + wsLength < chars.length() && Character.isLowerCase(chars.charAt(i + wsLength))) {
 								sb.setLength(sb.length() - 1);
+							} else {
+								sb.append(chars, start, i);
 							}
 						} else {
 							sb.append(chars, start, i);
