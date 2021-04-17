@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.textual.SentenceSplitter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -21,24 +22,27 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 	public List<String> split(final CharSequence chars) {
 		final var sentences = new ArrayList<String>();
 		StringBuilder sb = null;
+		Matcher matcher = null;
+		final int length = chars.length();
 		int start = 0;
-		for (int i = 0; i < chars.length(); i++) {
+		for (int i = 0; i < length; i++) {
 			final var c = chars.charAt(i);
 			if (Character.isWhitespace(c)) {
 				final int wsEnd = getWhitespaceEnd(chars, i);
 				final var wsLength = wsEnd - i;
 				if (wsLength != 1 || c != SPACE) {
 					if (sb == null) {
-						sb = new StringBuilder(chars.length());
+						sb = new StringBuilder(length);
+						matcher = LINEBREAK.matcher(chars);
 					}
 					sb.append(chars, start, i);
 					if (i != 0) {
 						if (chars.charAt(i - 1) == '-') {
-							if (wsLength == 1 && i + wsLength < chars.length() && Character.isLowerCase(chars.charAt(i + wsLength))) {
+							if (wsLength == 1 && i + wsLength < length && Character.isLowerCase(chars.charAt(i + wsLength))) {
 								sb.setLength(sb.length() - 1);
 							}
 						} else {
-							if (wsLength == 1 || LINEBREAK.matcher(chars).region(i, wsEnd).matches()) {
+							if (wsEnd != length && (wsLength == 1 || matcher.region(i, wsEnd).matches())) {
 								sb.append(SPACE);
 							} else {
 								sentences.add(sb.toString());
@@ -54,8 +58,8 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 		if (sb == null) {
 			return List.of(chars.toString().stripTrailing());
 		}
-		if (start < chars.length()) {
-			sb.append(chars, start, chars.length());
+		if (start < length) {
+			sb.append(chars, start, length);
 			sentences.add(sb.toString().stripTrailing());
 		}
 		return sentences;

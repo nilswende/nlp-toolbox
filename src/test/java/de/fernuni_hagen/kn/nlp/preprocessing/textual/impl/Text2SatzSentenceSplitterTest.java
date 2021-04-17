@@ -36,6 +36,7 @@ class Text2SatzSentenceSplitterTest {
 				arguments("abc \n\nabc", List.of("abc", "abc")),
 				// CRLF
 				arguments("abc\r\nabc", List.of("abc abc")),
+				arguments("abc \r\n\r\nabc \r\n", List.of("abc", "abc")),
 				// Tab
 				arguments("abc\tabc", List.of("abc abc")),
 				arguments("abc \tabc", List.of("abc abc")),
