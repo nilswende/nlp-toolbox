@@ -3,9 +3,9 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.fernuni_hagen.kn.nlp.db.im.InMemoryDB.Content;
+import de.fernuni_hagen.kn.nlp.file.FileHelper;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -34,7 +34,7 @@ class InMemoryDeserializer {
 
 	private static Content deserializeJson(final Path path) {
 		try (final var reader = new InputStreamReader(
-				new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))),
+				new GZIPInputStream(FileHelper.newBufferedInputStream(path)),
 				StandardCharsets.UTF_8)) {
 			return new Gson().fromJson(reader, getType());
 		} catch (final IOException e) {

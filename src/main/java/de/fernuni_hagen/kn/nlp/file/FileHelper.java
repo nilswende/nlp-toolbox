@@ -5,8 +5,10 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
@@ -69,6 +71,18 @@ public final class FileHelper {
 	 */
 	public static Reader newFileReader(final Path path) throws IOException {
 		return Files.newBufferedReader(path, AppConfig.DEFAULT_CHARSET);
+	}
+
+	/**
+	 * Opens or creates a file for writing with the default charset.
+	 *
+	 * @param path the file path
+	 * @return OutputStream
+	 * @throws IOException if an I/O error occurs
+	 */
+	public static OutputStream newBufferedOutputStream(final Path path) throws IOException {
+		createParentDirectories(path);
+		return new BufferedOutputStream(Files.newOutputStream(path));
 	}
 
 	/**
