@@ -54,6 +54,7 @@ class Text2SatzSentenceSplitterTest {
 				arguments("abc-\nAbc", List.of("abc-Abc")),
 				arguments("abc-\n\nabc", List.of("abc-abc")),
 				arguments("abc--\n\nabc", List.of("abc--abc")),
+				//arguments("abc - \n\nabc", List.of("abc -", "abc")),
 				arguments("abc\n-abc", List.of("abc -abc")),
 				arguments("abc\n \n-abc", List.of("abc", "-abc")),
 				arguments("abc \n\n-abc", List.of("abc", "-abc")),
