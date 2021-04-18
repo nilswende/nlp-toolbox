@@ -48,13 +48,15 @@ class Text2SatzSentenceSplitterTest {
 				// hyphen
 				arguments("abc-abc", List.of("abc-abc")),
 				arguments("abc-\n \nabc", List.of("abc-abc")),
+				arguments("abc- \n\nabc", List.of("abc-", "abc")),
+				arguments("abc-\t\n\nabc", List.of("abc-", "abc")),
 				arguments("abc -\n\nabc", List.of("abc -abc")),
 				arguments("abc- abc", List.of("abc- abc")),
+				arguments("abc- ", List.of("abc-")),
 				arguments("abc-\nabc", List.of("abcabc")), // seems language-specific
 				arguments("abc-\nAbc", List.of("abc-Abc")),
 				arguments("abc-\n\nabc", List.of("abc-abc")),
 				arguments("abc--\n\nabc", List.of("abc--abc")),
-				//arguments("abc - \n\nabc", List.of("abc -", "abc")),
 				arguments("abc\n-abc", List.of("abc -abc")),
 				arguments("abc\n \n-abc", List.of("abc", "-abc")),
 				arguments("abc \n\n-abc", List.of("abc", "-abc")),

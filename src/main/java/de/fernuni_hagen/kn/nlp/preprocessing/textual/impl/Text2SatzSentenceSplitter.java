@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
  */
 public class Text2SatzSentenceSplitter implements SentenceSplitter {
 
-	private static final Pattern LINEBREAK = Pattern.compile("\\h*\\R?\\h*");
+	private static final Pattern HORIZONTAL_WS = Pattern.compile("\\h");
+	private static final Pattern SINGLE_LINEBREAK = Pattern.compile("\\h*\\R?\\h*");
 	private static final char SPACE = ' ';
 
 	@Override
@@ -22,22 +23,26 @@ public class Text2SatzSentenceSplitter implements SentenceSplitter {
 		final var sentences = new ArrayList<String>();
 		final int end = chars.length();
 		final var sb = new StringBuilder(end);
-		final var matcher = LINEBREAK.matcher(chars);
+		final var horizontalWs = HORIZONTAL_WS.matcher(chars);
+		final var linebreak = SINGLE_LINEBREAK.matcher(chars);
 		int start = 0;
 		for (int i = 0; i < end; i++) {
 			final var c = chars.charAt(i);
 			if (Character.isWhitespace(c)) {
 				final int wsEnd = getWhitespaceEnd(chars, i);
 				final int wsLength = wsEnd - i;
-				if (wsLength != 1 || c != SPACE) {
+				if (c != SPACE || wsLength > 1) {
 					sb.append(chars, start, i);
-					if (i != 0) {
+					if (i > 0) {
 						if (chars.charAt(i - 1) == '-') {
-							if (wsLength == 1 && i + wsLength < end && Character.isLowerCase(chars.charAt(i + wsLength))) {
+							if (wsLength == 1 && wsEnd < end && Character.isLowerCase(chars.charAt(wsEnd))) {
 								sb.setLength(sb.length() - 1);
+							} else if (horizontalWs.region(i, i + 1).matches()) {
+								sentences.add(sb.toString());
+								sb.setLength(0);
 							}
 						} else {
-							if (wsEnd != end && (wsLength == 1 || matcher.region(i, wsEnd).matches())) {
+							if (wsEnd < end && (wsLength == 1 || linebreak.region(i, wsEnd).matches())) {
 								sb.append(SPACE);
 							} else {
 								sentences.add(sb.toString());
