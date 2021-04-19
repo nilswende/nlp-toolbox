@@ -87,7 +87,7 @@ public class Preprocessor extends UseCase {
 		@Override
 		protected void printResult() {
 			printfCollection(tempFiles, "No temp files kept", "Temp file '%s'");
-			printfNullableMap(phrases, "No phrases processed", "No phrases detected", "Phrase in '%s': '%s'");
+			printfNullableMap(phrases, "No phrases processed", "No phrases detected", "Phrases in '%s': %s");
 		}
 
 		/**
