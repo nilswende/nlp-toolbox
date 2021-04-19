@@ -4,7 +4,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.NounFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseRecognizer;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseDetector;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.StopWordRemover;
@@ -13,7 +13,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ASVStopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ENBaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ENCaseNormalizer;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.IndexerPhraseRecognizer;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.IndexerPhraseDetector;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.RegexSentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ViterbiTagger;
@@ -63,8 +63,8 @@ public class ENFactory implements PreprocessingFactory {
 	}
 
 	@Override
-	public PhraseRecognizer createPhraseRecognizer() {
-		return new IndexerPhraseRecognizer(ASV_LANGUAGE);
+	public PhraseDetector createPhraseDetector() {
+		return new IndexerPhraseDetector(ASV_LANGUAGE);
 	}
 
 	@Override

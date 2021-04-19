@@ -16,23 +16,32 @@ import java.util.stream.Stream;
 class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
 	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", true);
+	private final boolean detectPhrases;
+	private final boolean removePhrases;
+	private final boolean extractPhrases;
+	private List<String> phrases;
 
-	PhrasedSentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+	PhrasedSentencePreprocessor(final boolean detectPhrases, final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
 		super(preprocessingSteps, factory);
+		this.detectPhrases = detectPhrases;
+		this.removePhrases = removePhrases;
+		this.extractPhrases = extractPhrases;
 	}
 
 	@Override
 	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
-		final var phraseRecognizer = factory.createPhraseRecognizer();
+		final var phraseDetector = factory.createPhraseDetector();
 		final var tagger = factory.createTagger();
 		final var sentenceList = sentences.collect(Collectors.toList());
-		final var phrases = phraseRecognizer.recognizePhrases(sentenceList);
+		phrases = phraseDetector.detectPhrases(sentenceList);
 		phrases.forEach(fileSaver::println);
-		return sentenceList.stream()
-				.map(s -> extract(tagger, s, phrases));
+		return detectPhrases
+				? super.createSentences(sentenceList.stream())
+				: sentenceList.stream()
+				.map(s -> extract(tagger, s));
 	}
 
-	private Sentence extract(final Tagger tagger, final String sentence, final List<String> phrases) {
+	private Sentence extract(final Tagger tagger, final String sentence) {
 		final var phraseIterator = new PhraseIterator(sentence, phrases);
 		final var extractedPhrases = phraseIterator.removeAll();
 		final var taggedTerms = tagger.apply(phraseIterator.getSentence());
@@ -47,8 +56,23 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 	 * @param extractedPhrases extracted phrases
 	 * @return a {@link Sentence} instance
 	 */
-	protected Sentence createSentence(final List<TaggedTerm> taggedTerms, final String sentence, final List<String> extractedPhrases) {
-		return new PhrasedSentence(taggedTerms, sentence, extractedPhrases);
+	private Sentence createSentence(final List<TaggedTerm> taggedTerms, final String sentence, final List<String> extractedPhrases) {
+		if (removePhrases) {
+			return new Sentence(taggedTerms);
+		}
+		if (extractPhrases) {
+			return new PhrasedSentence(taggedTerms, sentence, extractedPhrases);
+		}
+		throw new IllegalArgumentException();
+	}
+
+	/**
+	 * Returns the list of distinct phrases in the text.
+	 *
+	 * @return the list of distinct phrases in the text
+	 */
+	public List<String> getPhrases() {
+		return phrases;
 	}
 
 }

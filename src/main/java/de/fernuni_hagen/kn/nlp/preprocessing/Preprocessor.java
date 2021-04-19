@@ -32,6 +32,7 @@ public class Preprocessor extends UseCase {
 	private boolean saveSentenceFile;
 	private int sentenceFileSizeLimitBytes = Integer.MAX_VALUE;
 	private boolean continueAfterReachingFileSizeLimit;
+	private boolean detectPhrases;
 	private boolean extractPhrases;
 	private boolean removePhrases;
 	private boolean useBaseFormReduction;
@@ -129,7 +130,7 @@ public class Preprocessor extends UseCase {
 		final var fileSaver = new FileSaver(sentenceFile, saveSentenceFile);
 		final var factory = PreprocessingFactory.from(textFile);
 		final var sentences = factory.createSentenceExtractor().extract(textFile).peek(fileSaver::println);
-		return SentencePreprocessor.from(removePhrases, extractPhrases, getPreprocessingSteps(), factory).processSentences(sentences);
+		return SentencePreprocessor.from(detectPhrases, removePhrases, extractPhrases, getPreprocessingSteps(), factory).processSentences(sentences);
 	}
 
 	private List<Function<PreprocessingFactory, PreprocessingStep>> getPreprocessingSteps() {
@@ -226,6 +227,17 @@ public class Preprocessor extends UseCase {
 	 */
 	public Preprocessor setContinueAfterReachingFileSizeLimit(final boolean continueAfterReachingFileSizeLimit) {
 		this.continueAfterReachingFileSizeLimit = continueAfterReachingFileSizeLimit;
+		return this;
+	}
+
+	/**
+	 * Set true, if phrases should be detected, false otherwise.
+	 *
+	 * @param detectPhrases true, if phrases should be detected
+	 * @return this object
+	 */
+	public Preprocessor setDetectPhrases(boolean detectPhrases) {
+		this.detectPhrases = detectPhrases;
 		return this;
 	}
 

@@ -70,18 +70,16 @@ public class SentencePreprocessor {
 	/**
 	 * Creates a linguistic preprocessor.
 	 *
+	 * @param detectPhrases      true if phrases should be detected
 	 * @param removePhrases      true if phrases should be removed
 	 * @param extractPhrases     true if phrases should be extracted
 	 * @param preprocessingSteps preprocessing steps
 	 * @param factory            PreprocessingFactory
 	 * @return a linguistic preprocessor
 	 */
-	public static SentencePreprocessor from(final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
-		if (removePhrases) {
-			return new UnphrasedSentencePreprocessor(preprocessingSteps, factory);
-		}
-		if (extractPhrases) {
-			return new PhrasedSentencePreprocessor(preprocessingSteps, factory);
+	public static SentencePreprocessor from(final boolean detectPhrases, final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+		if (detectPhrases || removePhrases || extractPhrases) {
+			return new PhrasedSentencePreprocessor(detectPhrases, removePhrases, extractPhrases, preprocessingSteps, factory);
 		}
 		return new SentencePreprocessor(preprocessingSteps, factory);
 	}
