@@ -21,7 +21,7 @@ public class TermSimilarity extends UseCase {
 	private String term1;
 	private String term2;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * Term similarity result.

@@ -10,7 +10,7 @@ import de.fernuni_hagen.kn.nlp.UseCase;
  */
 public class ClearDatabase extends UseCase {
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * ClearDatabase result.

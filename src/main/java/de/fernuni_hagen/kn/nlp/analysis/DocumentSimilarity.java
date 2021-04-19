@@ -24,7 +24,7 @@ public class DocumentSimilarity extends UseCase {
 	private DocSimilarityFunction similarityFunction = DocSimilarityFunction.COSINE;
 	private List<String> documents;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * Document similarity result.

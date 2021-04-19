@@ -23,7 +23,7 @@ public class CentroidBySpreadingActivation extends UseCase {
 	private WeightingFunction weightingFunction = WeightingFunction.DICE;
 	private List<String> query;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * Centroid result.

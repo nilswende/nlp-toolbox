@@ -18,7 +18,7 @@ public class BooleanRetrieval extends UseCase {
 	private Type type;
 	private List<String> query;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * Boolean retrieval result.

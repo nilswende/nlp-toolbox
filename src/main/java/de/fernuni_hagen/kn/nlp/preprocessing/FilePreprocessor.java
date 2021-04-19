@@ -20,7 +20,7 @@ public class FilePreprocessor extends Preprocessor {
 
 	private Path inputDir;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * FilePreprocessor result.

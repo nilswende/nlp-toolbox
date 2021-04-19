@@ -22,7 +22,7 @@ public class DL4JWord2Vec extends UseCase {
 	private int seed;
 	private int windowSize;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * Word2Vec result.

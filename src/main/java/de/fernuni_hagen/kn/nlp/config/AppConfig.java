@@ -19,6 +19,12 @@ public class AppConfig {
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 	private static final Path DEFAULT_WORKING_DIR = Path.of("data");
 
+	/*
+	 * It is important that this class and all other configurable classes contain no final fields,
+	 * since GSON will not be able to correctly overwrite them.
+	 * If a default value is needed, set the field or handle it in the getter.
+	 */
+
 	private Path workingDir;
 	private Path dbDir;
 	private DbType db;

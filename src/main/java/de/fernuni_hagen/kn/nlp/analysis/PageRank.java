@@ -23,7 +23,7 @@ public class PageRank extends UseCase {
 	private double weight = 0.85;
 	private WeightingFunction weightingFunction = WeightingFunction.DICE;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * PageRank result.

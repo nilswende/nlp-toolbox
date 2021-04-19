@@ -40,7 +40,7 @@ public class Preprocessor extends UseCase {
 	private boolean removeAbbreviations;
 	private boolean normalizeCase;
 
-	private Result result;
+	private transient Result result;
 
 	/**
 	 * Creates a Preprocessor. The mandatory arguments must be set by other means.
