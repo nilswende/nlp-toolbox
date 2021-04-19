@@ -44,7 +44,11 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 	private Sentence extract(final Tagger tagger, final String sentence) {
 		final var phraseIterator = new PhraseIterator(sentence, phrases);
 		final var extractedPhrases = phraseIterator.removeAll();
-		final var taggedTerms = tagger.apply(phraseIterator.getSentence());
+		final var iteratorSentence = phraseIterator.getSentence();
+		if (iteratorSentence.isEmpty()) {
+			return createSentence(List.of(), sentence, extractedPhrases);
+		}
+		final var taggedTerms = tagger.apply(iteratorSentence);
 		return createSentence(taggedTerms, sentence, extractedPhrases);
 	}
 
