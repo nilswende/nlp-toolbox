@@ -19,9 +19,9 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
 	@Override
 	protected Stream<Sentence> createSentences(final Stream<String> sentences) {
-		final var phraseExtractor = factory.createPhraseExtractor();
+		final var phraseRecognizer = factory.createPhraseRecognizer();
 		final var tagger = factory.createTagger();
-		final var pair = phraseExtractor.extractPhrases(sentences);
+		final var pair = phraseRecognizer.recognizePhrases(sentences);
 		final var phrases = pair.getRight();
 		return pair.getLeft()
 				.map(s -> extract(tagger, s, phrases));

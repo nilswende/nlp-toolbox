@@ -4,7 +4,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.NounFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseRecognizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.StopWordRemover;
@@ -30,7 +30,7 @@ public interface PreprocessingFactory {
 
 	NounFilter createNounFilter();
 
-	PhraseExtractor createPhraseExtractor();
+	PhraseRecognizer createPhraseRecognizer();
 
 	SentenceExtractor createSentenceExtractor();
 

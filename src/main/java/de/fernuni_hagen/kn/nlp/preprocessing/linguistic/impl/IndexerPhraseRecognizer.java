@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseRecognizer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import te.indexer.Indexer;
@@ -13,20 +13,20 @@ import java.util.stream.Stream;
 import static de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingUtils.cast;
 
 /**
- * Extracts phrases from a text using the ASV Indexer class.
+ * Recognizes phrases in a text using the ASV Indexer class.
  *
  * @author Nils Wende
  */
-public class IndexerPhraseExtractor implements PhraseExtractor {
+public class IndexerPhraseRecognizer implements PhraseRecognizer {
 
 	private final int asvLanguage;
 
-	public IndexerPhraseExtractor(final int asvLanguage) {
+	public IndexerPhraseRecognizer(final int asvLanguage) {
 		this.asvLanguage = asvLanguage;
 	}
 
 	@Override
-	public Pair<Stream<String>, List<String>> extractPhrases(final Stream<String> sentences) {
+	public Pair<Stream<String>, List<String>> recognizePhrases(final Stream<String> sentences) {
 		final var sentenceList = sentences.collect(Collectors.toList());
 		final Indexer indexer = createIndexer();
 		final var text = String.join(StringUtils.SPACE, sentenceList);

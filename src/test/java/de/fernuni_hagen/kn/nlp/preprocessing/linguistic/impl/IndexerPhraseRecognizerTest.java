@@ -15,12 +15,12 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 /**
  * @author Nils Wende
  */
-class IndexerPhraseExtractorTest {
+class IndexerPhraseRecognizerTest {
 
 	@ParameterizedTest
 	@MethodSource
 	void extractPhrases(final List<String> sentences, final List<String> phrases) {
-		final var extractions = new IndexerPhraseExtractor(Parameters.EN).extractPhrases(sentences.stream());
+		final var extractions = new IndexerPhraseRecognizer(Parameters.EN).recognizePhrases(sentences.stream());
 		final var sameSentences = extractions.getLeft().collect(Collectors.toList());
 		final var extractedPhrases = extractions.getRight();
 		assertTrue(phrases.containsAll(extractedPhrases), extractedPhrases.toString());
