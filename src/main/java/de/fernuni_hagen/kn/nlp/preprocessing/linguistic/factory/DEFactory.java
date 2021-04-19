@@ -32,6 +32,9 @@ import java.util.Locale;
 public class DEFactory implements PreprocessingFactory {
 
 	private static final Locale LOCALE = Locale.GERMAN;
+	/**
+	 * The language constant as defined by the ASV library.
+	 */
 	private static final int ASV_LANGUAGE = Parameters.DE;
 
 	@Override

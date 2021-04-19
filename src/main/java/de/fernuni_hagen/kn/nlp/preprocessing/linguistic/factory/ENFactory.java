@@ -32,6 +32,9 @@ import java.util.Locale;
 public class ENFactory implements PreprocessingFactory {
 
 	private static final Locale LOCALE = Locale.ENGLISH;
+	/**
+	 * The language constant as defined by the ASV library.
+	 */
 	private static final int ASV_LANGUAGE = Parameters.EN;
 
 	@Override

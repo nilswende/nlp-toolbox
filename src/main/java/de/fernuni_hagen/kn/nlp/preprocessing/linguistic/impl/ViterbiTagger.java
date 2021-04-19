@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
  */
 public class ViterbiTagger implements Tagger {
 
+	private final FileSaver fileSaver = new FileSaver("data/output/taggedSentences.txt", true);
 	private final Tagset tagset;
 	private final de.uni_leipzig.asv.toolbox.viterbitagger.Tagger tagger;
-	private final FileSaver fileSaver = new FileSaver("data/output/taggedSentences.txt", false);
 
 	/**
 	 * Creates a new instance.

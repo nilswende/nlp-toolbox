@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
+import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseRecognizer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,8 +20,14 @@ import static de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingUtil
  */
 public class IndexerPhraseRecognizer implements PhraseRecognizer {
 
+	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", true);
 	private final int asvLanguage;
 
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param asvLanguage the language constant as defined by the ASV library
+	 */
 	public IndexerPhraseRecognizer(final int asvLanguage) {
 		this.asvLanguage = asvLanguage;
 	}
@@ -32,6 +39,7 @@ public class IndexerPhraseRecognizer implements PhraseRecognizer {
 		final var text = String.join(StringUtils.SPACE, sentenceList);
 		indexer.prepare(text);
 		final List<String> phrases = getPhrases(indexer);
+		phrases.forEach(fileSaver::println);
 		return Pair.of(sentenceList.stream(), phrases);
 	}
 
