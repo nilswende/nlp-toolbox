@@ -43,15 +43,18 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
-		final var kmax = db.getMaxSentencesCount();
+		final var kmax = db.getMaxTermCount();
 		final var data = db.getData();
-		final var cooccs = getCooccurrences();
-		cooccs.forEach((ti, m) -> {
-			final var ki = data.get(ti).getCount();
-			m.replaceAll((tj, v) -> {
-				final var kj = data.get(tj).getCount();
-				final var kij = v.longValue();
-				return function.calculate(ki, kj, kij, k, kmax);
+		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
+		data.forEach((ti, m) -> {
+			final var ki = m.getSentenceCount();
+			m.getCooccs().forEach((tj, kij) -> {
+				final var kj = data.get(tj).getSentenceCount();
+				double sig = 0;
+				if (ki > 1 || kj > 1) {
+					sig = function.calculate(ki, kj, kij, k, kmax);
+				}
+				cooccs.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
 			});
 		});
 		return cooccs;
@@ -60,18 +63,18 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
-		final var kmax = db.getMaxSentencesCount();
+		final var kmax = db.getMaxTermCount();
 		final var data = db.getData();
 		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((ti, m) -> {
-			final var ki = m.getCount();
+			final var ki = m.getSentenceCount();
 			m.getCooccs().forEach((tj, kij) -> {
-				final var kj = data.get(tj).getCount();
-				final var dom = ki > kj ? ti : tj;
-				final var sub = ki > kj ? tj : ti;
-				if (!cooccs.containsKey(sub) || !cooccs.get(sub).containsKey(dom)) {
-					final var sig = function.calculate(ki, kj, kij, k, kmax);
-					cooccs.computeIfAbsent(dom, x -> new TreeMap<>()).put(sub, sig);
+				final var kj = data.get(tj).getSentenceCount();
+				if (ki > 1 || kj > 1) {
+					if (ki < kj) {
+						final var sig = function.calculate(ki, kj, kij, k, kmax);
+						cooccs.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
+					}
 				}
 			});
 		});
