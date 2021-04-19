@@ -1,15 +1,12 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseRecognizer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import te.indexer.Indexer;
 import te.indexer.Word;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingUtils.cast;
 
@@ -20,7 +17,6 @@ import static de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingUtil
  */
 public class IndexerPhraseRecognizer implements PhraseRecognizer {
 
-	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", true);
 	private final int asvLanguage;
 
 	/**
@@ -33,18 +29,15 @@ public class IndexerPhraseRecognizer implements PhraseRecognizer {
 	}
 
 	@Override
-	public Pair<Stream<String>, List<String>> recognizePhrases(final Stream<String> sentences) {
-		final var sentenceList = sentences.collect(Collectors.toList());
-		final Indexer indexer = createIndexer();
-		final var text = String.join(StringUtils.SPACE, sentenceList);
+	public List<String> recognizePhrases(final List<String> sentences) {
+		final var indexer = createIndexer();
+		final var text = String.join(StringUtils.SPACE, sentences);
 		indexer.prepare(text);
-		final List<String> phrases = getPhrases(indexer);
-		phrases.forEach(fileSaver::println);
-		return Pair.of(sentenceList.stream(), phrases);
+		return getPhrases(indexer);
 	}
 
 	private Indexer createIndexer() {
-		final Indexer indexer = new Indexer();
+		final var indexer = new Indexer();
 		indexer.setLanguage(asvLanguage);
 		indexer.getParameters().setStemming(false);
 		return indexer;

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class SentencePreprocessor {
 
 	/**
-	 * The PreprocessingFactory.
+	 * The preprocessing factory.
 	 */
 	protected final PreprocessingFactory factory;
 	private final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps;
