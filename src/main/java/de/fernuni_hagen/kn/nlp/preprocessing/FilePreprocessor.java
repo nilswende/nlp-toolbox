@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -28,8 +30,8 @@ public class FilePreprocessor extends Preprocessor {
 	public static class Result extends Preprocessor.Result {
 		private final List<String> documentNames;
 
-		Result(final List<String> documentNames, final List<Path> tempFiles) {
-			super(tempFiles);
+		Result(final List<String> documentNames, final List<Path> tempFiles, final Map<String, List<String>> phrases) {
+			super(tempFiles, phrases);
 			this.documentNames = documentNames;
 		}
 
@@ -56,13 +58,15 @@ public class FilePreprocessor extends Preprocessor {
 	public void execute(final DBWriter dbWriter) {
 		final var names = new ArrayList<String>();
 		final var tempFiles = new ArrayList<Path>();
+		final var phrases = new TreeMap<String, List<String>>();
 		for (final Path document : getDocuments()) {
 			final var name = document.getFileName().toString();
 			final var result = preprocess(document, name, dbWriter);
 			names.add(name);
 			tempFiles.addAll(result.getTempFiles());
+			phrases.put(name, this.phrases);
 		}
-		result = new Result(names, tempFiles);
+		result = new Result(names, tempFiles, this.phrases == null ? null : phrases);
 	}
 
 	private List<Path> getDocuments() {

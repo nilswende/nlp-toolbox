@@ -84,4 +84,14 @@ public class SentencePreprocessor {
 		return new SentencePreprocessor(preprocessingSteps, factory);
 	}
 
+	/**
+	 * Returns the list of distinct phrases in the text.<br>
+	 * This method returns null, if no form of phrase processing was enabled.
+	 *
+	 * @return the list of distinct phrases in the text or null
+	 */
+	public List<String> getPhrases() {
+		return null;
+	}
+
 }

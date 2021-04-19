@@ -48,14 +48,6 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		return createSentence(taggedTerms, sentence, extractedPhrases);
 	}
 
-	/**
-	 * Create a {@link Sentence} instance from the sentence string.
-	 *
-	 * @param taggedTerms      tagged terms
-	 * @param sentence         sentence string
-	 * @param extractedPhrases extracted phrases
-	 * @return a {@link Sentence} instance
-	 */
 	private Sentence createSentence(final List<TaggedTerm> taggedTerms, final String sentence, final List<String> extractedPhrases) {
 		if (removePhrases) {
 			return new Sentence(taggedTerms);
@@ -66,11 +58,7 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		throw new IllegalArgumentException();
 	}
 
-	/**
-	 * Returns the list of distinct phrases in the text.
-	 *
-	 * @return the list of distinct phrases in the text
-	 */
+	@Override
 	public List<String> getPhrases() {
 		return phrases;
 	}

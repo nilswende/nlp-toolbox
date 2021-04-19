@@ -129,7 +129,7 @@ public abstract class UseCase {
 		}
 
 		/**
-		 * Prints the concrete use case's name and the collection.
+		 * Prints the collection.
 		 *
 		 * @param collection   the collection
 		 * @param emptyMessage message if the collection is empty
@@ -144,7 +144,7 @@ public abstract class UseCase {
 		}
 
 		/**
-		 * Prints the concrete use case's name and the map.
+		 * Prints the map.
 		 *
 		 * @param map          the map
 		 * @param emptyMessage message if the map is empty
@@ -159,7 +159,25 @@ public abstract class UseCase {
 		}
 
 		/**
-		 * Prints the concrete use case's name and the map.
+		 * Prints the map.
+		 *
+		 * @param map          the map
+		 * @param nullMessage  message if the map is null
+		 * @param emptyMessage message if the map is empty
+		 * @param format       message for each map entry
+		 */
+		protected void printfNullableMap(final Map<?, ?> map, final String nullMessage, final String emptyMessage, final String format) {
+			if (map == null) {
+				print(nullMessage);
+			} else if (map.isEmpty()) {
+				print(emptyMessage);
+			} else {
+				map.forEach((k, v) -> printf(format, k, v));
+			}
+		}
+
+		/**
+		 * Prints the map.
 		 *
 		 * @param map          the map
 		 * @param emptyMessage message if the map is empty

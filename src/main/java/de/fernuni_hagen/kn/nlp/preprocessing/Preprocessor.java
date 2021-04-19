@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -42,6 +43,7 @@ public class Preprocessor extends UseCase {
 	private boolean normalizeCase;
 
 	private transient Result result;
+	transient List<String> phrases;
 
 	/**
 	 * Creates a Preprocessor. The mandatory arguments must be set by other means.
@@ -75,14 +77,17 @@ public class Preprocessor extends UseCase {
 	 */
 	public static class Result extends UseCase.Result {
 		private final List<Path> tempFiles;
+		private final Map<String, List<String>> phrases;
 
-		Result(final List<Path> tempFiles) {
+		Result(final List<Path> tempFiles, final Map<String, List<String>> phrases) {
 			this.tempFiles = tempFiles;
+			this.phrases = phrases;
 		}
 
 		@Override
 		protected void printResult() {
 			printfCollection(tempFiles, "No temp files kept", "Temp file '%s'");
+			printfNullableMap(phrases, "No phrases processed", "No phrases detected", "Phrase detected: '%s'");
 		}
 
 		/**
@@ -92,6 +97,16 @@ public class Preprocessor extends UseCase {
 		 */
 		public List<Path> getTempFiles() {
 			return tempFiles;
+		}
+
+		/**
+		 * Returns the detected phrases.<br>
+		 * This method returns null, if no form of phrase processing was enabled.
+		 *
+		 * @return the detected phrases
+		 */
+		public Map<String, List<String>> getPhrases() {
+			return phrases;
 		}
 	}
 
@@ -111,7 +126,8 @@ public class Preprocessor extends UseCase {
 			sentences.map(Sentence::getContent).filter(c -> c.size() > 1).forEach(dbWriter::addSentence);
 		}
 		deleteTempFiles(tempFile, sentenceFile);
-		return new Result(keepTempFiles ? (saveSentenceFile ? List.of(tempFile, sentenceFile) : List.of(tempFile)) : List.of());
+		return new Result(keepTempFiles ? (saveSentenceFile ? List.of(tempFile, sentenceFile) : List.of(tempFile)) : List.of(),
+				phrases == null ? null : Map.of(documentName, phrases));
 	}
 
 	private Path convertDocument() {
@@ -129,8 +145,11 @@ public class Preprocessor extends UseCase {
 	private Stream<Sentence> preprocess(final Path textFile, final Path sentenceFile) {
 		final var fileSaver = new FileSaver(sentenceFile, saveSentenceFile);
 		final var factory = PreprocessingFactory.from(textFile);
-		final var sentences = factory.createSentenceExtractor().extract(textFile).peek(fileSaver::println);
-		return SentencePreprocessor.from(detectPhrases, removePhrases, extractPhrases, getPreprocessingSteps(), factory).processSentences(sentences);
+		final var sentencePreprocessor = SentencePreprocessor.from(detectPhrases, removePhrases, extractPhrases, getPreprocessingSteps(), factory);
+		final var sentenceStrings = factory.createSentenceExtractor().extract(textFile).peek(fileSaver::println);
+		final var sentences = sentencePreprocessor.processSentences(sentenceStrings);
+		phrases = sentencePreprocessor.getPhrases();
+		return sentences;
 	}
 
 	private List<Function<PreprocessingFactory, PreprocessingStep>> getPreprocessingSteps() {
@@ -236,7 +255,7 @@ public class Preprocessor extends UseCase {
 	 * @param detectPhrases true, if phrases should be detected
 	 * @return this object
 	 */
-	public Preprocessor setDetectPhrases(boolean detectPhrases) {
+	public Preprocessor setDetectPhrases(final boolean detectPhrases) {
 		this.detectPhrases = detectPhrases;
 		return this;
 	}
