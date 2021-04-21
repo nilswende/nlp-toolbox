@@ -39,7 +39,7 @@ public class ENFactory implements PreprocessingFactory {
 
 	@Override
 	public AbbreviationRemover createAbbreviationRemover() {
-		throw new NotImplementedException("no AbbreviationRemover implemented for locale " + LOCALE);
+		throw new NotImplementedException("no abbreviations defined for locale " + LOCALE);
 	}
 
 	@Override

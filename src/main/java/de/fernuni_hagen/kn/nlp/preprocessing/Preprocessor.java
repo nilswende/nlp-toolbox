@@ -154,11 +154,11 @@ public class Preprocessor extends UseCase {
 
 	private List<Function<PreprocessingFactory, PreprocessingStep>> getPreprocessingSteps() {
 		final var steps = new ArrayList<Function<PreprocessingFactory, PreprocessingStep>>();
-		if (filterNouns) {
-			steps.add(PreprocessingFactory::createNounFilter);
-		}
 		if (removeAbbreviations) {
 			steps.add(PreprocessingFactory::createAbbreviationRemover);
+		}
+		if (filterNouns) {
+			steps.add(PreprocessingFactory::createNounFilter);
 		}
 		if (normalizeCase) {
 			steps.add(PreprocessingFactory::createCaseNormalizer);
