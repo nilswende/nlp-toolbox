@@ -60,7 +60,9 @@ class SentenceAdder {
 			final var term1 = termNodes.get(i);
 			for (int j = i + 1; j < termNodes.size(); j++) {
 				final var term2 = termNodes.get(j);
-				term1.createRelationshipTo(term2, RelationshipTypes.COOCCURS);
+				if (!term1.getProperty("name").equals(term2.getProperty("name"))) {
+					term1.createRelationshipTo(term2, RelationshipTypes.COOCCURS);
+				}
 			}
 		}
 	}
