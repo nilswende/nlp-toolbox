@@ -19,9 +19,9 @@ class PageRankTest {
 	@Test
 	void calculate() {
 		final var dbReader = mockDbReader();
-		final var mock = mock();
-		mock.execute(dbReader);
-		final var actual = mock.getResult().getScores();
+		final var pageRank = mock();
+		pageRank.execute(dbReader);
+		final var actual = pageRank.getResult().getScores();
 		assertEqualSize(dbReader, actual);
 		assertEqualPageRank(actual, "a", "b");
 		assertMaxPageRank(actual, "c");
@@ -36,7 +36,7 @@ class PageRankTest {
 				"d", Map.of("c", 1.0)
 		);
 		final DBReader dbReader = Mockito.mock(DBReader.class);
-		Mockito.when(dbReader.getSignificances(ArgumentMatchers.any(WeightingFunction.class))).thenReturn(Maps.copyOf(map));
+		Mockito.when(dbReader.getDirectedSignificances(ArgumentMatchers.any(WeightingFunction.class))).thenReturn(Maps.copyOf(map));
 		return dbReader;
 	}
 
@@ -48,7 +48,7 @@ class PageRankTest {
 	}
 
 	private void assertEqualSize(final DBReader dbReader, final Map<String, Double> actual) {
-		assertEquals(dbReader.getSignificances(WeightingFunction.NONE).size(), actual.size());
+		assertEquals(dbReader.getDirectedSignificances(WeightingFunction.NONE).size(), actual.size());
 	}
 
 	private void assertEqualPageRank(final Map<String, Double> actual, final String a, final String b) {
