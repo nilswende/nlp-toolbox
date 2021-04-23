@@ -70,12 +70,12 @@ public class InMemoryReader implements DBReader {
 			final var ki = m.getSentenceCount();
 			m.getCooccs().forEach((tj, kij) -> {
 				final var kj = data.get(tj).getSentenceCount();
-				if (ki > 1 || kj > 1) {
-					if (ki < kj) {
-						final var sig = function.calculate(ki, kj, kij, k, kmax);
-						cooccs.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
-					}
+				// use the direction with the higher significance
+				var sig = 0.01;
+				if ((ki > 1 || kj > 1) && kj >= ki) {
+					sig = function.calculate(ki, kj, kij, k, kmax);
 				}
+				cooccs.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
 			});
 		});
 		return cooccs;

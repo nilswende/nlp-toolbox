@@ -2,7 +2,6 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
-import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
@@ -52,8 +51,8 @@ public class PageRank extends UseCase {
 
 	@Override
 	public void execute(final DBReader dbReader) {
-		final var significances = dbReader.getSignificances(weightingFunction);
-		new BreadthFirstGraphSearcher().findBiggestSubgraph(significances);
+		final var significances = dbReader.getDirectedSignificances(weightingFunction);
+//		new BreadthFirstGraphSearcher().findBiggestSubgraph(significances);
 
 		final var pageRanks = initPageRanks(significances.keySet());
 		for (int i = 0; i < iterations; i++) {
@@ -68,15 +67,15 @@ public class PageRank extends UseCase {
 	}
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
-		significances.forEach((t1, adjacent) -> {
-			final double pr = 1 - weight + weight * sumAdjacentPageRanks(pageRanks, adjacent, significances);
-			pageRanks.put(t1, pr);
+		significances.forEach((ti, adjacent) -> {
+			final double pr = 1 - weight + weight * sumAdjacentPageRanks(ti, pageRanks, adjacent, significances);
+			pageRanks.put(ti, pr);
 		});
 	}
 
-	private double sumAdjacentPageRanks(final Map<String, Double> pageRanks, final Map<String, Double> adjacent, final Map<String, Map<String, Double>> significances) {
-		return adjacent.entrySet().stream()
-				.mapToDouble(e -> (pageRanks.get(e.getKey()) * e.getValue()) / significances.get(e.getKey()).size())
+	private double sumAdjacentPageRanks(String ti, final Map<String, Double> pageRanks, final Map<String, Double> adjacent, final Map<String, Map<String, Double>> significances) {
+		return adjacent.keySet().stream()
+				.mapToDouble(tj -> (pageRanks.get(tj) * significances.get(tj).get(ti)) / significances.get(tj).size())
 				.sum();
 	}
 

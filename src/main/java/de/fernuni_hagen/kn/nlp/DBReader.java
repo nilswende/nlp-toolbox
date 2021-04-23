@@ -32,6 +32,7 @@ public interface DBReader {
 	 * Gets the significance coefficient of all term cooccurrences via the weighting function.<br>
 	 * The direction of each term association is decided by the higher term occurrence.
 	 * It points from the term with the higher occurrence to the term with lower occurrence.
+	 * The other direction will be contained as well with a value of {@code 0.01}.
 	 *
 	 * @param function the weighting function
 	 * @return a mapping from each term to each cooccurring term with their respective significance coefficient
