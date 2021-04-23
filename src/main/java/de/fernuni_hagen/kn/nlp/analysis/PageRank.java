@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class PageRank extends UseCase {
 
 	private int iterations = 25;
-	private int resultLimit;
+	private int resultLimit = Integer.MAX_VALUE;
 	private double weight = 0.85;
 	private WeightingFunction weightingFunction = WeightingFunction.ASSN;
 
@@ -31,7 +31,7 @@ public class PageRank extends UseCase {
 		private final Map<String, Double> scores;
 
 		Result(final Map<String, Double> scores, final int resultLimit) {
-			this.scores = resultLimit == 0 ? scores : Maps.topN(scores, resultLimit);
+			this.scores = Maps.topN(scores, resultLimit);
 		}
 
 		@Override
@@ -73,7 +73,7 @@ public class PageRank extends UseCase {
 		});
 	}
 
-	private double sumAdjacentPageRanks(String ti, final Map<String, Double> pageRanks, final Map<String, Double> adjacent, final Map<String, Map<String, Double>> significances) {
+	private double sumAdjacentPageRanks(final String ti, final Map<String, Double> pageRanks, final Map<String, Double> adjacent, final Map<String, Map<String, Double>> significances) {
 		return adjacent.keySet().stream()
 				.mapToDouble(tj -> (pageRanks.get(tj) * significances.get(tj).get(ti)) / significances.get(tj).size())
 				.sum();

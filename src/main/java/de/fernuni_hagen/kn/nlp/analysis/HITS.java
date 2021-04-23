@@ -32,8 +32,8 @@ public class HITS extends UseCase {
 
 		Result(final Set<String> terms, final Map<String, Double> auths, final Map<String, Double> hubs, final int resultLimit) {
 			this.terms = terms;
-			this.authorityScores = resultLimit == 0 ? auths : Maps.topN(auths, resultLimit);
-			this.hubScores = resultLimit == 0 ? hubs : Maps.topN(hubs, resultLimit);
+			this.authorityScores = Maps.topN(auths, resultLimit);
+			this.hubScores = Maps.topN(hubs, resultLimit);
 		}
 
 		@Override

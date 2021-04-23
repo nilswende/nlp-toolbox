@@ -5,7 +5,6 @@ import de.fernuni_hagen.kn.nlp.UseCase;
 import de.fernuni_hagen.kn.nlp.analysis.HITS;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
 import java.time.Duration;
 import java.util.List;
@@ -21,8 +20,8 @@ public class Analyze {
 		// create the app config
 		final var appConfig = new AppConfig();
 		// create the use case steps
-		final var pageRank = new PageRank().setResultLimit(10).setWeightingFunction(WeightingFunction.ASSN);
-		final var hits = new HITS().setResultLimit(10).setWeightingFunction(WeightingFunction.ASSN);
+		final var pageRank = new PageRank().setResultLimit(10);
+		final var hits = new HITS().setResultLimit(10);
 		final var useCases = List.of(pageRank, hits);
 		// run the NLPToolbox
 		final var start = System.nanoTime();
