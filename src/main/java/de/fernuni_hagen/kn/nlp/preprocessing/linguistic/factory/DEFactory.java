@@ -39,7 +39,7 @@ public class DEFactory implements PreprocessingFactory {
 
 	@Override
 	public AbbreviationRemover createAbbreviationRemover() {
-		return new FileAbbreviationRemover("abbreviations/DE.txt");
+		return new FileAbbreviationRemover("abbreviations/abbrevs.txt");
 	}
 
 	@Override

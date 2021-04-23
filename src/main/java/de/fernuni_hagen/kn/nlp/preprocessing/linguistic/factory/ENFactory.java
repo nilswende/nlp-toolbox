@@ -13,13 +13,13 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ASVStopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ENBaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ENCaseNormalizer;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.FileAbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.IndexerPhraseDetector;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.RegexSentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ViterbiTagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzSentenceSplitter;
-import org.apache.commons.lang3.NotImplementedException;
 import te.utils.Parameters;
 
 import java.util.Locale;
@@ -39,7 +39,7 @@ public class ENFactory implements PreprocessingFactory {
 
 	@Override
 	public AbbreviationRemover createAbbreviationRemover() {
-		throw new NotImplementedException("no abbreviations defined for locale " + LOCALE);
+		return new FileAbbreviationRemover("abbreviations/abbrevs.txt");
 	}
 
 	@Override
