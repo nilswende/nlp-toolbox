@@ -26,7 +26,7 @@ public class Mode1 {
 		final var preprocessor = new FilePreprocessor()
 				.setKeepTempFiles(true)
 				.setSaveSentenceFile(true)
-				//.setRemoveAbbreviations(true) // DE only
+				.setRemoveAbbreviations(true)
 				.setDetectPhrases(true)
 				.setFilterNouns(true)
 				.setNormalizeCase(true)
