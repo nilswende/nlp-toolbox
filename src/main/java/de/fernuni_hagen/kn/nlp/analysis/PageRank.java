@@ -68,13 +68,13 @@ public class PageRank extends UseCase {
 
 	private void calculate(final Map<String, Double> pageRanks, final Map<String, Map<String, Double>> significances) {
 		significances.forEach((ti, adjacent) -> {
-			final double pr = 1 - weight + weight * sumAdjacentPageRanks(ti, pageRanks, adjacent, significances);
+			final double pr = 1 - weight + weight * sumAdjacentPageRanks(ti, pageRanks, adjacent.keySet(), significances);
 			pageRanks.put(ti, pr);
 		});
 	}
 
-	private double sumAdjacentPageRanks(final String ti, final Map<String, Double> pageRanks, final Map<String, Double> adjacent, final Map<String, Map<String, Double>> significances) {
-		return adjacent.keySet().stream()
+	private double sumAdjacentPageRanks(final String ti, final Map<String, Double> pageRanks, final Set<String> adjacent, final Map<String, Map<String, Double>> significances) {
+		return adjacent.stream()
 				.mapToDouble(tj -> (pageRanks.get(tj) * significances.get(tj).get(ti)) / significances.get(tj).size())
 				.sum();
 	}
