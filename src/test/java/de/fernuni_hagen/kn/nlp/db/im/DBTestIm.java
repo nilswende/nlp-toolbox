@@ -67,7 +67,7 @@ public class DBTestIm extends DBTest {
 		final var art = data.get("art");
 		assertEquals(3, art.getCount());
 		assertEquals(2, art.getSentenceCount());
-		assertEquals(6, art.getCooccs().size());
+		assertEquals(5, art.getCooccs().size()); // not a coocc of itself
 
 		final var artist = data.get("artist");
 		assertEquals(2, artist.getCooccs().size());

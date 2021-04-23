@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -64,10 +63,9 @@ public abstract class DBTest {
 		assertEquals(2, cooccs.get("d"));
 		assertEquals(1, cooccs.get("e"));
 		cooccs = cooccurrences.get("d");
-		assertEquals(3, cooccs.size(), cooccs.toString());
+		assertEquals(2, cooccs.size(), cooccs.toString());
 		assertEquals(2, cooccs.get("b"));
 		assertEquals(2, cooccs.get("c"));
-		assertEquals(1, cooccs.get("d"));
 		cooccs = cooccurrences.get("e");
 		assertEquals(3, cooccs.size(), cooccs.toString());
 		assertEquals(1, cooccs.get("a"));
@@ -92,18 +90,11 @@ public abstract class DBTest {
 
 	@Test
 	void testDirectedSignificances() {
-		final var input = List.of("art", "competition", "game", "year");
-		writer.addSentence(input);
+		writer.addSentence(List.of("car", "brand1"));
+		writer.addSentence(List.of("car", "brand2"));
 
 		final var significances = reader.getDirectedSignificances(WeightingFunction.NONE);
-		assertOneDirectedRelationshipBetweenTwoNodes(significances);
-	}
-
-	private void assertOneDirectedRelationshipBetweenTwoNodes(final Map<String, Map<String, Double>> significances) {
-		significances.forEach(
-				(k, v) -> v.keySet().forEach(
-						coocc -> assertTrue(!significances.containsKey(coocc) || !significances.get(coocc).containsKey(k))
-				));
+		assertTrue(significances.get("car").get("brand1") < significances.get("brand1").get("car"), significances.toString());
 	}
 
 	@Test

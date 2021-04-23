@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Utils;
@@ -65,24 +66,15 @@ public class Neo4JReader implements DBReader {
 			final var map = new TreeMap<String, Map<String, Double>>();
 			while (result.hasNext()) {
 				final var row = result.next();
-				final double sig = calcSig(row, k, kmax, function);
-				putSig(row, sig, map);
+				final var ki = toLong(row.get("ki"));
+				final var kj = toLong(row.get("kj"));
+				final var kij = toLong(row.get("kij"));
+				final var t1 = row.get("t1.name").toString();
+				final var t2 = row.get("t2.name").toString();
+				DBUtils.putSignificance(map, t1, t2, ki, kj, kij, k, kmax, function);
 			}
 			return map;
 		}
-	}
-
-	private void putSig(final Map<String, Object> row, final double sig, final Map<String, Map<String, Double>> map) {
-		final var t1 = row.get("t1.name").toString();
-		final var t2 = row.get("t2.name").toString();
-		map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
-	}
-
-	private double calcSig(final Map<String, Object> row, final long k, final long kmax, final WeightingFunction function) {
-		final var ki = toLong(row.get("ki"));
-		final var kj = toLong(row.get("kj"));
-		final var kij = toLong(row.get("kij"));
-		return function.calculate(ki, kj, kij, k, kmax);
 	}
 
 	private long countSentences(final Transaction tx) {
@@ -107,10 +99,10 @@ public class Neo4JReader implements DBReader {
 				final var row = result.next();
 				final var t1 = row.get("t1.name").toString();
 				final var t2 = row.get("t2.name").toString();
-				if (!map.containsKey(t2) || !map.get(t2).containsKey(t1)) {
-					final double sig = calcSig(row, k, kmax, function);
-					map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, sig);
-				}
+				final var ki = toLong(row.get("ki"));
+				final var kj = toLong(row.get("kj"));
+				final var kij = toLong(row.get("kij"));
+				DBUtils.putDirectedSignificance(map, t1, t2, ki, kj, kij, k, kmax, function);
 			}
 			return map;
 		}

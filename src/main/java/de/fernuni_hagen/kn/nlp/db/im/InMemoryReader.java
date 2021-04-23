@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -50,11 +50,7 @@ public class InMemoryReader implements DBReader {
 			final var ki = m.getSentenceCount();
 			m.getCooccs().forEach((tj, kij) -> {
 				final var kj = data.get(tj).getSentenceCount();
-				double sig = 0;
-				if (ki > 1 || kj > 1) {
-					sig = function.calculate(ki, kj, kij, k, kmax);
-				}
-				cooccs.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
+				DBUtils.putSignificance(cooccs, ti, tj, ki, kj, kij, k, kmax, function);
 			});
 		});
 		return cooccs;
@@ -70,12 +66,7 @@ public class InMemoryReader implements DBReader {
 			final var ki = m.getSentenceCount();
 			m.getCooccs().forEach((tj, kij) -> {
 				final var kj = data.get(tj).getSentenceCount();
-				// use the direction with the higher significance
-				var sig = 0.01;
-				if ((ki > 1 || kj > 1) && kj >= ki) {
-					sig = function.calculate(ki, kj, kij, k, kmax);
-				}
-				cooccs.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
+				DBUtils.putDirectedSignificance(cooccs, ti, tj, ki, kj, kij, k, kmax, function);
 			});
 		});
 		return cooccs;
