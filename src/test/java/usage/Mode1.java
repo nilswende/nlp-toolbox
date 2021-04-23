@@ -2,11 +2,8 @@ package usage;
 
 import de.fernuni_hagen.kn.nlp.NLPToolbox;
 import de.fernuni_hagen.kn.nlp.UseCase;
-import de.fernuni_hagen.kn.nlp.analysis.HITS;
-import de.fernuni_hagen.kn.nlp.analysis.PageRank;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
-import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 
 import java.util.List;
@@ -35,9 +32,7 @@ public class Mode1 {
 				.setNormalizeCase(true)
 				.setUseBaseFormReduction(true)
 				.setRemoveStopWords(true);
-		final var pageRank = new PageRank().setWeightingFunction(WeightingFunction.ASSN);
-		final var hits = new HITS().setWeightingFunction(WeightingFunction.ASSN);
-		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
+		final var useCases = List.of(clearDatabase, preprocessor);
 		// run the NLPToolbox
 		new NLPToolbox(appConfig, useCases).run();
 		// process the results
