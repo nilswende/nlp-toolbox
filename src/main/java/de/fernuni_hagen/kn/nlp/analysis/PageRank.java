@@ -20,7 +20,7 @@ public class PageRank extends UseCase {
 	private int iterations = 25;
 	private int resultLimit;
 	private double weight = 0.85;
-	private WeightingFunction weightingFunction = WeightingFunction.DICE;
+	private WeightingFunction weightingFunction = WeightingFunction.ASSN;
 
 	private transient Result result;
 

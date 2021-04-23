@@ -21,7 +21,7 @@ public class DocumentSimilarity extends UseCase {
 
 	private boolean useInverseDocFrequency;
 	private double weightThreshold;
-	private DocSimilarityFunction similarityFunction = DocSimilarityFunction.COSINE;
+	private DocSimilarityFunction similarityFunction = DocSimilarityFunction.DICE;
 	private List<String> documents;
 
 	private transient Result result;

@@ -18,7 +18,7 @@ public class HITS extends UseCase {
 
 	int iterations = 50;
 	int resultLimit = Integer.MAX_VALUE;
-	WeightingFunction weightingFunction = WeightingFunction.DICE;
+	WeightingFunction weightingFunction = WeightingFunction.ASSN;
 
 	Result result;
 

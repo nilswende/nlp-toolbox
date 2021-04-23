@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.math;
 
-import java.util.HashSet;
+import org.apache.commons.collections4.SetUtils;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -10,10 +11,16 @@ import java.util.Set;
  * @author Nils Wende
  */
 public enum DocSimilarityFunction {
+	DICE {
+		@Override
+		public double calculate(final Map<String, Double> d1, final Map<String, Double> d2) {
+			return 2 * getCommonTerms(d1, d2).size() / (double) (d1.size() + d2.size());
+		}
+	},
 	EUCLID {
 		@Override
 		public double calculate(final Map<String, Double> d1, final Map<String, Double> d2) {
-			final var sum = getAllKeys(d1, d2).stream()
+			final var sum = getAllTerms(d1, d2).stream()
 					.mapToDouble(k -> d1.getOrDefault(k, 0.0) + d2.getOrDefault(k, 0.0))
 					.map(w -> w * w)
 					.sum();
@@ -23,7 +30,7 @@ public enum DocSimilarityFunction {
 	COSINE {
 		@Override
 		public double calculate(final Map<String, Double> d1, final Map<String, Double> d2) {
-			final var dividend = getAllKeys(d1, d2).stream()
+			final var dividend = getAllTerms(d1, d2).stream()
 					.mapToDouble(k -> d1.getOrDefault(k, 0.0) * d2.getOrDefault(k, 0.0))
 					.sum();
 			final var divisor1 = sumWeight(d1);
@@ -32,10 +39,12 @@ public enum DocSimilarityFunction {
 		}
 	};
 
-	private static Set<String> getAllKeys(final Map<String, Double> d1, final Map<String, Double> d2) {
-		final var keys = new HashSet<>(d1.keySet());
-		keys.addAll(d2.keySet());
-		return keys;
+	private static Set<String> getCommonTerms(Map<String, Double> d1, Map<String, Double> d2) {
+		return SetUtils.intersection(d1.keySet(), d2.keySet());
+	}
+
+	private static Set<String> getAllTerms(final Map<String, Double> d1, final Map<String, Double> d2) {
+		return SetUtils.union(d1.keySet(), d2.keySet());
 	}
 
 	private static double sumWeight(final Map<String, Double> docVec) {
