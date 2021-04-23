@@ -24,6 +24,7 @@ public class Full {
 		final var clearDatabase = new ClearDatabase();
 		final var preprocessor = new FilePreprocessor()
 				.setKeepTempFiles(false)
+				.setRemoveAbbreviations(true)
 				.setExtractPhrases(true)
 				.setUseBaseFormReduction(true)
 				.setFilterNouns(true)
