@@ -5,7 +5,6 @@ import de.fernuni_hagen.kn.nlp.analysis.BooleanRetrieval;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidByMinAvgDistance;
 import de.fernuni_hagen.kn.nlp.analysis.CentroidBySpreadingActivation;
 import de.fernuni_hagen.kn.nlp.analysis.DL4JWord2Vec;
-import de.fernuni_hagen.kn.nlp.analysis.DirectedHITS;
 import de.fernuni_hagen.kn.nlp.analysis.DocumentSimilarity;
 import de.fernuni_hagen.kn.nlp.analysis.HITS;
 import de.fernuni_hagen.kn.nlp.analysis.PageRank;
@@ -31,7 +30,6 @@ enum UseCases {
 	CENTROID_BY_SPREADING_ACTIVATION(CentroidBySpreadingActivation.class),
 	DOCUMENT_SIMILARITY(DocumentSimilarity.class),
 	HITS(HITS.class),
-	DIRECTED_HITS(DirectedHITS.class),
 	PAGE_RANK(PageRank.class),
 	TERM_SIMILARITY(TermSimilarity.class),
 	WORD2VEC(DL4JWord2Vec.class);

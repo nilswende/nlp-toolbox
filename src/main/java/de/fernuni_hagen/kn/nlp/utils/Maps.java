@@ -174,7 +174,7 @@ public final class Maps {
 	}
 
 	/**
-	 * Limit the map to the top n entries by value.
+	 * Limits the map to the top n entries by value.
 	 *
 	 * @param map   Map
 	 * @param limit limit
@@ -185,6 +185,16 @@ public final class Maps {
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.limit(limit)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k1, k2) -> k1, LinkedHashMap::new));
+	}
+
+	/**
+	 * Normalizes the map by dividing each value by the norm.
+	 *
+	 * @param map  Map
+	 * @param norm norm
+	 */
+	public static void normalize(final Map<String, Double> map, final double norm) {
+		map.replaceAll((k, v) -> v / norm);
 	}
 
 }

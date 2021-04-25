@@ -36,7 +36,7 @@ public class PageRank extends UseCase {
 
 		@Override
 		protected void printResult() {
-			this.scores.forEach((term, score) -> printf("PageRank of %s: %s", term, score));
+			printfMap(scores, "No PageRanks", "PageRank of %s: %s");
 		}
 
 		/**
@@ -73,7 +73,10 @@ public class PageRank extends UseCase {
 		});
 	}
 
-	private double sumAdjacentPageRanks(final String ti, final Map<String, Double> pageRanks, final Set<String> adjacent, final Map<String, Map<String, Double>> significances) {
+	private double sumAdjacentPageRanks(final String ti,
+										final Map<String, Double> pageRanks,
+										final Set<String> adjacent,
+										final Map<String, Map<String, Double>> significances) {
 		return adjacent.stream()
 				.mapToDouble(tj -> (pageRanks.get(tj) * significances.get(tj).get(ti)) / significances.get(tj).size())
 				.sum();
@@ -82,12 +85,8 @@ public class PageRank extends UseCase {
 	private Map<String, Double> normalize(final Map<String, Double> pageRanks) {
 		pageRanks.values().stream()
 				.max(Comparator.naturalOrder())
-				.ifPresent(maxPageRank -> normalize(pageRanks, maxPageRank));
+				.ifPresent(maxPageRank -> Maps.normalize(pageRanks, maxPageRank));
 		return pageRanks;
-	}
-
-	private void normalize(final Map<String, Double> pageRanks, final double maxPageRank) {
-		pageRanks.replaceAll((t, pr) -> pr / maxPageRank);
 	}
 
 	@Override

@@ -41,7 +41,7 @@ class HITSTest {
 				"d", Map.of("c", 1.0)
 		);
 		final DBReader dbReader = Mockito.mock(DBReader.class);
-		Mockito.when(dbReader.getSignificances(ArgumentMatchers.any(WeightingFunction.class))).thenReturn(Maps.copyOf(map));
+		Mockito.when(dbReader.getDirectedSignificances(ArgumentMatchers.any(WeightingFunction.class))).thenReturn(Maps.copyOf(map));
 		return dbReader;
 	}
 
@@ -52,7 +52,7 @@ class HITSTest {
 	}
 
 	private void assertEqualSize(final DBReader dbReader, final Set<String> actual) {
-		assertEquals(dbReader.getSignificances(WeightingFunction.NONE).size(), actual.size());
+		assertEquals(dbReader.getDirectedSignificances(WeightingFunction.NONE).size(), actual.size());
 	}
 
 	private void assertEqualScore(final String a, final String b, final Map<String, Double> actual) {
