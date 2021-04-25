@@ -8,7 +8,6 @@ import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,12 +73,7 @@ public class InMemoryReader implements DBReader {
 
 	@Override
 	public Map<String, Map<String, Long>> getTermFrequencies() {
-		final var map = new HashMap<String, Map<String, Long>>();
-		db.getData().forEach(
-				(k, v) -> v.getDocuments().forEach(
-						(d, n) -> map.computeIfAbsent(k, x -> new HashMap<>()).put(d, n)
-				));
-		return map;
+		return db.getData().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getDocuments()));
 	}
 
 	@Override
