@@ -15,13 +15,11 @@ import java.util.List;
 public class Neo4JWriter implements DBWriter {
 
 	private final GraphDatabaseService graphDb;
-	private final Sequences sequences;
-	private long currentDocId;
+	private String currentDocName;
 	private long currentSentence;
 
 	public Neo4JWriter(final Neo4J db) {
 		graphDb = db.getGraphDb();
-		sequences = new Sequences(graphDb);
 	}
 
 	@Override
@@ -40,10 +38,9 @@ public class Neo4JWriter implements DBWriter {
 			if (tx.findNode(Labels.DOCUMENT, "name", name) != null) {
 				System.out.println("no two input documents can have the same file name");
 			}
-			currentDocId = sequences.nextValueFor(Labels.DOCUMENT);
 			final Node doc = tx.createNode(Labels.DOCUMENT);
 			doc.setProperty("name", name);
-			doc.setProperty("id", currentDocId);
+			currentDocName = name;
 			currentSentence = 0;
 			tx.commit();
 		}
@@ -51,7 +48,7 @@ public class Neo4JWriter implements DBWriter {
 
 	@Override
 	public void addSentence(final List<String> terms) {
-		new SentenceAdder(graphDb).addSentence(terms, currentDocId, currentSentence++);
+		new SentenceAdder(graphDb).addSentence(terms, currentDocName, currentSentence++);
 	}
 
 }

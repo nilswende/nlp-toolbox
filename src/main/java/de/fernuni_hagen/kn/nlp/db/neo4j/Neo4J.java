@@ -39,8 +39,7 @@ public class Neo4J implements DB {
 		try (final Transaction tx = graphDb.beginTx()) {
 			createUniqueNameConstraint(Labels.TERM, tx);
 			createUniqueNameConstraint(Labels.SEQUENCE, tx);
-			createUniqueIdConstraint(Labels.SENTENCE, tx);
-			createUniqueIdConstraint(Labels.DOCUMENT, tx);
+			createUniqueNameConstraint(Labels.DOCUMENT, tx);
 			tx.commit();
 		}
 	}

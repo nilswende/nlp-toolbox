@@ -16,25 +16,23 @@ import java.util.stream.Collectors;
 class SentenceAdder {
 
 	private final GraphDatabaseService graphDb;
-	private final Sequences sequences;
 
 	SentenceAdder(final GraphDatabaseService graphDb) {
 		this.graphDb = graphDb;
-		sequences = new Sequences(this.graphDb);
 	}
 
 	/**
 	 * Delegate for {@link Neo4JWriter#addSentence(List)}.
 	 *
 	 * @param terms           a sentence
-	 * @param docId           document ID
+	 * @param docName         document name
 	 * @param currentSentence current sentence position
 	 */
-	public void addSentence(final List<String> terms, final long docId, final long currentSentence) {
+	public void addSentence(final List<String> terms, final String docName, final long currentSentence) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var termNodes = addTermNodes(terms, tx);
 			addTermRelationships(termNodes);
-			addSentenceNode(termNodes, docId, currentSentence, tx);
+			addSentenceNode(termNodes, docName, currentSentence, tx);
 			tx.commit();
 		}
 	}
@@ -67,13 +65,13 @@ class SentenceAdder {
 		}
 	}
 
-	private void addSentenceNode(final List<Node> termNodes, final long docId, final long currentSentence, final Transaction tx) {
+	private void addSentenceNode(final List<Node> termNodes, final String docName, final long currentSentence, final Transaction tx) {
 		final var sentenceNode = tx.createNode(Labels.SENTENCE);
-		addSentenceRelationships(sentenceNode, termNodes, tx);
-		addDocumentRelationship(sentenceNode, docId, currentSentence, tx);
+		addSentenceRelationships(sentenceNode, termNodes);
+		addDocumentRelationship(sentenceNode, docName, currentSentence, tx);
 	}
 
-	private void addSentenceRelationships(final Node sentenceNode, final List<Node> terms, final Transaction tx) {
+	private void addSentenceRelationships(final Node sentenceNode, final List<Node> terms) {
 		for (int i = 0; i < terms.size(); i++) {
 			final var termNode = terms.get(i);
 			final var relationship = sentenceNode.createRelationshipTo(termNode, RelationshipTypes.CONTAINS);
@@ -81,8 +79,8 @@ class SentenceAdder {
 		}
 	}
 
-	private void addDocumentRelationship(final Node sentenceNode, final long docId, final long currentSentence, final Transaction tx) {
-		final var docNode = tx.findNode(Labels.DOCUMENT, "id", docId);
+	private void addDocumentRelationship(final Node sentenceNode, final String docName, final long currentSentence, final Transaction tx) {
+		final var docNode = tx.findNode(Labels.DOCUMENT, "name", docName);
 		final var relationship = sentenceNode.createRelationshipTo(docNode, RelationshipTypes.CONTAINS);
 		relationship.setProperty("position", currentSentence);
 	}
