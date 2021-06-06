@@ -12,8 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Initializes the DB before the first test class and resets it for each test.
@@ -152,6 +151,25 @@ public abstract class DBTest {
 		assertEquals("f", sentence.get(1));
 		assertEquals("g", sentence.get(2));
 		assertEquals("h", sentence.get(3));
+	}
+
+	@Test
+	void containsTerms() {
+		writer.addSentence(List.of("a", "b", "c", "d"));
+		writer.addSentence(List.of("e", "f", "g", "h"));
+
+		assertTrue(reader.containsTerms(List.of("a", "f")));
+		assertFalse(reader.containsTerms(List.of("a", "f", "x")));
+	}
+
+	@Test
+	void containsTerm() {
+		writer.addSentence(List.of("a", "b", "c", "d"));
+		writer.addSentence(List.of("e", "f", "g", "h"));
+
+		assertTrue(reader.containsTerm("a"));
+		assertTrue(reader.containsTerm("f"));
+		assertFalse(reader.containsTerm("x"));
 	}
 
 }

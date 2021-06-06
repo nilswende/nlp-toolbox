@@ -63,4 +63,22 @@ public interface DBReader {
 	 * @return all sentences in the given document
 	 */
 	List<List<String>> getAllSentencesInDocument(String name);
+
+	/**
+	 * Returns true, if the database contains all of the given terms.
+	 *
+	 * @param terms the terms
+	 * @return true, if the database contains all of the given terms
+	 */
+	default boolean containsTerms(List<String> terms) {
+		return terms.stream().allMatch(this::containsTerm);
+	}
+
+	/**
+	 * Returns true, if the database contains the given term.
+	 *
+	 * @param term the term
+	 * @return true, if the database contains the given term
+	 */
+	boolean containsTerm(String term);
 }

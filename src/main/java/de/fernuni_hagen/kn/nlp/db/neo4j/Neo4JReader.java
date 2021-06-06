@@ -207,6 +207,13 @@ public class Neo4JReader implements DBReader {
 		return lists;
 	}
 
+	@Override
+	public boolean containsTerm(final String term) {
+		try (final Transaction tx = graphDb.beginTx()) {
+			return tx.findNode(Labels.TERM, "name", term) != null;
+		}
+	}
+
 	private static class SignificanceEvaluator implements CostEvaluator<Double> {
 		private final long k;
 		private final long kmax;

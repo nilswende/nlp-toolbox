@@ -1,5 +1,8 @@
 package de.fernuni_hagen.kn.nlp.graph;
 
+import de.fernuni_hagen.kn.nlp.utils.Maps;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,30 @@ public class DijkstraSearcher {
 
 	private PriorityQueue<Triplet> prioQueue;
 	private Set<String> visited;
+
+	/**
+	 * Finds the shortest paths between the given nodes.
+	 * A node is mapped iff at least one path to another node exists.
+	 * A mapping between two nodes exists iff a path exists.
+	 *
+	 * @param nodes     the nodes
+	 * @param distances the full graph
+	 * @return the shortest paths
+	 */
+	public Map<String, List<WeightedPath>> search(final List<String> nodes, final Map<String, Map<String, Double>> distances) {
+		final var paths = Maps.<String, List<WeightedPath>>newHashMap(nodes.size());
+		for (int i = 0; i < nodes.size(); i++) {
+			final var node1 = nodes.get(i);
+			for (int j = i + 1; j < nodes.size(); j++) {
+				final var node2 = nodes.get(j);
+				final var path = search(node1, node2, distances);
+				if (path.exists()) {
+					paths.computeIfAbsent(node1, x -> new ArrayList<>()).add(path);
+				}
+			}
+		}
+		return paths;
+	}
 
 	/**
 	 * Finds the shortest path between start and end.

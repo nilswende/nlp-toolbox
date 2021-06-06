@@ -82,7 +82,7 @@ public class CentroidBySpreadingActivation extends UseCase {
 		if (cleanedQuery.size() <= 1) {
 			return null;
 		}
-		cleanedQuery = getQueryTermsSpanningBiggestSubgraph(cleanedQuery, significances);
+		cleanedQuery = new BreadthFirstGraphSearcher().getBestConnectedNodes(cleanedQuery, significances);
 		if (cleanedQuery.size() <= 1) {
 			return null;
 		}
@@ -93,25 +93,9 @@ public class CentroidBySpreadingActivation extends UseCase {
 		return query.stream().filter(significances::containsKey).collect(Collectors.toList());
 	}
 
-	private List<String> getQueryTermsSpanningBiggestSubgraph(final List<String> query, final Map<String, Map<String, Double>> significances) {
-		var subgraphQuery = List.<String>of();
-		final var bfs = new BreadthFirstGraphSearcher();
-		for (final var queryTerm : query) {
-			final var connected = bfs.search(queryTerm, significances);
-			final var connectedQuery = query.stream().filter(connected::contains).collect(Collectors.toList());
-			if (connectedQuery.size() > subgraphQuery.size()) {
-				subgraphQuery = connectedQuery;
-			}
-			if (subgraphQuery.size() == query.size()) {
-				break;
-			}
-		}
-		return subgraphQuery;
-	}
-
 	// a centroid will be found eventually, because at this point all nodes in the query are known to be connected
 	private String findCentroid(final List<String> query, final Map<String, Map<String, Double>> distances) {
-		final double maxDistance = getMaxShortestDistance(query, distances);
+		final var maxDistance = getMaxShortestDistance(query, distances);
 		var centroid = Optional.<String>empty();
 		for (var radius = maxDistance / 2; centroid.isEmpty(); ) {
 			radius += maxDistance / 10;
@@ -121,13 +105,13 @@ public class CentroidBySpreadingActivation extends UseCase {
 	}
 
 	private double getMaxShortestDistance(final List<String> query, final Map<String, Map<String, Double>> distances) {
-		double maxDistance = 0;
+		var maxDistance = .0;
 		final var dijkstra = new DijkstraSearcher();
 		for (int i = 0; i < query.size(); i++) {
 			final var term1 = query.get(i);
 			for (int j = i + 1; j < query.size(); j++) {
 				final var term2 = query.get(j);
-				final double distance = dijkstra.search(term1, term2, distances).getWeight();
+				final var distance = dijkstra.search(term1, term2, distances).getWeight();
 				if (distance > maxDistance) {
 					maxDistance = distance;
 				}

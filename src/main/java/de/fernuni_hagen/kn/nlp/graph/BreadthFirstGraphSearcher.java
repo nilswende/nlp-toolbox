@@ -17,7 +17,7 @@ import java.util.TreeSet;
 public class BreadthFirstGraphSearcher implements GraphSearcher {
 
 	@Override
-	public Set<String> search(final String start, final Map<String, Map<String, Double>> significances) {
+	public Set<String> search(final String start, final Map<String, Map<String, Double>> graph) {
 		final Set<String> visited = new TreeSet<>();
 		final var stack = new ArrayDeque<String>();
 		visited.add(start);
@@ -25,7 +25,7 @@ public class BreadthFirstGraphSearcher implements GraphSearcher {
 		while (!stack.isEmpty()) {
 			final var term = stack.pop();
 
-			final var cooccs = significances.get(term).keySet();
+			final var cooccs = graph.get(term).keySet();
 			final var unvisited = CollectionUtils.removeAll(cooccs, visited);
 
 			visited.addAll(unvisited);

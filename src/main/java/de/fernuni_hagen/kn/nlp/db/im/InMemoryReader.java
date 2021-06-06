@@ -100,4 +100,13 @@ public class InMemoryReader implements DBReader {
 		return db.getDoc2Sentences().get(name).stream().map(ArrayList::new).collect(Collectors.toList());
 	}
 
+	public List<String> getAllNodes() {
+		return List.copyOf(db.getData().keySet());
+	}
+
+	@Override
+	public boolean containsTerm(final String term) {
+		return db.getData().containsKey(term);
+	}
+
 }
