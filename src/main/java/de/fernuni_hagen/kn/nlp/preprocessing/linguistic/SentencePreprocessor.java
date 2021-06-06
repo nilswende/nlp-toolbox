@@ -40,7 +40,7 @@ public class SentencePreprocessor {
 	private Stream<String> cleanSentences(final Stream<String> sentences) {
 		return sentences
 				.map(factory.createSentenceCleaner())
-				.filter(s -> !s.isEmpty());
+				.filter(s -> !s.isBlank());
 	}
 
 	/**
