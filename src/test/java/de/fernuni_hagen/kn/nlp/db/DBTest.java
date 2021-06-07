@@ -62,9 +62,10 @@ public abstract class DBTest {
 		assertEquals(2, cooccs.get("d"));
 		assertEquals(1, cooccs.get("e"));
 		cooccs = cooccurrences.get("d");
-		assertEquals(2, cooccs.size(), cooccs.toString());
+		assertEquals(3, cooccs.size(), cooccs.toString());
 		assertEquals(2, cooccs.get("b"));
 		assertEquals(2, cooccs.get("c"));
+		assertEquals(1, cooccs.get("d"));
 		cooccs = cooccurrences.get("e");
 		assertEquals(3, cooccs.size(), cooccs.toString());
 		assertEquals(1, cooccs.get("a"));
