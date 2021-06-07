@@ -31,7 +31,7 @@ class SentenceAdder {
 	public void addSentence(final List<String> terms, final String docName, final long currentSentence) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var termNodes = addTermNodes(terms, tx);
-			addTermRelationships(termNodes);
+			addTermRelationships(terms, tx);
 			addSentenceNode(termNodes, docName, currentSentence, tx);
 			tx.commit();
 		}
@@ -53,14 +53,18 @@ class SentenceAdder {
 		}
 	}
 
-	private void addTermRelationships(final List<Node> termNodes) {
-		for (int i = 0; i < termNodes.size(); i++) {
-			final var term1 = termNodes.get(i);
-			for (int j = i + 1; j < termNodes.size(); j++) {
-				final var term2 = termNodes.get(j);
-				if (!term1.getProperty("name").equals(term2.getProperty("name"))) {
-					term1.createRelationshipTo(term2, RelationshipTypes.COOCCURS);
-				}
+	private void addTermRelationships(final List<String> terms, final Transaction tx) {
+		final var stmt = "MATCH (t1:" + Labels.TERM + " {name: $name1}),(t2:" + Labels.TERM + " {name: $name2})\n"
+				+ "MERGE (t1)-[r:" + RelationshipTypes.COOCCURS + "]-(t2)\n"
+				+ "ON CREATE SET r.count = 1\n"
+				+ "ON  MATCH SET r.count = r.count + 1\n";
+		for (int i = 0; i < terms.size(); i++) {
+			final var term1 = terms.get(i);
+			for (int j = i + 1; j < terms.size(); j++) {
+				final var term2 = terms.get(j);
+				final Map<String, Object> params = Map.of("name1", term1, "name2", term2);
+				StatementPrinter.print(stmt, params);
+				tx.execute(stmt, params);
 			}
 		}
 	}

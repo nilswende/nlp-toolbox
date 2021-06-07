@@ -40,7 +40,7 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getCooccurrences() {
 		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-				+ "RETURN t1.name, t2.name, count(c)\n";
+				+ "RETURN t1.name, t2.name, c.count\n";
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var map = new TreeMap<String, Map<String, Double>>();
@@ -48,7 +48,7 @@ public class Neo4JReader implements DBReader {
 				final var row = result.next();
 				final var t1 = row.get("t1.name").toString();
 				final var t2 = row.get("t2.name").toString();
-				final var c = toDouble(row.get("count(c)"));
+				final var c = toDouble(row.get("c.count"));
 				map.computeIfAbsent(t1, t -> new TreeMap<>()).put(t2, c);
 			}
 			return map;
@@ -58,7 +58,7 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
+				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
@@ -89,7 +89,7 @@ public class Neo4JReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
 		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
-				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, count(c) as kij\n";
+				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
