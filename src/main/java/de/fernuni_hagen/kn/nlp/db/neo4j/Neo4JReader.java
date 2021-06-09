@@ -78,7 +78,7 @@ public class Neo4JReader implements DBReader {
 	}
 
 	private long countSentences(final Transaction tx) {
-		final var stmt = " MATCH (s:" + Labels.SENTENCE + ")\n" +
+		final var stmt = " MATCH (:" + Labels.SENTENCE + ")\n" +
 				"RETURN count(*)\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
@@ -112,8 +112,8 @@ public class Neo4JReader implements DBReader {
 	 * Returns the maximum number of sentences that contain the same term.
 	 */
 	private long getMaxSentencesCount(final Transaction tx) {
-		final var stmt = " MATCH (s:" + Labels.SENTENCE + ")-[r:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
-				+ "  WITH s, t, count(r) as c\n"
+		final var stmt = " MATCH (s:" + Labels.SENTENCE + ")-[:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
+				+ "  WITH t, count(distinct s) as c\n" // implicit group by t
 				+ "RETURN max(c) as max\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
