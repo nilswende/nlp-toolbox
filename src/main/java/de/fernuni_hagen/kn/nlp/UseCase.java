@@ -31,11 +31,22 @@ public abstract class UseCase {
 	public void execute(final AppConfig appConfig, final DBReader dbReader, final DBWriter dbWriter) {
 		this.appConfig = appConfig;
 		final var start = System.currentTimeMillis();
+		execute(dbReader, dbWriter);
 		execute(dbReader);
 		execute(dbWriter);
 		final var result = getResult();
 		result.setStart(start);
 		result.setEnd(System.currentTimeMillis());
+	}
+
+	/**
+	 * Hook method to be used by use cases that need both a DBReader and a DBWriter.
+	 *
+	 * @param dbReader DBReader
+	 * @param dbWriter DBWriter
+	 */
+	protected void execute(final DBReader dbReader, final DBWriter dbWriter) {
+
 	}
 
 	/**
