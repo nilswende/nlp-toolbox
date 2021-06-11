@@ -43,11 +43,7 @@ public class InMemoryWriter implements DBWriter {
 			final var term1 = terms.get(i);
 			for (int j = i + 1; j < terms.size(); j++) {
 				final var term2 = terms.get(j);
-				if (term1.equals(term2)) {
-					db.addDirectedRelationship(term1, term2);
-				} else {
-					db.addUndirectedRelationship(term1, term2);
-				}
+				db.addUndirectedRelationship(term1, term2);
 			}
 		}
 	}
