@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * A simple in-memory database.
@@ -69,11 +70,15 @@ public class InMemoryDB implements DB {
 	public void addTerm(final String term) {
 		final var values = content.getData().computeIfAbsent(term, t -> new Values());
 		values.documents.merge(currentDoc, 1L, Long::sum);
-		values.sentences.add(currentDoc + sentenceCount);
+		values.sentences.add(currentSentence());
 		content.getDoc2Sentences()
 				.get(currentDoc)
 				.get(sentenceCount - 1)
 				.add(term);
+	}
+
+	private String currentSentence() {
+		return currentDoc + sentenceCount;
 	}
 
 	/**
@@ -83,7 +88,9 @@ public class InMemoryDB implements DB {
 	 * @param term2 another term
 	 */
 	public void addDirectedRelationship(final String term1, final String term2) {
-		content.getData().get(term1).getCooccs().merge(term2, 1L, Long::sum);
+		content.getData().get(term1).getCooccsPerSentence()
+				.computeIfAbsent(term2, x -> new TreeMap<>())
+				.merge(currentSentence(), 1L, Long::sum);
 	}
 
 	/**
@@ -170,7 +177,7 @@ public class InMemoryDB implements DB {
 	static class Values {
 		private final Map<String, Long> documents = new TreeMap<>();
 		private final Set<String> sentences = new TreeSet<>();
-		private final Map<String, Long> cooccs = new TreeMap<>();
+		private final Map<String, Map<String, Long>> cooccs = new TreeMap<>();
 
 		/**
 		 * Returns the set of documents this term occurs in.
@@ -187,6 +194,32 @@ public class InMemoryDB implements DB {
 		 * @return Map Coocc -> Count
 		 */
 		public Map<String, Long> getCooccs() {
+			return cooccs.entrySet().stream()
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							e -> e.getValue().values().stream().mapToLong(l -> l).sum()
+					));
+		}
+
+		/**
+		 * Returns the set of cooccurring terms along with the number of cooccurrences with this term in distinct sentences.
+		 *
+		 * @return Map Coocc -> distinct Count
+		 */
+		public Map<String, Long> getDistinctCooccs() {
+			return cooccs.entrySet().stream()
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							e -> (long) e.getValue().values().size()
+					));
+		}
+
+		/**
+		 * Returns the set of cooccurring terms along with the number of cooccurrences with this term per sentence.
+		 *
+		 * @return Map Coocc -> Map Sentence -> Count
+		 */
+		public Map<String, Map<String, Long>> getCooccsPerSentence() {
 			return cooccs;
 		}
 
