@@ -53,7 +53,8 @@ public final class DBUtils {
 	public static void putDirectedSignificance(final Map<String, Map<String, Double>> map, final String ti, final String tj, final long ki, final long kj, final Long kij, final long k, final long kmax, final WeightingFunction function) {
 		var sig = 0.01;
 		if ((ki > 1 || kj > 1) && kj >= ki) {
-			sig = function.calculate(ki, kj, kij, k, kmax);
+			final var minKij = Math.min(kij, Math.min(ki, kj));
+			sig = function.calculate(ki, kj, minKij, k, kmax);
 		}
 		map.computeIfAbsent(ti, x -> new TreeMap<>()).put(tj, sig);
 	}
