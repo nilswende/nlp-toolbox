@@ -62,9 +62,9 @@ public class InMemoryReader implements DBReader {
 		final var data = db.getData();
 		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((ti, m) -> {
-			final var ki = m.getSentenceCount();
+			final var ki = m.getCount();
 			m.getCooccs().forEach((tj, kij) -> {
-				final var kj = data.get(tj).getSentenceCount();
+				final var kj = data.get(tj).getCount();
 				DBUtils.putDirectedSignificance(cooccs, ti, tj, ki, kj, kij, k, kmax, function);
 			});
 		});
