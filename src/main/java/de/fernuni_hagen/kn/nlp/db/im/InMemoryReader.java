@@ -42,13 +42,13 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
-		final var kmax = db.getMaxSentenceCount();
+		final var kmax = db.getMaxTermCount();
 		final var data = db.getData();
 		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((ti, m) -> {
-			final var ki = m.getSentenceCount();
+			final var ki = m.getCount();
 			m.getCooccs().forEach((tj, kij) -> {
-				final var kj = data.get(tj).getSentenceCount();
+				final var kj = data.get(tj).getCount();
 				DBUtils.putSignificance(cooccs, ti, tj, ki, kj, kij, k, kmax, function);
 			});
 		});
