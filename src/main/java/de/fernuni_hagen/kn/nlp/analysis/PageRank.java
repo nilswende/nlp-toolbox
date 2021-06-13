@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
  */
 public class PageRank extends UseCase {
 
+	// private final FileSaver fileSaver = new FileSaver("data/output/associations.csv", true);
+
 	private int iterations = 25;
 	private int resultLimit = Integer.MAX_VALUE;
 	private double weight = 0.85;
@@ -52,7 +54,7 @@ public class PageRank extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var significances = dbReader.getDirectedSignificances(weightingFunction);
-//		new BreadthFirstGraphSearcher().findBiggestSubgraph(significances);
+		// significances.forEach((t1, m) -> m.forEach((t2, l) -> fileSaver.println(t1 + ";" + t2 + ";" + l)));
 
 		final var pageRanks = initPageRanks(significances.keySet());
 		for (int i = 0; i < iterations; i++) {
