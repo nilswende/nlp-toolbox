@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,7 +40,15 @@ public class FileSaver {
 	 * @param print true if text should be printed
 	 */
 	public FileSaver(final Path path, final boolean print) {
-		printWriter = print ? FileHelper.newPrintWriter(path) : new PrintWriter(NullOutputStream.NULL_OUTPUT_STREAM);
+		PrintWriter pw = null;
+		if (print) {
+			try {
+				pw = FileHelper.newPrintWriter(path);
+			} catch (final UncheckedException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+		printWriter = pw == null ? new PrintWriter(NullOutputStream.NULL_OUTPUT_STREAM) : pw;
 	}
 
 	/**
