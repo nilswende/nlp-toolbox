@@ -62,9 +62,11 @@ class SentenceAdder {
 			final var term1 = terms.get(i);
 			for (int j = i + 1; j < terms.size(); j++) {
 				final var term2 = terms.get(j);
-				final Map<String, Object> params = Map.of("name1", term1, "name2", term2);
-				StatementPrinter.print(stmt, params);
-				tx.execute(stmt, params);
+				if (!term1.equals(term2)) {
+					final Map<String, Object> params = Map.of("name1", term1, "name2", term2);
+					StatementPrinter.print(stmt, params);
+					tx.execute(stmt, params);
+				}
 			}
 		}
 	}
