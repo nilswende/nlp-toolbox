@@ -21,25 +21,31 @@ public enum DocSimilarityFunction {
 		@Override
 		public double calculate(final Map<String, Double> d1, final Map<String, Double> d2) {
 			final var sum = getAllTerms(d1, d2).stream()
-					.mapToDouble(k -> d1.getOrDefault(k, 0.0) + d2.getOrDefault(k, 0.0))
+					.mapToDouble(k -> d1.getOrDefault(k, 0.0) - d2.getOrDefault(k, 0.0))
 					.map(w -> w * w)
 					.sum();
 			return Math.sqrt(sum);
 		}
 	},
+	SCALAR {
+		@Override
+		public double calculate(final Map<String, Double> d1, final Map<String, Double> d2) {
+			return getAllTerms(d1, d2).stream()
+					.mapToDouble(k -> d1.getOrDefault(k, 0.0) * d2.getOrDefault(k, 0.0))
+					.sum();
+		}
+	},
 	COSINE {
 		@Override
 		public double calculate(final Map<String, Double> d1, final Map<String, Double> d2) {
-			final var dividend = getAllTerms(d1, d2).stream()
-					.mapToDouble(k -> d1.getOrDefault(k, 0.0) * d2.getOrDefault(k, 0.0))
-					.sum();
+			final var dividend = SCALAR.calculate(d1, d2);
 			final var divisor1 = sumWeight(d1);
 			final var divisor2 = sumWeight(d2);
 			return dividend / (divisor1 * divisor2);
 		}
 	};
 
-	private static Set<String> getCommonTerms(Map<String, Double> d1, Map<String, Double> d2) {
+	private static Set<String> getCommonTerms(final Map<String, Double> d1, final Map<String, Double> d2) {
 		return SetUtils.intersection(d1.keySet(), d2.keySet());
 	}
 
