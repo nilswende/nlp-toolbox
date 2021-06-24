@@ -50,7 +50,7 @@ public class NLPToolbox {
 			throw new IllegalArgumentException("missing AppConfig");
 		}
 		if (useCases == null || useCases.isEmpty() || useCases.stream().anyMatch(Objects::isNull)) {
-			throw new IllegalArgumentException("missing use case: " + useCases);
+			throw new IllegalArgumentException("missing use case in " + useCases);
 		}
 		this.appConfig = appConfig;
 		this.useCases = useCases;
@@ -72,7 +72,7 @@ public class NLPToolbox {
 	 * Runs the NLPToolbox with the supplied JSON use case arguments and prints the results to the console.<br>
 	 * See the {@link UseCase} subclasses for configuration.
 	 * Generally, if a use case has a setter for a property, you can specify that property as a JSON attribute.<br>
-	 * {@code anyUseCase.setProperty(value)} becomes {@code {"name": "any", "property": "value"}}.
+	 * {@code new AnyUseCase().setProperty(value)} becomes {@code {"name": "AnyUseCase", "property": "value"}}.
 	 *
 	 * @param args JSON arguments
 	 * @see JsonConfigParser
