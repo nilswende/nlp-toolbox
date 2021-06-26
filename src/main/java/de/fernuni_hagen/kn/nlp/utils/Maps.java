@@ -188,7 +188,7 @@ public final class Maps {
 	}
 
 	/**
-	 * Normalizes the map by dividing each value by the norm.
+	 * Normalizes the map by dividing each value by the normative value.
 	 *
 	 * @param map  Map
 	 * @param norm norm
