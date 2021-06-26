@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp;
 
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 
@@ -32,7 +33,7 @@ public interface DBReader {
 	 * Gets the significance coefficient of all term cooccurrences via the weighting function.<br>
 	 * The direction of each term association is decided by the higher term occurrence.
 	 * It points from the term with the higher occurrence to the term with lower occurrence.
-	 * The other direction will be contained as well with a value of {@code 0.01}.
+	 * The other direction will be contained as well with a value of {@link AppConfig#getDefaultSignificance()}.
 	 *
 	 * @param function the weighting function
 	 * @return a mapping from each term to each cooccurring term with their respective significance coefficient

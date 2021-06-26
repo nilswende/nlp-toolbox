@@ -17,12 +17,13 @@ class Neo4JDBFactory extends DBFactory {
 	private final Neo4J db;
 
 	Neo4JDBFactory(final AppConfig config) {
+		super(config);
 		this.db = new Neo4J(config);
 	}
 
 	@Override
 	public DBReader getReader() {
-		return new Neo4JReader(db);
+		return new Neo4JReader(config, db);
 	}
 
 	@Override

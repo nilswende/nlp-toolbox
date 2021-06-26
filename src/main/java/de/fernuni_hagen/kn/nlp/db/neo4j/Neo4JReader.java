@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
@@ -31,9 +32,11 @@ import static de.fernuni_hagen.kn.nlp.db.neo4j.Neo4JUtils.toLong;
  */
 public class Neo4JReader implements DBReader {
 
+	private final AppConfig config;
 	private final GraphDatabaseService graphDb;
 
-	public Neo4JReader(final Neo4J db) {
+	public Neo4JReader(final AppConfig config, final Neo4J db) {
+		this.config = config;
 		graphDb = db.getGraphDb();
 	}
 
@@ -71,7 +74,7 @@ public class Neo4JReader implements DBReader {
 				final var kij = toLong(row.get("kij"));
 				final var t1 = row.get("t1.name").toString();
 				final var t2 = row.get("t2.name").toString();
-				DBUtils.putSignificance(map, t1, t2, ki, kj, kij, k, kmax, function);
+				DBUtils.putSignificance(config, map, t1, t2, ki, kj, kij, k, kmax, function);
 			}
 			return map;
 		}
@@ -102,7 +105,7 @@ public class Neo4JReader implements DBReader {
 				final var ki = toLong(row.get("ki"));
 				final var kj = toLong(row.get("kj"));
 				final var kij = toLong(row.get("kij"));
-				DBUtils.putDirectedSignificance(map, t1, t2, ki, kj, kij, k, kmax, function);
+				DBUtils.putDirectedSignificance(config, map, t1, t2, ki, kj, kij, k, kmax, function);
 			}
 			return map;
 		}

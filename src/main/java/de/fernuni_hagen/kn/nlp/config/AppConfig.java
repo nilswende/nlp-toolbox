@@ -29,6 +29,7 @@ public class AppConfig {
 	private Path dbDir;
 	private DbType db;
 	private boolean persistInMemoryDb;
+	private double defaultSignificance = 0.01; // or Double.MIN_VALUE
 
 	/**
 	 * Database type.
@@ -68,6 +69,21 @@ public class AppConfig {
 
 	public boolean persistInMemoryDb() {
 		return persistInMemoryDb;
+	}
+
+	public double getDefaultSignificance() {
+		return defaultSignificance;
+	}
+
+	/**
+	 * Set the default significance.
+	 *
+	 * @param defaultSignificance the default significance
+	 * @return this object
+	 */
+	public AppConfig setDefaultSignificance(final double defaultSignificance) {
+		this.defaultSignificance = defaultSignificance;
+		return this;
 	}
 
 	/**

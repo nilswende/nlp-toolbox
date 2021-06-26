@@ -17,12 +17,13 @@ class InMemoryDBFactory extends DBFactory {
 	private final InMemoryDB db;
 
 	InMemoryDBFactory(final AppConfig config) {
+		super(config);
 		this.db = new InMemoryDB(config);
 	}
 
 	@Override
 	public DBReader getReader() {
-		return new InMemoryReader(db);
+		return new InMemoryReader(config, db);
 	}
 
 	@Override

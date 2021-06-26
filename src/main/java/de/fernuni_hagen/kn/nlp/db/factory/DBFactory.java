@@ -14,7 +14,10 @@ import de.fernuni_hagen.kn.nlp.db.DB;
  */
 public abstract class DBFactory implements AutoCloseable {
 
-	DBFactory() {
+	protected final AppConfig config;
+
+	DBFactory(AppConfig config) {
+		this.config = config;
 	}
 
 	/**

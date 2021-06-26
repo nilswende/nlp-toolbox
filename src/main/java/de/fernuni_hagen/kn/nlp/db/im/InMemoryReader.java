@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
  */
 public class InMemoryReader implements DBReader {
 
+	private final AppConfig config;
 	private final InMemoryDB db;
 
-	public InMemoryReader(final InMemoryDB db) {
+	public InMemoryReader(final AppConfig config, final InMemoryDB db) {
+		this.config = config;
 		this.db = db;
 	}
 
@@ -49,7 +52,7 @@ public class InMemoryReader implements DBReader {
 			final var ki = m.getCount();
 			m.getCooccs().forEach((tj, kij) -> {
 				final var kj = data.get(tj).getCount();
-				DBUtils.putSignificance(cooccs, ti, tj, ki, kj, kij, k, kmax, function);
+				DBUtils.putSignificance(config, cooccs, ti, tj, ki, kj, kij, k, kmax, function);
 			});
 		});
 		return cooccs;
@@ -65,7 +68,7 @@ public class InMemoryReader implements DBReader {
 			final var ki = m.getCount();
 			m.getCooccs().forEach((tj, kij) -> {
 				final var kj = data.get(tj).getCount();
-				DBUtils.putDirectedSignificance(cooccs, ti, tj, ki, kj, kij, k, kmax, function);
+				DBUtils.putDirectedSignificance(config, cooccs, ti, tj, ki, kj, kij, k, kmax, function);
 			});
 		});
 		return cooccs;
