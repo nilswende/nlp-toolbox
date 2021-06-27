@@ -31,7 +31,7 @@ public final class DBUtils {
 	 * @param kmax     maximum number of sentences that contain any term
 	 * @param function the weighting function
 	 */
-	public static void putSignificance(final AppConfig config, final Map<String, Map<String, Double>> map, final String ti, final String tj, final long ki, final long kj, final Long kij, final long k, final long kmax, final WeightingFunction function) {
+	public static void putSignificance(final AppConfig config, final Map<String, Map<String, Double>> map, final String ti, final String tj, final long ki, final long kj, final long kij, final long k, final long kmax, final WeightingFunction function) {
 		var sig = config.getDefaultSignificance();
 		if (ki > 1 || kj > 1) {
 			sig = function.calculate(ki, kj, kij, k, kmax);
@@ -53,7 +53,7 @@ public final class DBUtils {
 	 * @param kmax     maximum number of sentences that contain any term
 	 * @param function the weighting function
 	 */
-	public static void putDirectedSignificance(final AppConfig config, final Map<String, Map<String, Double>> map, final String ti, final String tj, final long ki, final long kj, final Long kij, final long k, final long kmax, final WeightingFunction function) {
+	public static void putDirectedSignificance(final AppConfig config, final Map<String, Map<String, Double>> map, final String ti, final String tj, final long ki, final long kj, final long kij, final long k, final long kmax, final WeightingFunction function) {
 		var sig = config.getDefaultSignificance();
 		if ((ki > 1 || kj > 1) && kj >= ki) {
 			final var minKij = Math.min(kij, Math.min(ki, kj));
