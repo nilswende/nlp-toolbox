@@ -46,7 +46,7 @@ public class InMemoryDB implements DB {
 	 */
 	public void addDocument(final String fileName) {
 		if (content.getData().values().stream().map(Values::getDocuments).anyMatch(d -> d.containsKey(fileName))) {
-			System.out.println("no two input documents can have the same file name");
+			throw new IllegalArgumentException("no two input documents can have the same file name");
 		}
 		currentDoc = fileName;
 		sentenceCount = 0;

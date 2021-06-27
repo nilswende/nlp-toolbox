@@ -36,7 +36,7 @@ public class Neo4JWriter implements DBWriter {
 	public void addDocument(final String name) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			if (tx.findNode(Labels.DOCUMENT, "name", name) != null) {
-				System.out.println("no two input documents can have the same file name");
+				throw new IllegalArgumentException("no two input documents can have the same file name");
 			}
 			final Node doc = tx.createNode(Labels.DOCUMENT);
 			doc.setProperty("name", name);
