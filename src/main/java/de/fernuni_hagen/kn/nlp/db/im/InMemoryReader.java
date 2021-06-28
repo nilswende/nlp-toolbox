@@ -79,6 +79,10 @@ public class InMemoryReader implements DBReader {
 		return db.getData().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getDocuments()));
 	}
 
+	/**
+	 * Gets the shortest path between the two nodes.<br>
+	 * For repeated invocations, it is more efficient to save the distances map to your use case and find the shortest paths with that.
+	 */
 	@Override
 	public WeightedPath getShortestPath(final String start, final String end, final WeightingFunction function) {
 		final var distances = Maps.invertValues(getSignificances(function));
