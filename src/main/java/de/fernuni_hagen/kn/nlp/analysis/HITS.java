@@ -45,6 +45,7 @@ public class HITS extends UseCase {
 
 		/**
 		 * Returns the set of all terms associated with a score.
+		 * This can be used as a common denominator for both score maps.
 		 *
 		 * @return the set of all terms
 		 */
