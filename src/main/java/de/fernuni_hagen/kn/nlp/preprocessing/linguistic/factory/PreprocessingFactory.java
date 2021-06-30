@@ -56,7 +56,7 @@ public interface PreprocessingFactory {
 	/**
 	 * Creates a concrete factory according to the given language.
 	 *
-	 * @param language a language
+	 * @param language a {@link java.util.Locale} language code
 	 * @return a concrete factory
 	 */
 	static PreprocessingFactory from(String language) {
