@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases.PhrasedSentencePreprocessor;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,13 @@ public class SentencePreprocessor {
 	protected final PreprocessingFactory factory;
 	private final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps;
 
-	SentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+	/**
+	 * Constructor.
+	 *
+	 * @param preprocessingSteps PreprocessingSteps
+	 * @param factory            PreprocessingFactory
+	 */
+	protected SentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
 		this.preprocessingSteps = preprocessingSteps;
 		this.factory = factory;
 	}

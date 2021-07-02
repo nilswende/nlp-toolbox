@@ -1,6 +1,9 @@
-package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
+package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.PhrasedSentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
@@ -12,11 +15,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Executes the linguistic preprocessing on Strings, including phrase extraction.
+ * Executes the linguistic preprocessing on Strings, including phrase handling.
  *
  * @author Nils Wende
  */
-class PhrasedSentencePreprocessor extends SentencePreprocessor {
+public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
 	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", true);
 	private final boolean detectPhrases;
@@ -24,7 +27,16 @@ class PhrasedSentencePreprocessor extends SentencePreprocessor {
 	private final boolean extractPhrases;
 	private List<String> phrases;
 
-	PhrasedSentencePreprocessor(final boolean detectPhrases, final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
+	/**
+	 * Constructor.
+	 *
+	 * @param detectPhrases      detectPhrases
+	 * @param removePhrases      removePhrases
+	 * @param extractPhrases     extractPhrases
+	 * @param preprocessingSteps PreprocessingSteps
+	 * @param factory            PreprocessingFactory
+	 */
+	public PhrasedSentencePreprocessor(final boolean detectPhrases, final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
 		super(preprocessingSteps, factory);
 		this.detectPhrases = detectPhrases;
 		this.removePhrases = removePhrases;

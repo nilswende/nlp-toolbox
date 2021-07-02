@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases.PhraseIterator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
