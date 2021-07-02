@@ -30,10 +30,10 @@ public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 	/**
 	 * Constructor.
 	 *
-	 * @param detectPhrases      detectPhrases
-	 * @param removePhrases      removePhrases
-	 * @param extractPhrases     extractPhrases
-	 * @param preprocessingSteps PreprocessingSteps
+	 * @param detectPhrases      true if phrases should be detected
+	 * @param removePhrases      true if phrases should be removed
+	 * @param extractPhrases     true if phrases should be extracted
+	 * @param preprocessingSteps preprocessing steps
 	 * @param factory            PreprocessingFactory
 	 */
 	public PhrasedSentencePreprocessor(final boolean detectPhrases, final boolean removePhrases, final boolean extractPhrases, final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {

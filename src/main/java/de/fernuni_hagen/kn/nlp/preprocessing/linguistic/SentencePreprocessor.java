@@ -25,7 +25,7 @@ public class SentencePreprocessor {
 	/**
 	 * Constructor.
 	 *
-	 * @param preprocessingSteps PreprocessingSteps
+	 * @param preprocessingSteps preprocessing steps
 	 * @param factory            PreprocessingFactory
 	 */
 	protected SentencePreprocessor(final List<Function<PreprocessingFactory, PreprocessingStep>> preprocessingSteps, final PreprocessingFactory factory) {
