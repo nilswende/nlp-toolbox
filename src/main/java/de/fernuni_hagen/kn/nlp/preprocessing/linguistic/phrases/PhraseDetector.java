@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
+package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases;
 
 import java.util.List;
 

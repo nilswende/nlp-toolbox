@@ -4,7 +4,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.NounFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseDetector;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.StopWordRemover;
@@ -18,6 +17,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.IndexerPhraseDetect
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.RegexSentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.TaggedNounFilter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.ViterbiTagger;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases.PhraseDetector;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.SimpleSentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.Text2SatzSentenceSplitter;
 import te.utils.Parameters;

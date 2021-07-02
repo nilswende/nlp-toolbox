@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseDetector;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases.PhraseDetector;
 import org.apache.commons.lang3.StringUtils;
 import te.indexer.Indexer;
 import te.indexer.Word;

@@ -4,12 +4,12 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.AbbreviationRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.BaseFormReducer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.CaseNormalizer;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.NounFilter;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PhraseDetector;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceCleaner;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.StopWordRemover;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl.JLanILanguageExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases.PhraseDetector;
 
 import java.nio.file.Path;
 import java.util.HashMap;
