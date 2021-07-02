@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.BaseFormReducer;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import de.uni_leipzig.asv.toolbox.baseforms.Zerleger2;
 
 import java.nio.file.Path;

@@ -1,7 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.AbbreviationRemover;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.IOUtils;
 

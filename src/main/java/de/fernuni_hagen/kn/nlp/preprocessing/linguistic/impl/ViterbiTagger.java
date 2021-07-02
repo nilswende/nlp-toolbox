@@ -1,9 +1,9 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.utils.ASVUtils;
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,5 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.PhrasedSentence;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

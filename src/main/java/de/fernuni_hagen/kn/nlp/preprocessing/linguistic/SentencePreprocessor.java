@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 
 import java.util.List;
