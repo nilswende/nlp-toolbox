@@ -9,8 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,32 +46,44 @@ public abstract class DBTest {
 
 		final var cooccurrences = reader.getCooccurrences();
 		assertEquals(5, cooccurrences.size(), cooccurrences.toString());
-		var cooccs = cooccurrences.get("a");
+		getCooccs(cooccurrences::get);
+	}
+
+	private void getCooccs(final Function<String, Map<String, Double>> f) {
+		var cooccs = f.apply("a");
 		assertEquals(3, cooccs.size(), cooccs.toString());
 		assertEquals(1, cooccs.get("b"));
 		assertEquals(1, cooccs.get("c"));
 		assertEquals(1, cooccs.get("e"));
-		cooccs = cooccurrences.get("b");
+		cooccs = f.apply("b");
 		assertEquals(4, cooccs.size(), cooccs.toString());
 		assertEquals(1, cooccs.get("a"));
 		assertEquals(2, cooccs.get("c"));
 		assertEquals(2, cooccs.get("d"));
 		assertEquals(1, cooccs.get("e"));
-		cooccs = cooccurrences.get("c");
+		cooccs = f.apply("c");
 		assertEquals(4, cooccs.size(), cooccs.toString());
 		assertEquals(1, cooccs.get("a"));
 		assertEquals(2, cooccs.get("b"));
 		assertEquals(2, cooccs.get("d"));
 		assertEquals(1, cooccs.get("e"));
-		cooccs = cooccurrences.get("d");
+		cooccs = f.apply("d");
 		assertEquals(2, cooccs.size(), cooccs.toString());
 		assertEquals(2, cooccs.get("b"));
 		assertEquals(2, cooccs.get("c"));
-		cooccs = cooccurrences.get("e");
+		cooccs = f.apply("e");
 		assertEquals(3, cooccs.size(), cooccs.toString());
 		assertEquals(1, cooccs.get("a"));
 		assertEquals(1, cooccs.get("b"));
 		assertEquals(1, cooccs.get("c"));
+	}
+
+	@Test
+	void getCooccurrencesTerm() {
+		writer.addSentence(List.of("a", "b", "c", "e"));
+		writer.addSentence(List.of("b", "d", "c", "d"));
+
+		getCooccs(reader::getCooccurrences);
 	}
 
 	@Test

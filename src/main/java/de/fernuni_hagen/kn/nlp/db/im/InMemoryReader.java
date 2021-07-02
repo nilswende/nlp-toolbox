@@ -32,14 +32,14 @@ public class InMemoryReader implements DBReader {
 	public Map<String, Map<String, Double>> getCooccurrences() {
 		final var data = db.getData();
 		final var copy = Maps.<String, Map<String, Double>>newHashMap(data.size());
-		data.forEach((k, v) -> {
-			final var cooccs = v.getCooccs()
-					.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey,
-							e -> e.getValue().doubleValue()));
-			copy.put(k, cooccs);
-		});
+		data.forEach((k, v) -> copy.put(k, v.getCooccsAsDouble()));
 		return copy;
+	}
+
+	@Override
+	public Map<String, Double> getCooccurrences(final String term) {
+		final var values = db.getData().get(term);
+		return values == null ? Map.of() : values.getCooccsAsDouble();
 	}
 
 	@Override

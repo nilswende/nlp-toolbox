@@ -202,6 +202,19 @@ public class InMemoryDB implements DB {
 		}
 
 		/**
+		 * Returns the set of cooccurring terms along with the number of cooccurrences with this term.
+		 *
+		 * @return Map Coocc -> Count as Double
+		 */
+		public Map<String, Double> getCooccsAsDouble() {
+			return cooccs.entrySet().stream()
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							e -> e.getValue().values().stream().mapToDouble(l -> l).sum()
+					));
+		}
+
+		/**
 		 * Returns the set of cooccurring terms along with the number of cooccurrences with this term in distinct sentences.
 		 *
 		 * @return Map Coocc -> distinct Count

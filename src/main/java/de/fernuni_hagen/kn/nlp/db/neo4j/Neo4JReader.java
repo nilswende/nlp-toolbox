@@ -59,6 +59,24 @@ public class Neo4JReader implements DBReader {
 	}
 
 	@Override
+	public Map<String, Double> getCooccurrences(final String term) {
+		final var stmt = " MATCH (t1:" + Labels.TERM + "{name: $t1})-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
+				+ "RETURN t2.name, c.count\n";
+		final Map<String, Object> params = Map.of("t1", term);
+		try (final Transaction tx = graphDb.beginTx();
+			 final var result = tx.execute(stmt, params)) {
+			final var map = new TreeMap<String, Double>();
+			while (result.hasNext()) {
+				final var row = result.next();
+				final var t2 = row.get("t2.name").toString();
+				final var c = toDouble(row.get("c.count"));
+				map.put(t2, c);
+			}
+			return map;
+		}
+	}
+
+	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var stmt = " MATCH (t1:" + Labels.TERM + ")-[c:" + RelationshipTypes.COOCCURS + "]-(t2:" + Labels.TERM + ")\n"
 				+ "RETURN t1.name, t2.name, t1.count as ki, t2.count as kj, c.count as kij\n";

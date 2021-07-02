@@ -22,6 +22,16 @@ public interface DBReader {
 	Map<String, Map<String, Double>> getCooccurrences();
 
 	/**
+	 * Gets the cooccurrences of the given term.
+	 *
+	 * @param term the term
+	 * @return a mapping from each cooccurring term to their respective number of cooccurrences
+	 */
+	default Map<String, Double> getCooccurrences(final String term) {
+		return getCooccurrences().get(term);
+	}
+
+	/**
 	 * Gets the significance coefficient of all term cooccurrences via the weighting function.
 	 *
 	 * @param function the weighting function
@@ -71,7 +81,7 @@ public interface DBReader {
 	 * @param terms the terms
 	 * @return true, if the database contains all of the given terms
 	 */
-	default boolean containsTerms(List<String> terms) {
+	default boolean containsTerms(final List<String> terms) {
 		return terms.stream().allMatch(this::containsTerm);
 	}
 
