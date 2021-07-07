@@ -14,7 +14,7 @@ import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 /**
  * @author Nils Wende
  */
-public class SaveDB {
+public class Persist {
 
 	public static void main(final String[] args) {
 		// create the app config
