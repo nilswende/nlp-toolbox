@@ -9,6 +9,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
+import de.fernuni_hagen.kn.nlp.utils.FileSaver;
 import org.apache.commons.io.input.ReaderInputStream;
 
 import java.io.InputStream;

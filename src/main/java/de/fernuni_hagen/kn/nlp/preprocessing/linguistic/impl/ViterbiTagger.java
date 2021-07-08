@@ -1,10 +1,10 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.impl;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.utils.ASVUtils;
+import de.fernuni_hagen.kn.nlp.utils.FileSaver;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class ViterbiTagger implements Tagger {
 
-	private final FileSaver fileSaver = new FileSaver("data/output/taggedSentences.txt", true);
+	private final FileSaver fileSaver = new FileSaver("data/output/taggedSentences.txt", false);
 	private final Tagset tagset;
 	private final de.uni_leipzig.asv.toolbox.viterbitagger.Tagger tagger;
 

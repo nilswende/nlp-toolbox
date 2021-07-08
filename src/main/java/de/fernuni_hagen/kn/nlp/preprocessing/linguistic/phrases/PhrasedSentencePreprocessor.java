@@ -1,6 +1,5 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
@@ -8,6 +7,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.PhrasedSentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
+import de.fernuni_hagen.kn.nlp.utils.FileSaver;
 
 import java.util.List;
 import java.util.function.Function;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
-	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", true);
+	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", false);
 	private final boolean detectPhrases;
 	private final boolean removePhrases;
 	private final boolean extractPhrases;
