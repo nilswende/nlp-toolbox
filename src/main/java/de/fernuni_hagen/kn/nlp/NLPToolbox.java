@@ -59,6 +59,8 @@ public class NLPToolbox {
 	/**
 	 * Runs the NLPToolbox with the supplied use cases.<br>
 	 * After this, each use case will contain a {@link UseCase.Result} object which consequently contains that use case's results.
+	 *
+	 * @throws de.fernuni_hagen.kn.nlp.utils.UncheckedException if any exception occurred. Catch at your own discretion
 	 */
 	public void run() {
 		try (final var dbFactory = DBFactory.from(appConfig)) {
