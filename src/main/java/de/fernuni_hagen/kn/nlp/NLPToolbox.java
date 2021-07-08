@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.config.parser.ConfigParser;
 import de.fernuni_hagen.kn.nlp.config.parser.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.util.List;
 import java.util.Objects;
@@ -60,7 +61,7 @@ public class NLPToolbox {
 	 * Runs the NLPToolbox with the supplied use cases.<br>
 	 * After this, each use case will contain a {@link UseCase.Result} object which consequently contains that use case's results.
 	 *
-	 * @throws de.fernuni_hagen.kn.nlp.utils.UncheckedException if any exception occurred. Catch at your own discretion
+	 * @throws UncheckedException if any checked exception occurred. Catch at your own discretion
 	 */
 	public void run() {
 		try (final var dbFactory = DBFactory.from(appConfig)) {

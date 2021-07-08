@@ -12,7 +12,10 @@ import java.util.List;
 import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 
 /**
+ * Persist the preprocessed terms in a database.
+ *
  * @author Nils Wende
+ * @see Analyze
  */
 public class Persist {
 

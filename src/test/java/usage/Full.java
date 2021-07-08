@@ -13,6 +13,9 @@ import java.util.List;
 import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 
 /**
+ * A full run of the NLPToolbox.
+ * Read files, analyze the cooccurrence graph and print the results to the console.
+ *
  * @author Nils Wende
  */
 public class Full {

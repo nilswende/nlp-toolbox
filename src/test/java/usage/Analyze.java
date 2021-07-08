@@ -12,7 +12,10 @@ import java.util.List;
 import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 
 /**
+ * Use a persisted database to analyze its content.
+ *
  * @author Nils Wende
+ * @see Persist
  */
 public class Analyze {
 
