@@ -76,6 +76,15 @@ public abstract class UseCase {
 	public abstract Result getResult();
 
 	/**
+	 * Returns true, if this use case contains a result.
+	 *
+	 * @return true, if this use case contains a result
+	 */
+	public boolean hasResult() {
+		return getResult() != null;
+	}
+
+	/**
 	 * The basic use case result.<br>
 	 * Must be implemented by every use case implementation to be able to return a more specific result (including the use case's name).
 	 */
