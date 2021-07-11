@@ -59,11 +59,11 @@ public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 	private Sentence extract(final Tagger tagger, final String sentence) {
 		final var phraseIterator = new PhraseIterator(sentence, phrases);
 		final var extractedPhrases = phraseIterator.removeAll();
-		final var iteratorSentence = phraseIterator.getSentence();
-		if (iteratorSentence.isEmpty()) {
+		final var cleanedSentence = phraseIterator.getSentence();
+		if (cleanedSentence.isEmpty()) {
 			return createSentence(List.of(), sentence, extractedPhrases);
 		}
-		final var taggedTerms = tagger.apply(iteratorSentence);
+		final var taggedTerms = tagger.apply(cleanedSentence);
 		return createSentence(taggedTerms, sentence, extractedPhrases);
 	}
 
@@ -74,7 +74,7 @@ public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		if (extractPhrases) {
 			return new PhrasedSentence(taggedTerms, sentence, extractedPhrases);
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalStateException();
 	}
 
 	@Override
