@@ -74,7 +74,7 @@ public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		if (extractPhrases) {
 			return new PhrasedSentence(taggedTerms, sentence, extractedPhrases);
 		}
-		throw new IllegalStateException();
+		throw new IllegalStateException("should not be reachable");
 	}
 
 	@Override
