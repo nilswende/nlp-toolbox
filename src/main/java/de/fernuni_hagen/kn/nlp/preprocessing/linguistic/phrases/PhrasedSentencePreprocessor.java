@@ -1,5 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases;
 
+import de.fernuni_hagen.kn.nlp.file.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
@@ -7,7 +8,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.PhrasedSentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
-import de.fernuni_hagen.kn.nlp.utils.FileSaver;
 
 import java.util.List;
 import java.util.function.Function;

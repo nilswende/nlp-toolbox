@@ -1,6 +1,6 @@
-package de.fernuni_hagen.kn.nlp.utils;
+package de.fernuni_hagen.kn.nlp.file;
 
-import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.StringUtils;
 
