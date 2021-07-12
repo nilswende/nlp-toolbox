@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
+import de.fernuni_hagen.kn.nlp.file.FileSaver;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
 
@@ -11,13 +12,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Calculates the PageRanks of a graph.
+ * Calculates the PageRank scores of a graph.
  *
  * @author Nils Wende
  */
 public class PageRank extends UseCase {
 
-	// private final FileSaver fileSaver = new FileSaver("data/output/associations.csv", true);
+	private final FileSaver fileSaver = new FileSaver("data/output/PageRank.txt", false);
 
 	private int iterations = 25;
 	private int resultLimit = Integer.MAX_VALUE;
@@ -38,7 +39,8 @@ public class PageRank extends UseCase {
 
 		@Override
 		protected void printResult() {
-			printfMap(scores, "No PageRanks", "PageRank of %s: %s");
+			print("PageRank scores:");
+			printfMap(scores, "No PageRank scores", "%s: %s");
 		}
 
 		/**
@@ -54,7 +56,6 @@ public class PageRank extends UseCase {
 	@Override
 	public void execute(final DBReader dbReader) {
 		final var significances = dbReader.getDirectedSignificances(weightingFunction);
-		// significances.forEach((t1, m) -> m.forEach((t2, l) -> fileSaver.println(t1 + ";" + t2 + ";" + l)));
 
 		final var pageRanks = initPageRanks(significances.keySet());
 		for (int i = 0; i < iterations; i++) {
@@ -62,6 +63,7 @@ public class PageRank extends UseCase {
 		}
 		final var normalizedPageRanks = normalize(pageRanks);
 		result = new Result(normalizedPageRanks, resultLimit);
+		fileSaver.print(result);
 	}
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {
