@@ -139,6 +139,15 @@ public abstract class UseCase {
 		}
 
 		/**
+		 * Prints the map.
+		 *
+		 * @param map the map
+		 */
+		protected void printMap(final Map<String, Double> map) {
+			printfMap(map, "None", "%s: %s");
+		}
+
+		/**
 		 * Prints the format.
 		 *
 		 * @param format format string

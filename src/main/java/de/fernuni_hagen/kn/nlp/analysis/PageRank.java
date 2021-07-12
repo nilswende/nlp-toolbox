@@ -40,7 +40,7 @@ public class PageRank extends UseCase {
 		@Override
 		protected void printResult() {
 			print("PageRank scores:");
-			printfMap(scores, "No PageRank scores", "%s: %s");
+			printMap(scores);
 		}
 
 		/**

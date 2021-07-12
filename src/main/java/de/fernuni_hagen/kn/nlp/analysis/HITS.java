@@ -43,9 +43,9 @@ public class HITS extends UseCase {
 		@Override
 		protected void printResult() {
 			print("Authority scores:");
-			printfMap(authorityScores, "No authority scores", "%s: %s");
+			printMap(authorityScores);
 			print("Hub scores:");
-			printfMap(hubScores, "No hub scores", "%s: %s");
+			printMap(hubScores);
 		}
 
 		/**
