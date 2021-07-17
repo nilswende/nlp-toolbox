@@ -2,10 +2,10 @@ package de.fernuni_hagen.kn.nlp;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Map;
 
@@ -30,13 +30,13 @@ public abstract class UseCase {
 	 */
 	public void execute(final AppConfig appConfig, final DBReader dbReader, final DBWriter dbWriter) {
 		this.appConfig = appConfig;
-		final var start = System.currentTimeMillis();
+		final var start = LocalDateTime.now();
 		execute(dbReader, dbWriter);
 		execute(dbReader);
 		execute(dbWriter);
 		final var result = getResult();
 		result.setStart(start);
-		result.setEnd(System.currentTimeMillis());
+		result.setEnd(LocalDateTime.now());
 	}
 
 	/**
@@ -89,7 +89,8 @@ public abstract class UseCase {
 	 * Must be implemented by every use case implementation to be able to return a more specific result (including the use case's name).
 	 */
 	public static abstract class Result {
-		private long start, end;
+		private LocalDateTime start = LocalDateTime.MIN;
+		private LocalDateTime end = LocalDateTime.MAX;
 		private StringBuilder sb;
 
 		/**
@@ -100,10 +101,10 @@ public abstract class UseCase {
 		@Override
 		public String toString() {
 			sb = new StringBuilder();
-			final var formatter = DateTimeFormat.forPattern("(dd.MM.yyyy HH:mm:ss)");
-			println(formatter.print(getStart()) + " Start " + getUseCaseName());
+			final var formatter = DateTimeFormatter.ofPattern("(dd.MM.yyyy HH:mm:ss)");
+			println(getStart().format(formatter) + " Start " + getUseCaseName());
 			printResult();
-			println(formatter.print(getEnd()) + " End " + getUseCaseName());
+			println(getEnd().format(formatter) + " End " + getUseCaseName());
 			final var duration = getDuration();
 			println(String.format("%s duration: %d s %d ms", getUseCaseName(), duration.toSecondsPart(), duration.toMillisPart()));
 			return sb.toString();
@@ -222,11 +223,11 @@ public abstract class UseCase {
 			}
 		}
 
-		void setStart(final long start) {
+		void setStart(final LocalDateTime start) {
 			this.start = start;
 		}
 
-		void setEnd(final long end) {
+		void setEnd(final LocalDateTime end) {
 			this.end = end;
 		}
 
@@ -236,7 +237,7 @@ public abstract class UseCase {
 		 * @return the start time
 		 */
 		public LocalDateTime getStart() {
-			return new LocalDateTime(start);
+			return start;
 		}
 
 		/**
@@ -245,7 +246,7 @@ public abstract class UseCase {
 		 * @return the end time
 		 */
 		public LocalDateTime getEnd() {
-			return new LocalDateTime(end);
+			return end;
 		}
 
 		/**
@@ -254,7 +255,7 @@ public abstract class UseCase {
 		 * @return the time spent
 		 */
 		public Duration getDuration() {
-			return Duration.ofMillis(end - start);
+			return Duration.between(getStart(), getEnd());
 		}
 	}
 
