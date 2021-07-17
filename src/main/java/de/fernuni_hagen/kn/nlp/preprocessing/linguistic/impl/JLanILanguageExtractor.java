@@ -17,6 +17,8 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
+import static de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingUtils.cast;
+
 /**
  * Extracts the language from a text file.
  *
@@ -65,8 +67,7 @@ public class JLanILanguageExtractor implements LanguageExtractor {
 	}
 
 	private Locale getLocale(final Response response) {
-		@SuppressWarnings("unchecked")
-		final var result = (Map<String, Double>) response.getResult();
+		final Map<String, Double> result = cast(response.getResult());
 		final var language = result.entrySet().stream()
 				.max(Map.Entry.comparingByValue())
 				.orElseGet(() -> Map.entry("en", 0.0))

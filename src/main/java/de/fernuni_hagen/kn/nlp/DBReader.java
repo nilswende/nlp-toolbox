@@ -22,7 +22,8 @@ public interface DBReader {
 	Map<String, Map<String, Double>> getCooccurrences();
 
 	/**
-	 * Gets the cooccurrences of the given term.
+	 * Gets the cooccurrences of the given term.<br>
+	 * For repeated invocations, it is more efficient to save the full cooccurrences map to your use case and use that.
 	 *
 	 * @param term the term
 	 * @return a mapping from each cooccurring term to their respective number of cooccurrences

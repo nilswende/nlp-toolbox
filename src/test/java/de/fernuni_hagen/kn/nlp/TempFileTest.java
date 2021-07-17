@@ -18,7 +18,8 @@ public abstract class TempFileTest {
 
 	@BeforeAll
 	static void setUp() throws IOException {
-		tempFile = Files.createTempFile("nlp", ".test");
+		final var tempDirectory = Files.createTempDirectory("nlp");
+		tempFile = Files.createTempFile(tempDirectory, "nlp", ".test");
 	}
 
 	protected void writeString(final String input) throws IOException {

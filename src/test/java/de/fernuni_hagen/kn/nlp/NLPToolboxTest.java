@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nils Wende
@@ -24,8 +24,20 @@ class NLPToolboxTest {
 		final var booleanRetrieval = new BooleanRetrieval()
 				.setType(BooleanRetrieval.Type.OR)
 				.setQuery(List.of("words"));
+		assertFalse(booleanRetrieval.hasResult());
 		new NLPToolbox(appConfig).run(preprocessor, booleanRetrieval);
+		assertTrue(booleanRetrieval.hasResult());
 		assertEquals(Map.of("1", 1L), booleanRetrieval.getResult().getDocuments());
+	}
+
+	@Test
+	void asApplication() {
+		assertDoesNotThrow(() -> NLPToolbox.main(new String[]{"-u", "hits"}));
+	}
+
+	@Test
+	void others() {
+		assertThrows(IllegalArgumentException.class, () -> new NLPToolbox().run());
 	}
 
 }

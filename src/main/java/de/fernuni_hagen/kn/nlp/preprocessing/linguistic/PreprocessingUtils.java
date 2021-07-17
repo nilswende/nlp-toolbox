@@ -1,6 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,6 +37,19 @@ public final class PreprocessingUtils {
 	@SuppressWarnings("unchecked")
 	public static <E> Set<E> cast(@SuppressWarnings("rawtypes") final Set arg) {
 		return (Set<E>) arg;
+	}
+
+	/**
+	 * Casts a raw Map into a parameterized Map.
+	 *
+	 * @param arg the raw Map
+	 * @param <K> the type of keys in the Map
+	 * @param <V> the type of values in the Map
+	 * @return a parameterized Map
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> cast(@SuppressWarnings("rawtypes") final Map arg) {
+		return (Map<K, V>) arg;
 	}
 
 }

@@ -84,7 +84,6 @@ class BufferedFileReaderTest {
 	}
 
 	static class TestReader extends BufferedFileReader {
-
 		final String s;
 
 		TestReader(final String s) {
