@@ -24,7 +24,7 @@ class NLPToolboxTest {
 		final var booleanRetrieval = new BooleanRetrieval()
 				.setType(BooleanRetrieval.Type.OR)
 				.setQuery(List.of("words"));
-		new NLPToolbox(appConfig, preprocessor, booleanRetrieval).run();
+		new NLPToolbox(appConfig).run(preprocessor, booleanRetrieval);
 		assertEquals(Map.of("1", 1L), booleanRetrieval.getResult().getDocuments());
 	}
 

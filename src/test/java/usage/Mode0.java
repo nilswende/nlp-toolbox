@@ -38,7 +38,7 @@ public class Mode0 {
 		final var hits = new HITS();
 		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
 		// run the NLPToolbox
-		new NLPToolbox(appConfig, useCases).run();
+		new NLPToolbox(appConfig).run(useCases);
 		// process the results
 		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
 	}

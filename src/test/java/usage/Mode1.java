@@ -34,7 +34,7 @@ public class Mode1 {
 				.setRemoveStopWords(true);
 		final var useCases = List.of(clearDatabase, preprocessor);
 		// run the NLPToolbox
-		new NLPToolbox(appConfig, useCases).run();
+		new NLPToolbox(appConfig).run(useCases);
 		// process the results
 		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
 	}

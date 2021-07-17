@@ -17,6 +17,7 @@ import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 /**
  * How to recover from a failed execution.
  * Find the non-executed use cases and retry executing them.
+ * Note that the NLPToolbox object can be reused.
  *
  * @author Nils Wende
  */
@@ -25,6 +26,7 @@ public class Recover {
 	public static void main(final String[] args) {
 		// create the app config
 		final var appConfig = new AppConfig().setPersistInMemoryDb(true);
+		final NLPToolbox nlpToolbox = new NLPToolbox(appConfig);
 		// create the use case steps
 		final var clearDatabase = new ClearDatabase();
 		final var preprocessor = new FilePreprocessor();
@@ -33,13 +35,13 @@ public class Recover {
 		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
 		try {
 			// run the NLPToolbox
-			new NLPToolbox(appConfig, useCases).run();
+			nlpToolbox.run(useCases);
 			// process the results
 			useCases.stream().map(UseCase::getResult).forEach(System.out::println);
 		} catch (final UncheckedException e) {
 			// retry
 			final var notExecuted = useCases.stream().filter(useCase -> !useCase.hasResult()).collect(Collectors.toList());
-			new NLPToolbox(appConfig, notExecuted).run();
+			nlpToolbox.run(notExecuted);
 			// process the results
 			notExecuted.stream().map(UseCase::getResult).forEach(System.out::println);
 		}

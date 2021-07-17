@@ -28,7 +28,7 @@ public class Analyze {
 		final var useCases = List.of(pageRank, hits);
 		// run the NLPToolbox
 		final var start = System.nanoTime();
-		new NLPToolbox(appConfig, useCases).run();
+		new NLPToolbox(appConfig).run(useCases);
 		final var duration = Duration.ofNanos(System.nanoTime() - start);
 		// process the results
 		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
