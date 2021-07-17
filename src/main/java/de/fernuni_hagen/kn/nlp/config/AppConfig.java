@@ -76,7 +76,7 @@ public class AppConfig {
 	}
 
 	/**
-	 * Set the default significance.
+	 * Set the default significance used for cooccurrences that should not be considered for an analysis.
 	 *
 	 * @param defaultSignificance the default significance
 	 * @return this object
@@ -109,7 +109,7 @@ public class AppConfig {
 	}
 
 	/**
-	 * Set the database.
+	 * Set the database type.
 	 *
 	 * @param db the database type
 	 * @return this object
