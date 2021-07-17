@@ -21,6 +21,7 @@ import java.util.List;
 public class Mode0 {
 
 	public static void main(final String[] args) {
+		final long start = System.currentTimeMillis();
 		// create the app config
 		final var appConfig = new AppConfig();
 		// create the use case steps
@@ -41,6 +42,9 @@ public class Mode0 {
 		new NLPToolbox(appConfig).run(useCases);
 		// process the results
 		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+
+		final long end = System.currentTimeMillis();
+		System.out.println("Processing took " + (end - start) / 1000.0 + " seconds.");
 	}
 
 }
