@@ -50,7 +50,7 @@ class EntityFormatter {
 	public static String formatPath(final Path p) {
 		return Utils.stream(p.relationships())
 				.map(EntityFormatter::formatRelationship)
-				.collect(Collectors.joining("\n"));
+				.collect(Collectors.joining(StringUtils.LF));
 	}
 
 }
