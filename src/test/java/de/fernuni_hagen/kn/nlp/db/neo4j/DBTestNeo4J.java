@@ -4,26 +4,30 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.DBTest;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.utils.Utils;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.neo4j.graphdb.Transaction;
-
-import java.nio.file.Path;
 
 /**
  * @author Nils Wende
  */
 public class DBTestNeo4J extends DBTest {
 
-	private static final DBFactory dbFactory;
+	private static DBFactory dbFactory;
 
-	static {
-		final var mock = Mockito.mock(AppConfig.class);
-		Mockito.when(mock.getDb()).thenReturn(AppConfig.DbType.NEO4J);
-		final var path = Path.of("test", "neo4j");
-		System.out.println(path.toAbsolutePath());
-		Mockito.when(mock.getNeo4JDbDir()).thenReturn(path);
-		dbFactory = DBFactory.from(mock);
-		//Runtime.getRuntime().addShutdownHook(new Thread(this::deleteDbDir));
+	@BeforeAll
+	static void beforeAll() {
+		dbFactory = createDbFactory(AppConfig.DbType.NEO4J);
+	}
+
+	@AfterAll
+	static void afterAll() {
+		dbFactory.close();
+	}
+
+	@Override
+	protected DBFactory getDbFactory() {
+		return dbFactory;
 	}
 
 	protected void printAllTerms() {
@@ -43,8 +47,4 @@ public class DBTestNeo4J extends DBTest {
 		}
 	}
 
-	@Override
-	protected DBFactory getDbFactory() {
-		return dbFactory;
-	}
 }

@@ -2,6 +2,8 @@ package de.fernuni_hagen.kn.nlp.db;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.TempFileTest;
+import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import org.junit.jupiter.api.AfterEach;
@@ -21,13 +23,23 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Nils Wende
  */
-public abstract class DBTest {
+public abstract class DBTest extends TempFileTest {
 
-	protected DBReader reader = getDbFactory().getReader();
-	protected DBWriter writer = getDbFactory().getWriter();
+	protected DBReader reader;
+	protected DBWriter writer;
+
+	protected static DBFactory createDbFactory(AppConfig.DbType dbType) {
+		final var mock = new AppConfig()
+				.setDb(dbType)
+				.setDbDir(tempFile.getParent().toString())
+				.setPersistInMemoryDb(true);
+		return DBFactory.from(mock);
+	}
 
 	@BeforeEach
 	void beforeEach() {
+		reader = getDbFactory().getReader();
+		writer = getDbFactory().getWriter();
 		writer.deleteAll();
 		writer.addDocument("1");
 	}

@@ -3,29 +3,27 @@ package de.fernuni_hagen.kn.nlp.db.im;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.DBTest;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Nils Wende
  */
 public class DBTestIm extends DBTest {
 
-	private static final DBFactory dbFactory;
+	private static DBFactory dbFactory;
 
 	private final InMemoryDB db = (InMemoryDB) dbFactory.getDb();
 
-	static {
-		final var mock = Mockito.mock(AppConfig.class);
-		Mockito.when(mock.getDb()).thenReturn(AppConfig.DbType.IN_MEMORY);
-		Mockito.when(mock.getInMemoryDbDir()).thenReturn(Path.of(""));
-		dbFactory = DBFactory.from(mock);
+	@BeforeAll
+	static void beforeAll() {
+		dbFactory = createDbFactory(AppConfig.DbType.IN_MEMORY);
 	}
 
 	@Override
@@ -76,5 +74,16 @@ public class DBTestIm extends DBTest {
 
 		data.entrySet().stream().filter(e -> !e.getKey().equals("art")).forEach(e -> assertEquals(1, e.getValue().getCount()));
 		data.entrySet().stream().filter(e -> !e.getKey().equals("art")).forEach(e -> assertEquals(1, e.getValue().getSentenceCount()));
+	}
+
+	@Test
+	void persist() {
+		final var input = List.of("art", "competition", "game", "year");
+		writer.addSentence(input);
+
+		dbFactory.close();
+		dbFactory = createDbFactory(AppConfig.DbType.IN_MEMORY);
+
+		assertTrue(getDbFactory().getReader().containsTerms(input));
 	}
 }
