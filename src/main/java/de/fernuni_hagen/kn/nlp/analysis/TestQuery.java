@@ -63,8 +63,7 @@ public class TestQuery extends UseCase {
 			final var paths = new DijkstraSearcher().search(query, distances);
 			final var anyPaths = paths.values().stream()
 					.filter(p -> p.size() == query.size())
-					.findAny();
-			// any list of paths is sufficient, since having the same size as the query means the paths connect every query term
+					.findAny(); // any list of paths is sufficient, since having the same size as the query means that the paths connect every query term
 			if (anyPaths.isPresent()) {
 				final double maxDistance = anyPaths.get().stream()
 						.max(Comparator.comparingDouble(WeightedPath::getWeight))
