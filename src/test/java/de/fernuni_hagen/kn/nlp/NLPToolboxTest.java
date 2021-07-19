@@ -39,7 +39,7 @@ class NLPToolboxTest {
 
 	@Test
 	void others() {
-		assertThrows(IllegalArgumentException.class, () -> new NLPToolbox().run());
+		assertThrows(Exception.class, () -> new NLPToolbox().run(null));
 	}
 
 }

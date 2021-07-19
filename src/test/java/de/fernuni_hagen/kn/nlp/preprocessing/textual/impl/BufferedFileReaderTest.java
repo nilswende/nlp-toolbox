@@ -1,5 +1,7 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.textual.impl;
 
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
@@ -83,6 +86,16 @@ class BufferedFileReaderTest {
 		);
 	}
 
+	@Test
+	void exceptions() throws IOException {
+		try (final var reader = new FailingTestReader("")) {
+			assertThrows(Exception.class, () -> reader.read(-1));
+			assertThrows(Exception.class, () -> reader.read(0));
+			assertThrows(Exception.class, () -> reader.read(-1, 1));
+			assertThrows(Exception.class, () -> reader.read(0, 1));
+		}
+	}
+
 	static class TestReader extends BufferedFileReader {
 		final String s;
 
@@ -99,6 +112,29 @@ class BufferedFileReaderTest {
 		@Override
 		public long getLength() {
 			return s.length();
+		}
+	}
+
+	static class FailingTestReader extends TestReader {
+		FailingTestReader(String s) {
+			super(s);
+		}
+
+		@Override
+		Reader createReader() {
+			return new FailingReader();
+		}
+
+		static class FailingReader extends Reader {
+			@Override
+			public int read(@NotNull char[] cbuf, int off, int len) throws IOException {
+				throw new IOException("Test exception");
+			}
+
+			@Override
+			public void close() {
+
+			}
 		}
 	}
 

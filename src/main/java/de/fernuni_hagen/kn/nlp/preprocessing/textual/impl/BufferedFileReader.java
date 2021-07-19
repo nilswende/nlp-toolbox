@@ -43,6 +43,9 @@ public class BufferedFileReader implements Closeable {
 	 * @throws UncheckedException if the file cannot be read
 	 */
 	public int read(final long pos) {
+		if (pos < 0) {
+			throw new IllegalArgumentException();
+		}
 		try {
 			ensureReader(pos);
 			final var read = getReader().read();
@@ -104,9 +107,6 @@ public class BufferedFileReader implements Closeable {
 	private char[] getChars(final int length) throws IOException {
 		final var chars = new char[length];
 		final var read = IOUtils.read(getReader(), chars);
-		if (read == IOUtils.EOF) {
-			return null;
-		}
 		offset += read;
 		return read < length ? Arrays.copyOf(chars, read) : chars;
 	}
@@ -138,14 +138,6 @@ public class BufferedFileReader implements Closeable {
 	 */
 	public long getLength() {
 		return InputUtils.countChars(path, AppConfig.DEFAULT_CHARSET);
-	}
-
-	@Override
-	public String toString() {
-		return "BufferedFileReader{" +
-				"file=" + path +
-				", offset=" + offset +
-				'}';
 	}
 
 }

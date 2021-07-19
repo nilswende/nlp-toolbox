@@ -5,6 +5,8 @@ import de.fernuni_hagen.kn.nlp.config.parser.JsonConfigParser;
 import de.fernuni_hagen.kn.nlp.db.factory.DBFactory;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,11 +40,17 @@ public class NLPToolbox {
 	/**
 	 * Convenience method for calling {@link #run(List)}.
 	 *
-	 * @param useCases use cases
+	 * @param useCase  one required use case
+	 * @param useCases further optional use cases
 	 * @see #run(List)
 	 */
-	public void run(final UseCase... useCases) {
-		run(List.of(useCases));
+	public void run(final UseCase useCase, final UseCase... useCases) {
+		final var list = new ArrayList<UseCase>();
+		list.add(useCase);
+		if (useCases != null) {
+			list.addAll(Arrays.asList(useCases));
+		}
+		run(list);
 	}
 
 	/**

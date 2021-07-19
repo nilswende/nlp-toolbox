@@ -2,11 +2,13 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual.impl;
 
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.impl.BufferedFileReaderTest.TestReader;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.text.CharacterIterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Nils Wende
@@ -70,4 +72,21 @@ class BufferedFileCharacterIteratorTest {
 		}
 	}
 
+	@Test
+	void testExceptionConstructor() {
+		final var mock = Mockito.mock(BufferedFileReader.class);
+		Mockito.when(mock.getLength()).thenReturn(Long.MAX_VALUE);
+		assertThrows(Exception.class, () -> new BufferedFileCharacterIterator(mock));
+	}
+
+	@Test
+	void testExceptions() throws IOException {
+		final var s = "abc";
+		try (final var reader = new TestReader(s);
+			 final var iter = new BufferedFileCharacterIterator(reader)) {
+			final var beginIndex = iter.getBeginIndex();
+			assertThrows(Exception.class, () -> iter.setIndex(beginIndex - 1));
+			assertThrows(Exception.class, iter::clone);
+		}
+	}
 }
