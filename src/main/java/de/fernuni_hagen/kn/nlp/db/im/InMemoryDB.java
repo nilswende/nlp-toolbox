@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.DB;
+import de.fernuni_hagen.kn.nlp.file.FileHelper;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -111,6 +112,7 @@ public class InMemoryDB implements DB {
 	 */
 	public void deleteAll() {
 		content.clear();
+		FileHelper.deleteFile(getDbFilePath(config));
 	}
 
 	/**

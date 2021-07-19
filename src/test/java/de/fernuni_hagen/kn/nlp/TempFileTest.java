@@ -18,7 +18,7 @@ public abstract class TempFileTest {
 	protected static Path tempFile;
 
 	@BeforeAll
-	static void setUp() throws IOException {
+	static void setUpTempFileTest() throws IOException {
 		tempDirectory = Files.createTempDirectory("nlp");
 		tempFile = Files.createTempFile(tempDirectory, "nlp", ".test");
 	}
@@ -28,7 +28,7 @@ public abstract class TempFileTest {
 	}
 
 	@AfterAll
-	static void afterAll() throws IOException {
+	static void afterAllTempFileTest() throws IOException {
 		PathUtils.deleteDirectory(tempDirectory);
 	}
 

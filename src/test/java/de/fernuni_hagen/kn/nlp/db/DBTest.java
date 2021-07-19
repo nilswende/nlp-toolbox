@@ -31,7 +31,7 @@ public abstract class DBTest extends TempFileTest {
 	protected static DBFactory createDbFactory(AppConfig.DbType dbType) {
 		final var mock = new AppConfig()
 				.setDb(dbType)
-				.setDbDir(tempFile.getParent().toString())
+				.setWorkingDir(tempDirectory.toString())
 				.setPersistInMemoryDb(true);
 		return DBFactory.from(mock);
 	}
