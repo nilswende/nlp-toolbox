@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public final class Maps {
 
 	private Maps() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

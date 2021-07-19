@@ -14,7 +14,7 @@ import java.util.TreeMap;
 public final class DBUtils {
 
 	private DBUtils() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

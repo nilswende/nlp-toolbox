@@ -12,7 +12,7 @@ import java.util.Set;
 public final class PreprocessingUtils {
 
 	private PreprocessingUtils() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

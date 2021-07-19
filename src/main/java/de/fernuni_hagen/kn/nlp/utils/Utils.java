@@ -11,7 +11,7 @@ import java.util.stream.StreamSupport;
 public final class Utils {
 
 	private Utils() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

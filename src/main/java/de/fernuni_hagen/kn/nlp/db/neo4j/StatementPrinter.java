@@ -32,7 +32,7 @@ public class StatementPrinter {
 	}
 
 	private StatementPrinter() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

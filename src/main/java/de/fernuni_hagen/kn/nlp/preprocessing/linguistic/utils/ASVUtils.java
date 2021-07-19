@@ -15,7 +15,7 @@ import java.io.RandomAccessFile;
 public class ASVUtils {
 
 	private ASVUtils() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

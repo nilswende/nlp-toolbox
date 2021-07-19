@@ -24,7 +24,7 @@ import java.util.Arrays;
 public final class FileHelper {
 
 	private FileHelper() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

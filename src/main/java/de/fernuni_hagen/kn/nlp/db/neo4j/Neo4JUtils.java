@@ -8,7 +8,7 @@ package de.fernuni_hagen.kn.nlp.db.neo4j;
 final class Neo4JUtils {
 
 	private Neo4JUtils() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

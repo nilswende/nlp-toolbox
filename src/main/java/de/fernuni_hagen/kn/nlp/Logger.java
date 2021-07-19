@@ -11,7 +11,7 @@ import java.time.Duration;
 public final class Logger {
 
 	private Logger() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

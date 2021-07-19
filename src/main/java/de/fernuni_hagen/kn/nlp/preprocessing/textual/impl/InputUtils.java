@@ -17,7 +17,7 @@ import java.nio.file.Path;
 public final class InputUtils {
 
 	private InputUtils() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**
