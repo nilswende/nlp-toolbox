@@ -28,8 +28,10 @@ import java.util.stream.Stream;
  */
 public class Preprocessor extends UseCase {
 
+	// mandatory
 	private InputStream input;
 	private String documentName;
+	// optional
 	private boolean keepTempFiles;
 	private boolean saveSentenceFile;
 	private int sentenceFileSizeLimitBytes = Integer.MAX_VALUE;
@@ -122,7 +124,7 @@ public class Preprocessor extends UseCase {
 	Result preprocess(final DBWriter dbWriter) {
 		final var tempFile = convertDocument();
 		dbWriter.addDocument(documentName);
-		final var sentenceFile = FileHelper.getTempFile(documentName + ".s");
+		final var sentenceFile = FileHelper.getTempFile(documentName + ".s.txt");
 		try (final var sentences = preprocess(tempFile, sentenceFile)) {
 			sentences.map(Sentence::getContent).filter(c -> c.size() > 1).forEach(dbWriter::addSentence);
 		}
