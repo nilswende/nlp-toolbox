@@ -32,6 +32,7 @@ public class NLPToolbox {
 	 * Creates an instance with a custom application-wide config.
 	 *
 	 * @param appConfig AppConfig
+	 * @throws NullPointerException if appConfig is null
 	 */
 	public NLPToolbox(final AppConfig appConfig) {
 		this.appConfig = Objects.requireNonNull(appConfig, "missing AppConfig");
@@ -42,15 +43,16 @@ public class NLPToolbox {
 	 *
 	 * @param useCase  one required use case
 	 * @param useCases further optional use cases
+	 * @return the use cases for method chaining
 	 * @see #run(List)
 	 */
-	public void run(final UseCase useCase, final UseCase... useCases) {
+	public List<UseCase> run(final UseCase useCase, final UseCase... useCases) {
 		final var list = new ArrayList<UseCase>();
 		list.add(useCase);
 		if (useCases != null) {
 			list.addAll(Arrays.asList(useCases));
 		}
-		run(list);
+		return run(list);
 	}
 
 	/**
@@ -58,9 +60,11 @@ public class NLPToolbox {
 	 * After this, each use case will contain a {@link UseCase.Result} object which consequently contains that use case's results.
 	 *
 	 * @param useCases use cases
-	 * @throws UncheckedException if any checked exception occurred. Catch at your own discretion
+	 * @return the use cases for method chaining
+	 * @throws IllegalArgumentException if useCases is null, is empty or contains nulls
+	 * @throws UncheckedException       if any checked exception occurred. Catch at your own discretion
 	 */
-	public void run(final List<UseCase> useCases) {
+	public List<UseCase> run(final List<UseCase> useCases) {
 		if (useCases == null || useCases.isEmpty() || useCases.stream().anyMatch(Objects::isNull)) {
 			throw new IllegalArgumentException("missing use case in " + useCases);
 		}
@@ -69,6 +73,7 @@ public class NLPToolbox {
 			final var dbWriter = dbFactory.getWriter();
 			useCases.forEach(useCase -> useCase.execute(appConfig, dbReader, dbWriter));
 		}
+		return useCases;
 	}
 
 	/**

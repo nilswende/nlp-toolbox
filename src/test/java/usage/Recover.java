@@ -35,15 +35,15 @@ public class Recover {
 		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
 		try {
 			// run the NLPToolbox
-			nlpToolbox.run(useCases);
-			// process the results
-			useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+			nlpToolbox.run(useCases)
+					// process the results
+					.stream().map(UseCase::getResult).forEach(System.out::println);
 		} catch (final UncheckedException e) {
 			// retry
 			final var notExecuted = useCases.stream().filter(useCase -> !useCase.hasResult()).collect(Collectors.toList());
-			nlpToolbox.run(notExecuted);
-			// process the results
-			notExecuted.stream().map(UseCase::getResult).forEach(System.out::println);
+			nlpToolbox.run(notExecuted)
+					// process the results
+					.stream().map(UseCase::getResult).forEach(System.out::println);
 		}
 		logCurrentThreadCpuTime();
 	}

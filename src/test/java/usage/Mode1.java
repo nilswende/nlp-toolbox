@@ -6,8 +6,6 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
 import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 
-import java.util.List;
-
 /**
  * How the previous Mode 1 would be configured.
  * Note that there are no fixed modes for the new NLPToolbox!
@@ -33,11 +31,10 @@ public class Mode1 {
 				.setNormalizeCase(true)
 				.setUseBaseFormReduction(true)
 				.setRemoveStopWords(true);
-		final var useCases = List.of(clearDatabase, preprocessor);
 		// run the NLPToolbox
-		new NLPToolbox(appConfig).run(useCases);
-		// process the results
-		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+		new NLPToolbox(appConfig).run(clearDatabase, preprocessor)
+				// process the results
+				.stream().map(UseCase::getResult).forEach(System.out::println);
 
 		final long end = System.currentTimeMillis();
 		System.out.println("Processing took " + (end - start) / 1000.0 + " seconds.");

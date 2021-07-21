@@ -31,11 +31,10 @@ public class PipeResults {
 				.setRemoveStopWords(true)
 				.setNormalizeCase(true);
 		final var pageRank = new PageRank().setResultLimit(5);
-		final var useCases = List.of(clearDatabase, preprocessor, pageRank);
 		// run the NLPToolbox
-		nlpToolbox.run(useCases);
-		// process the results
-		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+		nlpToolbox.run(clearDatabase, preprocessor, pageRank)
+				// process the results
+				.stream().map(UseCase::getResult).forEach(System.out::println);
 		final var topPageRanked = List.copyOf(pageRank.getResult().getScores().keySet());
 		// create another use case step
 		final var centroidBySpreadingActivation = new CentroidBySpreadingActivation().setQuery(topPageRanked);

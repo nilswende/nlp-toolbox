@@ -8,8 +8,6 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
 import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 
-import java.util.List;
-
 import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
 
 /**
@@ -35,11 +33,10 @@ public class Full {
 				.setNormalizeCase(true);
 		final var pageRank = new PageRank().setResultLimit(10);
 		final var hits = new HITS().setResultLimit(10);
-		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
 		// run the NLPToolbox
-		new NLPToolbox(appConfig).run(useCases);
-		// process the results
-		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+		new NLPToolbox(appConfig).run(clearDatabase, preprocessor, pageRank, hits)
+				// process the results
+				.stream().map(UseCase::getResult).forEach(System.out::println);
 		logCurrentThreadCpuTime();
 	}
 

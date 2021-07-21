@@ -5,8 +5,6 @@ import de.fernuni_hagen.kn.nlp.analysis.PageRank;
 import de.fernuni_hagen.kn.nlp.preprocessing.Preprocessor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-
 /**
  * An example of how to use the NLPToolbox.
  *
@@ -24,9 +22,8 @@ public class Example {
 		// create the use case steps
 		final var preprocessor = new Preprocessor(docText, "any");
 		final var pageRank = new PageRank().setResultLimit(5);
-		final var useCases = List.of(preprocessor, pageRank);
 		// run the NLPToolbox
-		new NLPToolbox().run(useCases);
+		new NLPToolbox().run(preprocessor, pageRank);
 		// process the results
 		System.out.println(pageRank.getResult());
 	}

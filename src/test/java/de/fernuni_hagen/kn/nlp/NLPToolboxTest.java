@@ -39,7 +39,8 @@ class NLPToolboxTest {
 
 	@Test
 	void others() {
-		assertThrows(Exception.class, () -> new NLPToolbox().run(null));
+		// pass nulls to the explicit check
+		assertThrows(IllegalArgumentException.class, () -> new NLPToolbox().run(null));
 	}
 
 }

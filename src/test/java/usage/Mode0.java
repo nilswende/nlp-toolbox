@@ -8,8 +8,6 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
 import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 
-import java.util.List;
-
 /**
  * How the previous Mode 0 would be configured.
  * Note that there are no fixed modes for the new NLPToolbox!
@@ -37,11 +35,10 @@ public class Mode0 {
 				.setRemoveStopWords(true);
 		final var pageRank = new PageRank();
 		final var hits = new HITS();
-		final var useCases = List.of(clearDatabase, preprocessor, pageRank, hits);
 		// run the NLPToolbox
-		new NLPToolbox(appConfig).run(useCases);
-		// process the results
-		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+		new NLPToolbox(appConfig).run(clearDatabase, preprocessor, pageRank, hits)
+				// process the results
+				.stream().map(UseCase::getResult).forEach(System.out::println);
 
 		final long end = System.currentTimeMillis();
 		System.out.println("Processing took " + (end - start) / 1000.0 + " seconds.");
