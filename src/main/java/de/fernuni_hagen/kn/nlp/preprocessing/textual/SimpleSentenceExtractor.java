@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentenceExtractor;
+import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.SentenceExtractor;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;

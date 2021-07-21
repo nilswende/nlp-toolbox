@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp.preprocessing.linguistic;
+package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
