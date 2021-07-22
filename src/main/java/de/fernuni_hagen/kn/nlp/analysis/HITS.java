@@ -2,9 +2,9 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
-import de.fernuni_hagen.kn.nlp.file.FileSaver;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 
 import java.util.Map;
 import java.util.Set;
@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  * @author Nils Wende
  */
 public class HITS extends UseCase {
-
-	private final FileSaver fileSaver = new FileSaver("data/output/HITS.txt", false);
 
 	private int iterations = 50;
 	private int resultLimit = Integer.MAX_VALUE;
@@ -41,11 +39,11 @@ public class HITS extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			print("Authority scores:");
-			printMap(authorityScores);
-			print("Hub scores:");
-			printMap(hubScores);
+		public void toString(final ResultPrinter printer) {
+			printer.print("Authority scores:");
+			printer.printMap(authorityScores);
+			printer.print("Hub scores:");
+			printer.printMap(hubScores);
 		}
 
 		/**
@@ -88,7 +86,6 @@ public class HITS extends UseCase {
 			calcScore(hubs, significances, auths, (ti, tj) -> significances.get(ti).get(tj));
 		}
 		result = new Result(terms, auths, hubs, resultLimit);
-		fileSaver.print(result);
 	}
 
 	private Map<String, Double> initMap(final Set<String> terms) {

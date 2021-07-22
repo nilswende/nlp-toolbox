@@ -6,6 +6,7 @@ import de.fernuni_hagen.kn.nlp.graph.BreadthFirstGraphSearcher;
 import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 
 import java.util.Comparator;
 import java.util.List;
@@ -36,8 +37,8 @@ public class CentroidBySpreadingActivation extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			print(centroid);
+		public void toString(final ResultPrinter printer) {
+			printer.print(centroid);
 		}
 
 		/**

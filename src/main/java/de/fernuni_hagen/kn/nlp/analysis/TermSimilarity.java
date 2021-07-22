@@ -4,6 +4,7 @@ import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 import org.apache.commons.collections4.SetUtils;
 
 import java.util.Map;
@@ -38,8 +39,8 @@ public class TermSimilarity extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			printf("Similarity between '%s' and '%s': %s", term1, term2, similarity);
+		public void toString(final ResultPrinter printer) {
+			printer.printf("Similarity between '%s' and '%s': %s", term1, term2, similarity);
 		}
 
 		/**

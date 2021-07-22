@@ -2,6 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 
 import java.io.IOException;
@@ -36,9 +37,9 @@ public class FilePreprocessor extends Preprocessor {
 		}
 
 		@Override
-		protected void printResult() {
-			printfCollection(documentNames, "No documents found", "Processed '%s'");
-			super.printResult();
+		public void toString(final ResultPrinter printer) {
+			printer.printfCollection(documentNames, "No documents found", "Processed '%s'");
+			super.toString(printer);
 		}
 
 		/**

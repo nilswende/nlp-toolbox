@@ -12,7 +12,7 @@ import java.nio.file.Path;
  *
  * @author Nils Wende
  */
-public class FileSaver {
+public class Exporter {
 
 	private final PrintWriter printWriter;
 
@@ -21,9 +21,19 @@ public class FileSaver {
 	 * If path is just a file name, a temp file will be created for it, else the path will be used as is.
 	 *
 	 * @param pathString file path
+	 */
+	public Exporter(final String pathString) {
+		this(getPath(pathString), true);
+	}
+
+	/**
+	 * Creates an instance from a file path.<br>
+	 * If path is just a file name, a temp file will be created for it, else the path will be used as is.
+	 *
+	 * @param pathString file path
 	 * @param print      true if text should be printed
 	 */
-	public FileSaver(final String pathString, final boolean print) {
+	public Exporter(final String pathString, final boolean print) {
 		this(getPath(pathString), print);
 	}
 
@@ -38,7 +48,7 @@ public class FileSaver {
 	 * @param path  file path
 	 * @param print true if text should be printed
 	 */
-	public FileSaver(final Path path, final boolean print) {
+	public Exporter(final Path path, final boolean print) {
 		PrintWriter pw = null;
 		if (print) {
 			try {

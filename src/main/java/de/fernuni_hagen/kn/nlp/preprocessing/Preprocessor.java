@@ -3,13 +3,14 @@ package de.fernuni_hagen.kn.nlp.preprocessing;
 import de.fernuni_hagen.kn.nlp.DBWriter;
 import de.fernuni_hagen.kn.nlp.UseCase;
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
+import de.fernuni_hagen.kn.nlp.file.Exporter;
 import de.fernuni_hagen.kn.nlp.file.FileHelper;
-import de.fernuni_hagen.kn.nlp.file.FileSaver;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.Sentence;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.factory.PreprocessingFactory;
 import de.fernuni_hagen.kn.nlp.preprocessing.textual.TikaDocumentConverter;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 import org.apache.commons.io.input.ReaderInputStream;
 
 import java.io.InputStream;
@@ -88,9 +89,9 @@ public class Preprocessor extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			printfCollection(tempFiles, "No temp files kept", "Temp file '%s'");
-			printfNullableMap(phrases, "No phrases processed", "No phrases detected", "Phrases in '%s': %s");
+		public void toString(final ResultPrinter printer) {
+			printer.printfCollection(tempFiles, "No temp files kept", "Temp file '%s'");
+			printer.printfNullableMap(phrases, "No phrases processed", "No phrases detected", "Phrases in '%s': %s");
 		}
 
 		/**
@@ -146,7 +147,7 @@ public class Preprocessor extends UseCase {
 	 * @return stream of the sentences inside the document
 	 */
 	private Stream<Sentence> preprocess(final Path textFile, final Path sentenceFile) {
-		final var fileSaver = new FileSaver(sentenceFile, saveSentenceFile);
+		final var fileSaver = new Exporter(sentenceFile, saveSentenceFile);
 		final var factory = PreprocessingFactory.from(textFile);
 		final var sentencePreprocessor = SentencePreprocessor.from(detectPhrases, removePhrases, extractPhrases, getPreprocessingSteps(), factory);
 		final var sentenceStrings = factory.createSentenceExtractor().extract(textFile).peek(fileSaver::println);

@@ -1,6 +1,6 @@
 package de.fernuni_hagen.kn.nlp.preprocessing.linguistic.phrases;
 
-import de.fernuni_hagen.kn.nlp.file.FileSaver;
+import de.fernuni_hagen.kn.nlp.file.Exporter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.PreprocessingStep;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.SentencePreprocessor;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 
-	private final FileSaver fileSaver = new FileSaver("data/output/phrases.txt", false);
+	private final Exporter exporter = new Exporter("data/output/phrases.txt", false);
 	private final boolean detectPhrases;
 	private final boolean removePhrases;
 	private final boolean extractPhrases;
@@ -49,7 +49,7 @@ public class PhrasedSentencePreprocessor extends SentencePreprocessor {
 		final var tagger = factory.createTagger();
 		final var sentenceList = sentences.collect(Collectors.toList());
 		phrases = phraseDetector.detectPhrases(sentenceList);
-		phrases.forEach(fileSaver::println);
+		phrases.forEach(exporter::println);
 		return detectPhrases
 				? super.createSentences(sentenceList.stream())
 				: sentenceList.stream()

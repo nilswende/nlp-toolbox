@@ -2,9 +2,9 @@ package de.fernuni_hagen.kn.nlp.analysis;
 
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
-import de.fernuni_hagen.kn.nlp.file.FileSaver;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  * @author Nils Wende
  */
 public class PageRank extends UseCase {
-
-	private final FileSaver fileSaver = new FileSaver("data/output/PageRank.txt", false);
 
 	private int iterations = 25;
 	private int resultLimit = Integer.MAX_VALUE;
@@ -38,9 +36,9 @@ public class PageRank extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			print("PageRank scores:");
-			printMap(scores);
+		public void toString(final ResultPrinter printer) {
+			printer.print("PageRank scores:");
+			printer.printMap(scores);
 		}
 
 		/**
@@ -63,7 +61,6 @@ public class PageRank extends UseCase {
 		}
 		final var normalizedPageRanks = normalize(pageRanks);
 		result = new Result(normalizedPageRanks, resultLimit);
-		fileSaver.print(result);
 	}
 
 	private Map<String, Double> initPageRanks(final Set<String> terms) {

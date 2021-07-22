@@ -6,6 +6,7 @@ import de.fernuni_hagen.kn.nlp.graph.DijkstraSearcher;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 
 import java.util.Comparator;
 import java.util.List;
@@ -37,8 +38,8 @@ public class TestQuery extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			print(success);
+		public void toString(final ResultPrinter printer) {
+			printer.print(success);
 		}
 
 		/**

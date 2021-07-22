@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
 import de.fernuni_hagen.kn.nlp.math.DocSimilarityFunction;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -37,8 +38,8 @@ public class DocumentSimilarity extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
+		public void toString(final ResultPrinter printer) {
+			printer.printfMapMap(similarities, "Too few documents", "Document similarity of '%s' and '%s': %s");
 		}
 
 		/**

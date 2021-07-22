@@ -3,6 +3,7 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
 import de.fernuni_hagen.kn.nlp.utils.Maps;
+import de.fernuni_hagen.kn.nlp.utils.ResultPrinter;
 
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,8 @@ public class BooleanRetrieval extends UseCase {
 		}
 
 		@Override
-		protected void printResult() {
-			printfMap(documents, "No matches found", "Document '%s' contains %s query terms");
+		public void toString(final ResultPrinter printer) {
+			printer.printfMap(documents, "No matches found", "Document '%s' contains %s query terms");
 		}
 
 		/**
