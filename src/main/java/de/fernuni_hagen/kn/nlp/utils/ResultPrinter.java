@@ -4,11 +4,12 @@ import de.fernuni_hagen.kn.nlp.UseCase;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Formats {@link UseCase.Result} objects.
+ * Prints result objects.
  *
  * @author Nils Wende
  * @see UseCase.Result
@@ -31,17 +32,18 @@ public class ResultPrinter {
 	 * Prints the result.
 	 *
 	 * @param result UseCase.Result
-	 * @return a string representation of the result's content.
+	 * @return a string representation of the result's content
 	 */
-	public String print(final UseCase.Result result) {
+	public static String print(final UseCase.Result result) {
+		final var printer = new ResultPrinter();
 		final var name = result.getUseCaseName();
 		final var formatter = DateTimeFormatter.ofPattern("(dd.MM.yyyy HH:mm:ss)");
-		println(result.getStart().format(formatter), " Start ", name);
-		result.toString(this);
-		println(result.getEnd().format(formatter), " End ", name);
+		printer.println(result.getStart().format(formatter), " Start ", name);
+		result.toString(printer);
+		printer.println(result.getEnd().format(formatter), " End ", name);
 		final var duration = result.getDuration();
-		println(String.format("%s duration: %d s %d ms", name, duration.toSecondsPart(), duration.toMillisPart()));
-		return toString();
+		printer.println(String.format("%s duration: %d s %d ms", name, duration.toSecondsPart(), duration.toMillisPart()));
+		return printer.toString();
 	}
 
 	/**
@@ -62,9 +64,7 @@ public class ResultPrinter {
 	 * @return this object
 	 */
 	public ResultPrinter println(final Object... os) {
-		for (final var o : os) {
-			sb.append(o);
-		}
+		Arrays.stream(os).forEach(sb::append);
 		sb.append(StringUtils.LF);
 		return this;
 	}

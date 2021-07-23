@@ -98,7 +98,7 @@ public abstract class UseCase {
 		 */
 		@Override
 		public String toString() {
-			return new ResultPrinter().print(this);
+			return ResultPrinter.print(this);
 		}
 
 		/**
