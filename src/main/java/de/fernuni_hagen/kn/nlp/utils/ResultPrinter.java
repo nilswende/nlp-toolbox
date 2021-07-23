@@ -19,9 +19,9 @@ public class ResultPrinter {
 	private final StringBuilder sb = new StringBuilder();
 
 	/**
-	 * Returns a string representation of this formatter's content.
+	 * Returns a string representation of this printer's content.
 	 *
-	 * @return a string representation of this formatter's content
+	 * @return a string representation of this printer's content
 	 */
 	@Override
 	public String toString() {
@@ -31,7 +31,7 @@ public class ResultPrinter {
 	/**
 	 * Prints the result.
 	 *
-	 * @param result UseCase.Result
+	 * @param result a use case result
 	 * @return a string representation of the result's content
 	 */
 	public static String print(final UseCase.Result result) {
