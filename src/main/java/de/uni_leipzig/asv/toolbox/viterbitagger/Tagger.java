@@ -425,7 +425,7 @@ public class Tagger {
 			System.out.println(" ----- Sentence result: ------- ");
 		}
 
-		List<String> taggedSentence = new ArrayList<>();
+		List<String> taggedSentence = new ArrayList<>(nr_of_words);
 
 		// pos starts with 2 to omit begin-of-sentence words
 		for (int pos = 2; pos < nr_of_words; pos++) {
