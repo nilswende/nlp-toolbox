@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -196,10 +197,10 @@ public class Tagger {
 	} // end public Tagger(String taglistfile,String lexiconfile,String
 	// transitionfile) constructor
 
-	public String tagSentence(String sentence) {
+	public List<String> tagSentence2(String sentence) {
 		this.transform = false;
 		// for beam search
-		Vector tagmaxprob = new Vector();
+		Vector tagmaxprob;
 
 		if (this.d) {
 			System.out.println("Tagging sentence: " + sentence);
@@ -424,26 +425,26 @@ public class Tagger {
 			System.out.println(" ----- Sentence result: ------- ");
 		}
 
-		StringBuilder taggedSentence = new StringBuilder();
+		List<String> taggedSentence = new ArrayList<>();
 
 		// pos starts with 2 to omit begin-of-sentence words
-		final int start = 2;
-		for (int pos = start; pos < nr_of_words; pos++) {
+		for (int pos = 2; pos < nr_of_words; pos++) {
 			String guess = "";
 			boolean inLex = this.lexicon.containsWord(words[pos]);
 			if (!inLex && appendStar) {
 				guess = "*";
 			}
-			if (pos>start){
-				taggedSentence.append(" ");
-			}
-			taggedSentence.append(words[pos]).append("|").append(tagSequence[pos]).append(guess);
+			taggedSentence.add(words[pos] + "|" + tagSequence[pos] + guess);
 		} // rof pos
 		if (this.d) {
 			System.out.println(taggedSentence);
 		}
 
-		return taggedSentence.toString();
+		return taggedSentence;
+	}
+
+	public String tagSentence(String sentence) {
+		return String.join(" ", tagSentence2(sentence));
 	}
 
 	public void tagFile_alt(String textfile) throws IOException,

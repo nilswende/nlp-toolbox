@@ -6,7 +6,6 @@ import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,10 +38,9 @@ public class ViterbiTagger implements Tagger {
 
 	@Override
 	public List<TaggedTerm> apply(final String sentence) {
-		final var taggedSentence = tagger.tagSentence(sentence);
-		exporter.println(taggedSentence);
-		final var terms = taggedSentence.split(StringUtils.SPACE);
-		return Arrays.stream(terms)
+		final var taggedSentence = tagger.tagSentence2(sentence);
+		exporter.println(() -> String.join(StringUtils.SPACE, taggedSentence));
+		return taggedSentence.stream()
 				.map(term -> TaggedTerm.from(term, tagset))
 				.collect(Collectors.toList());
 	}

@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.util.function.Supplier;
 
 /**
  * Saves text to file.
@@ -15,6 +16,7 @@ import java.nio.file.Path;
 public class Exporter {
 
 	private final PrintWriter printWriter;
+	private final boolean print;
 
 	/**
 	 * Creates an instance from a file path.<br>
@@ -49,6 +51,7 @@ public class Exporter {
 	 * @param print true if text should be printed
 	 */
 	public Exporter(final Path path, final boolean print) {
+		this.print = print;
 		PrintWriter pw = null;
 		if (print) {
 			try {
@@ -79,6 +82,30 @@ public class Exporter {
 		printWriter.print(o);
 		printWriter.print(StringUtils.LF);
 		printWriter.flush();
+	}
+
+	/**
+	 * Prints an Object.<br>
+	 * Use this method for expensive transformations before printing, when you may not even want to print.
+	 *
+	 * @param s Supplier
+	 */
+	public void print(final Supplier<Object> s) {
+		if (print) {
+			print(s.get());
+		}
+	}
+
+	/**
+	 * Prints an Object and then terminates the line.<br>
+	 * Use this method for expensive transformations before printing, when you may not even want to print.
+	 *
+	 * @param s Supplier
+	 */
+	public void println(final Supplier<Object> s) {
+		if (print) {
+			println(s.get());
+		}
 	}
 
 }
