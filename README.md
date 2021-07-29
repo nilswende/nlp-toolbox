@@ -81,7 +81,7 @@ Neo4j is always persisted.
 An example of this is the `Persist` class, in which files can be parsed and stored as a co-occurrence graph. 
 With the help of the `Analyze` class, the persisted database can be read and analyzed again. 
 This makes it possible to perform the lengthy construction of the graph only once, save it and analyze it several times.
-The use case ´ClearDatabase´ can be executed to clear the persisted data. 
+The use case `ClearDatabase` can be executed to clear the persisted data. 
 
 If the database is persisted, the results of analyses can also serve as input for other analyses. 
 This is illustrated in the `PipeResults` class: A co-occurrence graph is built as usual and the PageRank scores are calculated. 
