@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
+ * Local copy.
  * @author BIEMANN
  */
 public class Tagger {
