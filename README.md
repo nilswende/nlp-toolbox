@@ -34,9 +34,9 @@ This setup guide is written for Windows and Eclipse IDE.
 3. Create your Eclipse workspace, e.g. in `C:\Daten\Hagen_NLPToolbox`
 4. Import the project's Maven POM file, which tells the IDE how the project is to be configured:
     1. File -> Import -> Existing Maven Projects
-    ![Eclipse: File -> Import -> Existing Maven Projects](readme/eclipse file import maven.png)
+    ![Eclipse: File -> Import -> Maven -> Existing Maven Projects](readme/eclipse_file_import_maven.png)
     2. Import Maven Project
-    ![Eclipse: Import Maven Project](readme/eclipse import maven project.png)
+    ![Eclipse: Import Maven Project](readme/eclipse_import_maven_project.png)
 
 
 ## Usage
