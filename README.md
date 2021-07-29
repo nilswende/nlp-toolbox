@@ -76,11 +76,13 @@ One of these examples is the class `Full` shown above:
    The method returns the same list of use cases again, each of which now contains a result object. 
 4. The list is then streamed, mapped to the use case results and printed to the console.
 
-The databases can be persisted in order to use the stored data across multiple calls of the toolbox. 
+The in-memory database can be persisted in order to use the stored data across multiple calls of the toolbox. 
+Neo4j is always persisted. 
 An example of this is the `Persist` class, in which files can be parsed and stored as a co-occurrence graph. 
 With the help of the `Analyze` class, the persisted database can be read and analyzed again. 
 This makes it possible to perform the lengthy construction of the graph only once, save it and analyze it several times.
- 
+The use case ´ClearDatabase´ can be executed to clear the persisted data. 
+
 If the database is persisted, the results of analyses can also serve as input for other analyses. 
 This is illustrated in the `PipeResults` class: A co-occurrence graph is built as usual and the PageRank scores are calculated. 
 The five terms with the highest PageRank score are then in turn used as query terms for a Centroid search. 
