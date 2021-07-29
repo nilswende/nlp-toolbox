@@ -21,7 +21,13 @@ public class Sandbox extends UseCase {
 
 	@Override
 	public Result getResult() {
-		return new Result() {
-		};
+		return new Result();
 	}
+
+	/**
+	 * Sandbox result.
+	 */
+	public static class Result extends UseCase.Result {
+	}
+
 }
