@@ -3,8 +3,9 @@
     "name": "clearDatabase"
   },
   {
-    "name": "filepreprocessing",
+    "name": "filePreprocessing",
     "keepTempFiles": false,
+    "removeAbbreviations": true,
     "extractPhrases": true,
     "useBaseFormReduction": true,
     "filterNouns": true,
@@ -12,11 +13,11 @@
     "normalizeCase": true
   },
   {
-    "name": "pagerank",
-    "resultLimit": 25
+    "name": "pageRank",
+    "resultLimit": 10
   },
   {
     "name": "hits",
-    "resultLimit": 25
+    "resultLimit": 10
   }
 ]
