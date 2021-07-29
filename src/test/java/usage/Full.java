@@ -8,7 +8,7 @@ import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.db.ClearDatabase;
 import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
+import static de.fernuni_hagen.kn.nlp.utils.Logger.logCurrentThreadCpuTime;
 
 /**
  * A full run of the NLPToolbox.

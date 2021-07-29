@@ -1,4 +1,4 @@
-package de.fernuni_hagen.kn.nlp;
+package de.fernuni_hagen.kn.nlp.utils;
 
 import java.lang.management.ManagementFactory;
 import java.time.Duration;

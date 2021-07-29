@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
+import static de.fernuni_hagen.kn.nlp.utils.Logger.logCurrentThreadCpuTime;
 
 /**
  * Hagen NLPToolbox is a collection of text mining tools.

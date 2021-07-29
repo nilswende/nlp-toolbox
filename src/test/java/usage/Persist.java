@@ -9,7 +9,7 @@ import de.fernuni_hagen.kn.nlp.preprocessing.FilePreprocessor;
 import java.time.Duration;
 import java.util.List;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
+import static de.fernuni_hagen.kn.nlp.utils.Logger.logCurrentThreadCpuTime;
 
 /**
  * Persist the preprocessed terms in a database.

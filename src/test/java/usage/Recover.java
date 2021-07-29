@@ -12,7 +12,7 @@ import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.fernuni_hagen.kn.nlp.Logger.logCurrentThreadCpuTime;
+import static de.fernuni_hagen.kn.nlp.utils.Logger.logCurrentThreadCpuTime;
 
 /**
  * How to recover from a failed execution.
