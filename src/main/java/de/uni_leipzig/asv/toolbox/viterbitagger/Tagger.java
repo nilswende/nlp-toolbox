@@ -424,22 +424,26 @@ public class Tagger {
 			System.out.println(" ----- Sentence result: ------- ");
 		}
 
-		String taggedSentence = "";
+		StringBuilder taggedSentence = new StringBuilder();
 
 		// pos starts with 2 to omit begin-of-sentence words
-		for (int pos = 2; pos < nr_of_words; pos++) {
+		final int start = 2;
+		for (int pos = start; pos < nr_of_words; pos++) {
 			String guess = "";
 			boolean inLex = this.lexicon.containsWord(words[pos]);
 			if (!inLex && appendStar) {
 				guess = "*";
 			}
-			taggedSentence += " " + words[pos] + "|" + tagSequence[pos] + guess;
+			if (pos>start){
+				taggedSentence.append(" ");
+			}
+			taggedSentence.append(words[pos]).append("|").append(tagSequence[pos]).append(guess);
 		} // rof pos
 		if (this.d) {
 			System.out.println(taggedSentence);
 		}
 
-		return taggedSentence;
+		return taggedSentence.toString();
 	}
 
 	public void tagFile_alt(String textfile) throws IOException,
