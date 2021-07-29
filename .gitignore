@@ -228,5 +228,6 @@ $RECYCLE.BIN/
 .classpath
 log4j.out
 target
-data/
-javadoc/
+/data/
+/test/
+/javadoc/
