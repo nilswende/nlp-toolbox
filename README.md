@@ -28,12 +28,12 @@ The following general steps need to be performed in order to fully process an in
 ## Setup
 This setup guide is written for Windows and Eclipse IDE.
 1. Clone the repository or extract the archive to a folder, e.g. `C:\Daten\Hagen_NLPToolbox\nlp-toolbox-master`
-2. Execute the `.bat` file in `src/main/resources` to register an external jar dependency with Maven
+2. Execute the `.bat` file in `src/main/resources` to register an external jar dependency with your local Maven installation
     1. Maven needs to be in the Windows Path for the script to work
     2. Make sure the Maven in your Path and the Maven used by your IDE are the same or point to the same local repository; default is `%USERPROFILE%\\.m2\\repository`
 3. Create your Eclipse workspace, e.g. in `C:\Daten\Hagen_NLPToolbox`
 4. Import the project's Maven POM file, which tells the IDE how the project is to be configured:
-    1. File -> Import -> Existing Maven Projects
+    1. File -> Import -> Maven -> Existing Maven Projects
     ![Eclipse: File -> Import -> Maven -> Existing Maven Projects](readme/eclipse_file_import_maven.png)
     2. Import Maven Project
     ![Eclipse: Import Maven Project](readme/eclipse_import_maven_project.png)
