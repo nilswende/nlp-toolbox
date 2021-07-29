@@ -98,6 +98,7 @@ public class Tagger {
 	}
 
 	public void setExtern(boolean extern) {
+		this.extern = extern;
 		// load lexicon
 		if (this.extern) {
 			this.lexicon = new Lexicon_extern(lexiconfile, false, false); // lexfile,
@@ -134,7 +135,7 @@ public class Tagger {
 		this.conditionsfile = condprobsfile;
 		this.fast = false;
 		this.eval = use_eval;
-		this.extern = true;
+		this.extern = false;
 		this.taggedOut = !this.eval; // either evaluate or tagit
 
 		// load taglist
