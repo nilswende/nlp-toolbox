@@ -71,6 +71,7 @@ class Full {
 One of these examples is the class `Full` shown above:
 1. The main method first creates and configures an instance of `FilePreprocessor`, which by default reads files from the default input folder `data/input`.
    Several options for the linguistic preprocessing like phrase extraction and base form reduction are enabled via the fluent setter interface. 
+   The preprocessed terms are saved to the default in-memory database.
 2. The `PageRank` and `HITS` use cases are created and receive a result limit of 10, which causes only the ten terms with the highest scores to be retained. 
 3. A new instance of the `NLPToolbox` is then created, and the previously configured use cases are passed to the `run` method, where they are executed.
    The method returns the same list of use cases again, each of which now contains a result object. 
