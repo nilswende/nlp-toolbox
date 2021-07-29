@@ -2,7 +2,7 @@ package de.fernuni_hagen.kn.nlp.preprocessing.textual;
 
 import de.fernuni_hagen.kn.nlp.config.AppConfig;
 import de.fernuni_hagen.kn.nlp.utils.UncheckedException;
-import org.apache.cxf.io.ReaderInputStream;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
