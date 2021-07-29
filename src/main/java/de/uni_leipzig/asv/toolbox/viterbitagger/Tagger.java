@@ -318,7 +318,7 @@ public class Tagger {
 				if (count < this.beamwidth) {
 					count++;
 					if (current.getProbability() > 0.0) {
-						acceptTags.add(new Integer(current.getTagNr()));
+						acceptTags.add(current.getTagNr());
 						if (this.d) {
 							System.out.println("accepted: tagnr "
 									+ current.getTagNr() + " with p="
@@ -366,7 +366,7 @@ public class Tagger {
 				for (Enumeration pt = acceptTags.elements(); pt
 						.hasMoreElements(); ) {
 
-					int prevtag = ((Integer) pt.nextElement()).intValue();
+					int prevtag = (Integer) pt.nextElement();
 					int prevprevtag = backpoint[pos - 1][prevtag]; // code of
 					// T1
 					double prev_sequence_prob = maxprob[pos - 1][prevtag]; // maxprob
@@ -1044,38 +1044,37 @@ public class Tagger {
 	public void setReplaceNumbers(boolean replaceNumbers) {
 		this.replaceNumbers = replaceNumbers;
 	}
-} // end public class Tagger
 
-// for comparing and sorting tag numbers with probabilities, necessary for beam
-// search
-class DoubleAndIntValue implements Comparable {
-	private double probability;
+	// for comparing and sorting tag numbers with probabilities, necessary for beam search
+	static class DoubleAndIntValue implements Comparable<DoubleAndIntValue> {
+		private final double probability;
+		private final int tagnumber;
 
-	private int tagnumber;
+		/**
+		 * Creates new Object.
+		 */
+		public DoubleAndIntValue(double _prob, int _tag) {
+			this.probability = _prob;
+			this.tagnumber = _tag;
+		}
 
-	/**
-	 * Creates new Object.
-	 */
-	public DoubleAndIntValue(double _prob, int _tag) {
-		this.probability = _prob;
-		this.tagnumber = _tag;
-	}
+		public int compareTo(DoubleAndIntValue o) {
+			if ( o.getProbability() > this.probability) {
+				return 1;
+			} else if (o.getProbability() < this.probability) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
 
-	public int compareTo(Object o) {
-		if (((DoubleAndIntValue) o).getProbability() > this.probability) {
-			return 1;
-		} else if (((DoubleAndIntValue) o).getProbability() < this.probability) {
-			return -1;
-		} else {
-			return 0;
+		public int getTagNr() {
+			return this.tagnumber;
+		}
+
+		public double getProbability() {
+			return this.probability;
 		}
 	}
 
-	public int getTagNr() {
-		return this.tagnumber;
-	}
-
-	public double getProbability() {
-		return this.probability;
-	}
-}
+} // end public class Tagger
