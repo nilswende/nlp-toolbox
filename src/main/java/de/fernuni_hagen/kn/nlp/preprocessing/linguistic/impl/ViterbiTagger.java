@@ -4,10 +4,8 @@ import de.fernuni_hagen.kn.nlp.file.Exporter;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagger;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.Tagset;
 import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.data.TaggedTerm;
-import de.fernuni_hagen.kn.nlp.preprocessing.linguistic.utils.ASVUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,17 +32,15 @@ public class ViterbiTagger implements Tagger {
 				tagset.getLexicon(),
 				tagset.getTransitions(),
 				false);
-		ASVUtils.setInternal(tagger);
 		tagger.setReplaceNumbers(false);
 		tagger.setUseInternalTok(true);
 	}
 
 	@Override
 	public List<TaggedTerm> apply(final String sentence) {
-		final var taggedSentence = tagger.tagSentence(sentence).stripLeading();
-		exporter.println(taggedSentence);
-		final var terms = taggedSentence.split(StringUtils.SPACE);
-		return Arrays.stream(terms)
+		final var taggedSentence = tagger.tagSentence2(sentence);
+		exporter.println(() -> String.join(StringUtils.SPACE, taggedSentence));
+		return taggedSentence.stream()
 				.map(term -> TaggedTerm.from(term, tagset))
 				.collect(Collectors.toList());
 	}

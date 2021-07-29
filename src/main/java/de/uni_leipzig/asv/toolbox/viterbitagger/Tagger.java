@@ -19,9 +19,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 /**
+ * Local copy.
  * @author BIEMANN
  */
 public class Tagger {
@@ -98,6 +100,7 @@ public class Tagger {
 	}
 
 	public void setExtern(boolean extern) {
+		this.extern = extern;
 		// load lexicon
 		if (this.extern) {
 			this.lexicon = new Lexicon_extern(lexiconfile, false, false); // lexfile,
@@ -134,7 +137,7 @@ public class Tagger {
 		this.conditionsfile = condprobsfile;
 		this.fast = false;
 		this.eval = use_eval;
-		this.extern = true;
+		this.extern = false;
 		this.taggedOut = !this.eval; // either evaluate or tagit
 
 		// load taglist
@@ -194,10 +197,10 @@ public class Tagger {
 	} // end public Tagger(String taglistfile,String lexiconfile,String
 	// transitionfile) constructor
 
-	public String tagSentence(String sentence) {
+	public List<String> tagSentence2(String sentence) {
 		this.transform = false;
 		// for beam search
-		Vector tagmaxprob = new Vector();
+		Vector tagmaxprob;
 
 		if (this.d) {
 			System.out.println("Tagging sentence: " + sentence);
@@ -316,7 +319,7 @@ public class Tagger {
 				if (count < this.beamwidth) {
 					count++;
 					if (current.getProbability() > 0.0) {
-						acceptTags.add(new Integer(current.getTagNr()));
+						acceptTags.add(current.getTagNr());
 						if (this.d) {
 							System.out.println("accepted: tagnr "
 									+ current.getTagNr() + " with p="
@@ -364,7 +367,7 @@ public class Tagger {
 				for (Enumeration pt = acceptTags.elements(); pt
 						.hasMoreElements(); ) {
 
-					int prevtag = ((Integer) pt.nextElement()).intValue();
+					int prevtag = (Integer) pt.nextElement();
 					int prevprevtag = backpoint[pos - 1][prevtag]; // code of
 					// T1
 					double prev_sequence_prob = maxprob[pos - 1][prevtag]; // maxprob
@@ -422,7 +425,7 @@ public class Tagger {
 			System.out.println(" ----- Sentence result: ------- ");
 		}
 
-		String taggedSentence = "";
+		List<String> taggedSentence = new ArrayList<>(nr_of_words);
 
 		// pos starts with 2 to omit begin-of-sentence words
 		for (int pos = 2; pos < nr_of_words; pos++) {
@@ -431,13 +434,21 @@ public class Tagger {
 			if (!inLex && appendStar) {
 				guess = "*";
 			}
-			taggedSentence += " " + words[pos] + "|" + tagSequence[pos] + guess;
+			taggedSentence.add(words[pos] + "|" + tagSequence[pos] + guess);
 		} // rof pos
 		if (this.d) {
-			System.out.println(taggedSentence);
+			System.out.println(joinSentence(taggedSentence));
 		}
 
 		return taggedSentence;
+	}
+
+	public String tagSentence(String sentence) {
+		return joinSentence(tagSentence2(sentence));
+	}
+
+	private String joinSentence(List<String> list) {
+		return String.join(" ", list);
 	}
 
 	public void tagFile_alt(String textfile) throws IOException,
@@ -1042,38 +1053,37 @@ public class Tagger {
 	public void setReplaceNumbers(boolean replaceNumbers) {
 		this.replaceNumbers = replaceNumbers;
 	}
-} // end public class Tagger
 
-// for comparing and sorting tag numbers with probabilities, necessary for beam
-// search
-class DoubleAndIntValue implements Comparable {
-	private double probability;
+	// for comparing and sorting tag numbers with probabilities, necessary for beam search
+	static class DoubleAndIntValue implements Comparable<DoubleAndIntValue> {
+		private final double probability;
+		private final int tagnumber;
 
-	private int tagnumber;
+		/**
+		 * Creates new Object.
+		 */
+		public DoubleAndIntValue(double _prob, int _tag) {
+			this.probability = _prob;
+			this.tagnumber = _tag;
+		}
 
-	/**
-	 * Creates new Object.
-	 */
-	public DoubleAndIntValue(double _prob, int _tag) {
-		this.probability = _prob;
-		this.tagnumber = _tag;
-	}
+		public int compareTo(DoubleAndIntValue o) {
+			if ( o.getProbability() > this.probability) {
+				return 1;
+			} else if (o.getProbability() < this.probability) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
 
-	public int compareTo(Object o) {
-		if (((DoubleAndIntValue) o).getProbability() > this.probability) {
-			return 1;
-		} else if (((DoubleAndIntValue) o).getProbability() < this.probability) {
-			return -1;
-		} else {
-			return 0;
+		public int getTagNr() {
+			return this.tagnumber;
+		}
+
+		public double getProbability() {
+			return this.probability;
 		}
 	}
 
-	public int getTagNr() {
-		return this.tagnumber;
-	}
-
-	public double getProbability() {
-		return this.probability;
-	}
-}
+} // end public class Tagger
