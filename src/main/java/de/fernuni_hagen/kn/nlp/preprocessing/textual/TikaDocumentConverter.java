@@ -54,11 +54,11 @@ public class TikaDocumentConverter implements DocumentConverter {
 
 	private void handleException(final Exception e, final WriteOutContentHandler handler, final String name) {
 		if (handler.isWriteLimitReached(e)) {
-			final var message = "size limit for file '" + name + "' reached";
+			final var message = String.format("size limit of %s reached for file '%s'", sentenceFileSizeLimitBytes, name);
 			if (!continueAfterReachingFileSizeLimit) {
 				throw new UncheckedException(message, e);
 			}
-			System.out.println(message + ", continuing");
+			System.out.println(message + ", continuing with the text up to the limit");
 		} else {
 			throw new UncheckedException(e);
 		}
