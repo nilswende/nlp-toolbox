@@ -149,13 +149,11 @@ public class Tagger {
 
 		// load lexicon
 		if (this.extern) {
-			this.lexicon = new Lexicon_extern(lexiconfile, false, true); // lexfile,
-			// setsmooth,
-			// setpretree
+			// lexfile, setsmooth, setpretree
+			this.lexicon = new Lexicon_extern(lexiconfile, false, false); // setpretree originally true
 		} else {
-			this.lexicon = new Lexicon_ram(lexiconfile, false, true); // lexfile,
-			// setsmooth,
-			// setpretree
+			// lexfile, setsmooth, setpretree
+			this.lexicon = new Lexicon_ram(lexiconfile, false, false); // setpretree originally true
 		}
 
 		if (this.d) {
