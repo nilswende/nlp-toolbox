@@ -437,14 +437,18 @@ public class Tagger {
 			taggedSentence.add(words[pos] + "|" + tagSequence[pos] + guess);
 		} // rof pos
 		if (this.d) {
-			System.out.println(taggedSentence);
+			System.out.println(joinSentence(taggedSentence));
 		}
 
 		return taggedSentence;
 	}
 
 	public String tagSentence(String sentence) {
-		return String.join(" ", tagSentence2(sentence));
+		return joinSentence(tagSentence2(sentence));
+	}
+
+	private String joinSentence(List<String> list) {
+		return String.join(" ", list);
 	}
 
 	public void tagFile_alt(String textfile) throws IOException,
