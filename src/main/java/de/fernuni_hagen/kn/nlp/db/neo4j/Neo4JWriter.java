@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.db.neo4j;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.file.Exporter;
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 public class Neo4JWriter implements DBWriter {
 
+	private final Exporter exporter = new Exporter("data/output/neo4jWriter.txt", false);
 	private final GraphDatabaseService graphDb;
 	private String currentDocName;
 	private long currentSentence;
@@ -48,6 +51,7 @@ public class Neo4JWriter implements DBWriter {
 
 	@Override
 	public void addSentence(final List<String> terms) {
+		exporter.println(() -> String.join(StringUtils.SPACE, terms));
 		new SentenceAdder(graphDb).addSentence(terms, currentDocName, currentSentence++);
 	}
 

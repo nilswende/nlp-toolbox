@@ -1,6 +1,8 @@
 package de.fernuni_hagen.kn.nlp.db.im;
 
 import de.fernuni_hagen.kn.nlp.DBWriter;
+import de.fernuni_hagen.kn.nlp.file.Exporter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ import java.util.List;
  */
 public class InMemoryWriter implements DBWriter {
 
+	private final Exporter exporter = new Exporter("data/output/imWriter.txt", false);
 	private final InMemoryDB db;
 
 	public InMemoryWriter(final InMemoryDB db) {
@@ -30,6 +33,7 @@ public class InMemoryWriter implements DBWriter {
 	@Override
 	public void addSentence(final List<String> terms) {
 		db.addSentence();
+		exporter.println(() -> String.join(StringUtils.SPACE, terms));
 		addTerms(terms);
 		addRelationships(terms);
 	}
