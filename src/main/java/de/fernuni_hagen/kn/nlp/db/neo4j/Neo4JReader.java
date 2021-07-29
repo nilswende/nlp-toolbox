@@ -83,7 +83,7 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
-			final var kmax = getMaxSentencesCount(tx);
+			final var kmax = getMaxTermsCount(tx);
 			final var map = new TreeMap<String, Map<String, Double>>();
 			while (result.hasNext()) {
 				final var row = result.next();
@@ -114,7 +114,7 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
-			final var kmax = getMaxSentencesCount(tx);
+			final var kmax = getMaxTermsCount(tx);
 			final var map = new TreeMap<String, Map<String, Double>>();
 			while (result.hasNext()) {
 				final var row = result.next();
@@ -136,6 +136,18 @@ public class Neo4JReader implements DBReader {
 		final var stmt = " MATCH (s:" + Labels.SENTENCE + ")-[:" + RelationshipTypes.CONTAINS + "]-(t:" + Labels.TERM + ")\n"
 				+ "  WITH t, count(distinct s) as c\n" // implicit group by t
 				+ "RETURN max(c) as max\n";
+		try (final var result = tx.execute(stmt)) {
+			final var row = result.next();
+			return toLong(row.get("max"));
+		}
+	}
+
+	/**
+	 * Returns the maximum number of occurrences of any term.
+	 */
+	private long getMaxTermsCount(final Transaction tx) {
+		final var stmt = " MATCH (t:" + Labels.TERM + ")\n"
+				+ "RETURN max(t.count) as max\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
 			return toLong(row.get("max"));
@@ -189,7 +201,7 @@ public class Neo4JReader implements DBReader {
 	public WeightedPath getShortestPath(final String start, final String end, final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
-			final var kmax = getMaxSentencesCount(tx);
+			final var kmax = getMaxTermsCount(tx);
 			final var evaluator = new SignificanceEvaluator(k, kmax, function);
 			final var pathFinder = GraphAlgoFactory.dijkstra(PathExpanders.forType(RelationshipTypes.COOCCURS), evaluator, 1);
 			final var path = pathFinder.findSinglePath(tx.findNode(Labels.TERM, "name", start), tx.findNode(Labels.TERM, "name", end));
