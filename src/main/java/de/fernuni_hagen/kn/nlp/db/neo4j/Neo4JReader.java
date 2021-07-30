@@ -6,6 +6,7 @@ import de.fernuni_hagen.kn.nlp.db.DBUtils;
 import de.fernuni_hagen.kn.nlp.graph.WeightedPath;
 import de.fernuni_hagen.kn.nlp.math.WeightingFunction;
 import de.fernuni_hagen.kn.nlp.utils.Utils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.neo4j.graphalgo.CostEvaluator;
 import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphdb.Direction;
@@ -138,7 +139,7 @@ public class Neo4JReader implements DBReader {
 				+ "RETURN max(c) as max\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
-			return toLong(row.get("max"));
+			return toLong(ObjectUtils.defaultIfNull(row.get("max"), 0L));
 		}
 	}
 
@@ -150,7 +151,7 @@ public class Neo4JReader implements DBReader {
 				+ "RETURN max(t.count) as max\n";
 		try (final var result = tx.execute(stmt)) {
 			final var row = result.next();
-			return toLong(row.get("max"));
+			return toLong(ObjectUtils.defaultIfNull(row.get("max"), 0L));
 		}
 	}
 
