@@ -157,12 +157,13 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency> <!-- needed for Eclipse IDE -->
+    <!-- needed for Eclipse IDE -->
+    <!--<dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
