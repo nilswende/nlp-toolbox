@@ -187,6 +187,7 @@
         <updatePolicy>never</updatePolicy>
         <checksumPolicy>fail</checksumPolicy>
       </snapshots>
+      <!-- contains the de.uni_leipzig.asv.toolbox dependencies -->
       <name>TU-Darmstadt Repository</name>
       <id>TU-Darmstadt</id>
       <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases</url>
