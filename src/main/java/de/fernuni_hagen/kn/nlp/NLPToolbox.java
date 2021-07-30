@@ -80,7 +80,15 @@ public class NLPToolbox {
 	 * Runs the NLPToolbox with the supplied JSON use case arguments and prints the results to the console.<br>
 	 * See the {@link UseCase} subclasses for configuration.
 	 * Generally, if a use case has a setter for a property, you can specify that property as a JSON attribute:<br>
-	 * {@code new AnyUseCase().setProperty(value)} becomes {@code {"name": "AnyUseCase", "property": "value"}}.
+	 * {@code new AnyUseCase().setProperty(value)} becomes {@code {"name": "AnyUseCase", "property": "value"}}.<br>
+	 * There are two flags available, {@code -a} for the application-wide config and {@code -u} for use cases.<br>
+	 * If you want to execute a use case without further configuration, you can omit the JSON syntax and simply specify the use case's name.
+	 * The name will be expanded to JSON before parsing.<br>
+	 * Examples:<br>
+	 * {@code -u pagerank}<br>
+	 * {@code -u "{name:pagerank, resultLimit:10}"}<br>
+	 * {@code -u "{name:pagerank, resultLimit:10}" -u hits}<br>
+	 * {@code -a "{db:NEO4J}" -u pagerank}<br>
 	 *
 	 * @param args JSON arguments
 	 * @see JsonConfigParser
