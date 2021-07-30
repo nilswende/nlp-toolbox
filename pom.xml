@@ -22,6 +22,18 @@
 
   <build>
     <plugins>
+      <!-- update some Maven plugins to run JUnit 5 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.22.0</version>
+      </plugin>
+      <!-- add a Manifest to create an executable JAR -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -36,7 +48,7 @@
         </configuration>
       </plugin>
       <!-- Shade Plugin: package the artifact in an uber-jar, including its dependencies -->
-      <!-- jar will be huge -->
+      <!-- comment in to create the uber-jar, it will be huge -->
       <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
