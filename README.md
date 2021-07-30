@@ -96,3 +96,15 @@ They are completely replaced by the dynamic configuration via use cases.
 
 Last but not least, the `Recover` example shows how unchecked exceptions can be caught and how a possibly failed use case and the following ones can be executed again. 
 All use cases before the failed one are successfully executed and fully usable.
+
+## Creating and executing a JAR
+The Maven POM file includes the necessary configuration to be able to create an executable JAR file. 
+To create a JAR, follow these steps:
+1. Create a Run Configuration for Maven with the goal `package`:
+![Eclipse: Run -> Run Configurations](readme/eclipse_run_runConfigurations.png)
+![Eclipse: Run Configurations: mvn package](readme/eclipse_runConfigurations_mvnPackage.png)
+2. Run the Run Configuration. The JAR file will be placed in `C:\Daten\Hagen_NLPToolbox\nlp-toolbox-master\target`
+    1. if you want a JAR that is executable on its own, i.e. that contains all of its dependencies, comment in the `maven-shade-plugin` entry in the POM
+3. Execute the JAR
+![PS: Executing the JAR](readme/ps_jar_execute.png)
+    1. further information about calling the main method can be found in its javadoc
