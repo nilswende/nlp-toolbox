@@ -37,7 +37,7 @@ public class ResultPrinter {
 	public static String print(final UseCase.Result result) {
 		final var printer = new ResultPrinter();
 		final var name = result.getUseCaseName();
-		final var formatter = DateTimeFormatter.ofPattern("(dd.MM.yyyy HH:mm:ss)");
+		final var formatter = DateTimeFormatter.ofPattern("(HH:mm:ss)");
 		printer.println(result.getStart().format(formatter), " Start ", name);
 		result.toString(printer);
 		printer.println(result.getEnd().format(formatter), " End ", name);
