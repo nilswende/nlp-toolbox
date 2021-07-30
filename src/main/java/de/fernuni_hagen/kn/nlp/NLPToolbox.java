@@ -87,9 +87,10 @@ public class NLPToolbox {
 	 */
 	public static void main(final String[] args) {
 		final var configParser = new JsonConfigParser(args);
-		final var useCases = configParser.getUseCases();
-		new NLPToolbox(configParser.getAppConfig()).run(useCases);
-		useCases.stream().map(UseCase::getResult).forEach(System.out::println);
+		new NLPToolbox(configParser.getAppConfig()).run(configParser.getUseCases())
+				.stream()
+				.map(UseCase::getResult)
+				.forEach(System.out::println);
 		logCurrentThreadCpuTime();
 	}
 
