@@ -195,7 +195,7 @@ public class Tagger {
 	} // end public Tagger(String taglistfile,String lexiconfile,String
 	// transitionfile) constructor
 
-	public List<String> tagSentence2(String sentence) {
+	public List<String> tagSentenceAsList(String sentence) {
 		this.transform = false;
 		// for beam search
 		Vector tagmaxprob;
@@ -442,7 +442,7 @@ public class Tagger {
 	}
 
 	public String tagSentence(String sentence) {
-		return joinSentence(tagSentence2(sentence));
+		return joinSentence(tagSentenceAsList(sentence));
 	}
 
 	private String joinSentence(List<String> list) {
