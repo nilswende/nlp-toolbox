@@ -104,7 +104,7 @@ To create a JAR, follow these steps:
 ![Eclipse: Run -> Run Configurations](readme/eclipse_run_runConfigurations.png)
 ![Eclipse: Run Configurations: mvn package](readme/eclipse_runConfigurations_mvnPackage.png)
 2. Run the Run Configuration. The JAR file will be placed in `C:\Daten\Hagen_NLPToolbox\nlp-toolbox-master\target`
-    1. if you want a JAR that is executable on its own, i.e. that contains all of its dependencies, comment in the `maven-shade-plugin` entry in the POM
-3. Execute the JAR
+    1. If you want a JAR that is executable on its own, i.e. that contains all of its dependencies, comment in the `maven-shade-plugin` entry in the POM
+3. Execute the JAR:
 ![PS: Executing the JAR](readme/ps_jar_execute.png)
-    1. further information about calling the main method can be found in its javadoc
+    1. Further information about calling the main method can be found in its javadoc
