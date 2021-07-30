@@ -107,6 +107,6 @@ To create a JAR, follow these steps:
 2. Run the Run Configuration. The JAR file will be placed in `C:\Daten\Hagen_NLPToolbox\nlp-toolbox-master\target`
     1. If you want a JAR that is executable on its own, i.e. that contains all of its dependencies, comment in the `maven-shade-plugin` entry in the POM
 3. Move the JAR and the external resources (`resources/`, `lanikernel.ini`) to a common folder, so that the application can access them
-3. Execute the JAR:
+4. Execute the JAR:
 ![PS: Executing the JAR](readme/ps_jar_execute.png)
     1. Further information about calling the main method can be found in its javadoc
