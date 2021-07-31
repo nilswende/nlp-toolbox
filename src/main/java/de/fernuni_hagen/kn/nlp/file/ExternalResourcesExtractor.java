@@ -18,7 +18,7 @@ import java.util.zip.ZipInputStream;
 public final class ExternalResourcesExtractor {
 
 	private ExternalResourcesExtractor() {
-		throw new AssertionError("no init");
+		// no init
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * Copies JAR resources into temporary files for use by certain libraries.
@@ -41,7 +42,7 @@ public class ExternalResources {
 	}
 
 	private static void writeFile(final String fileName, final File file) throws IOException {
-		final var inputStream = ExternalResources.class.getClassLoader().getResourceAsStream(fileName);
+		final var inputStream = Objects.requireNonNull(ExternalResources.class.getClassLoader().getResourceAsStream(fileName));
 		FileUtils.copyInputStreamToFile(inputStream, file);
 	}
 
