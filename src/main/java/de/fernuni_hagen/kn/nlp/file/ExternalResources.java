@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Copies JAR resources into temporary files for use by certain libraries.
+ * Copies single JAR resources into temporary files for use by certain libraries.
  *
  * @author Nils Wende
  */
