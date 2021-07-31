@@ -98,6 +98,7 @@ They are completely replaced by the dynamic configuration via use cases.
 Last but not least, the `Recover` example shows how unchecked exceptions can be caught and how a possibly failed use case and the following ones can be executed again. 
 All use cases before the failed one are successfully executed and fully usable.
 
+
 ## Creating and executing a JAR
 The Maven POM file includes the necessary configuration to be able to create an executable JAR file. 
 To create a JAR, follow these steps:
@@ -110,3 +111,18 @@ To create a JAR, follow these steps:
 4. Execute the JAR:
 ![PS: Executing the JAR](readme/ps_jar_execute.png)
     1. Further information about calling the main method can be found in its javadoc
+
+
+## As dependency in other projects
+To add the NLPToolbox as a dependency in another Maven project, create a new Maven Run Configuration with the goal `install`:
+![Eclipse: Run Configurations: mvn install](readme/eclipse_runConfigurations_mvnInstall.png)
+Executing it will add the current build to the local Maven repository.
+
+To declare the dependency in another project, add the following dependency element to its POM:
+```xml
+<dependency>
+  <groupId>de.fernuni_hagen.kn.nlp</groupId>
+  <artifactId>nlp-toolbox</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
