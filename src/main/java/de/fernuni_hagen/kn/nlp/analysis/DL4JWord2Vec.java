@@ -3,14 +3,12 @@ package de.fernuni_hagen.kn.nlp.analysis;
 import de.fernuni_hagen.kn.nlp.DBReader;
 import de.fernuni_hagen.kn.nlp.UseCase;
 import org.apache.commons.lang3.StringUtils;
-import org.deeplearning4j.models.word2vec.Word2Vec;
-import org.deeplearning4j.text.sentenceiterator.CollectionSentenceIterator;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 
 import java.util.stream.Collectors;
 
 /**
- * <a href="https://deeplearning4j.konduit.ai/language-processing/word2vec">Word2Vec</a> is a two-layer neural net that processes text.
+ * <a href="https://deeplearning4j.konduit.ai/deeplearning4j/reference/word2vec-glove-doc2vec">Word2Vec</a> is a two-layer neural net that processes text.<br>
+ * This dependency better kept in a different project due to its size.
  *
  * @author Nils Wende
  */
@@ -35,44 +33,43 @@ public class DL4JWord2Vec extends UseCase {
 	/**
 	 * This class is needed to be able to use Word2Vec.Builder's fluent interface while maintaining its default values.
 	 */
-	private static class Builder extends Word2Vec.Builder {
-		@Override
-		public Word2Vec.Builder minWordFrequency(final int minWordFrequency) {
-			return minWordFrequency == 0 ? this : super.minWordFrequency(minWordFrequency);
-		}
-
-		@Override
-		public Word2Vec.Builder layerSize(final int layerSize) {
-			return layerSize == 0 ? this : super.layerSize(layerSize);
-		}
-
-		@Override
-		public Word2Vec.Builder seed(final long randomSeed) {
-			return seed == 0 ? this : super.seed(randomSeed);
-		}
-
-		@Override
-		public Word2Vec.Builder windowSize(final int windowSize) {
-			return window == 0 ? this : super.windowSize(windowSize);
-		}
-	}
-
+//	private static class Builder extends Word2Vec.Builder {
+//		@Override
+//		public Word2Vec.Builder minWordFrequency(final int minWordFrequency) {
+//			return minWordFrequency == 0 ? this : super.minWordFrequency(minWordFrequency);
+//		}
+//
+//		@Override
+//		public Word2Vec.Builder layerSize(final int layerSize) {
+//			return layerSize == 0 ? this : super.layerSize(layerSize);
+//		}
+//
+//		@Override
+//		public Word2Vec.Builder seed(final long randomSeed) {
+//			return seed == 0 ? this : super.seed(randomSeed);
+//		}
+//
+//		@Override
+//		public Word2Vec.Builder windowSize(final int windowSize) {
+//			return window == 0 ? this : super.windowSize(windowSize);
+//		}
+//	}
 	@Override
 	protected void execute(final DBReader dbReader) {
 		final var sentences = dbReader.getAllSentencesInDocument(document).stream()
 				.map(l -> String.join(StringUtils.SPACE, l))
 				.collect(Collectors.toList());
-		final var sentenceIterator = new CollectionSentenceIterator(sentences);
-		final var tokenizerFactory = new DefaultTokenizerFactory();
-		final var vec = new Builder()
-				.minWordFrequency(minWordFrequency)
-				.layerSize(layerSize)
-				.seed(seed)
-				.windowSize(windowSize)
-				.iterate(sentenceIterator)
-				.tokenizerFactory(tokenizerFactory)
-				.build();
-		vec.fit();
+//		final var sentenceIterator = new CollectionSentenceIterator(sentences);
+//		final var tokenizerFactory = new DefaultTokenizerFactory();
+//		final var vec = new Builder()
+//				.minWordFrequency(minWordFrequency)
+//				.layerSize(layerSize)
+//				.seed(seed)
+//				.windowSize(windowSize)
+//				.iterate(sentenceIterator)
+//				.tokenizerFactory(tokenizerFactory)
+//				.build();
+//		vec.fit();
 		// Evaluate the Model...
 		result = new Result();
 	}

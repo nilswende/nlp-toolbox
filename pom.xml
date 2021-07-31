@@ -106,7 +106,8 @@
     </dependency>
 
     <!-- Deeplearning4j -->
-    <dependency>
+    <!-- comment in for an extremely big dependency better kept in a different project (850 MB even zipped) -->
+    <!--<dependency>
       <groupId>org.deeplearning4j</groupId>
       <artifactId>deeplearning4j-core</artifactId>
       <version>${dl4j.version}</version>
@@ -120,7 +121,7 @@
       <groupId>org.nd4j</groupId>
       <artifactId>nd4j-native-platform</artifactId>
       <version>${dl4j.version}</version>
-    </dependency>
+    </dependency>-->
 
     <dependency>
       <groupId>unknown.external.jar</groupId>
