@@ -117,6 +117,7 @@ To create a JAR, follow these steps:
 To add the NLPToolbox as a dependency in another Maven project, create a new Maven Run Configuration with the goal `install`:
 ![Eclipse: Run Configurations: mvn install](readme/eclipse_runConfigurations_mvnInstall.png)
 Executing it will add the current build to the local Maven repository.
+The `maven-shade-plugin` entry in the POM should be commented out for this, since we don't need the JAR's dependencies inside of it.
 
 To declare the dependency in another project, add the following dependency element to its POM:
 ```xml
