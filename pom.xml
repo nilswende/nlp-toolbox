@@ -48,7 +48,7 @@
         </configuration>
       </plugin>
       <!-- Shade Plugin: package the artifact in an uber-jar, including its dependencies -->
-      <!-- comment in to create the uber-jar, it will be huge -->
+      <!-- comment in to create the uber-jar on packaging -->
       <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
