@@ -108,7 +108,7 @@ public class InMemoryReader implements DBReader {
 
 	@Override
 	public List<List<String>> getAllSentencesInDocument(final String name) {
-		return db.getDoc2Sentences().get(name).stream().map(ArrayList::new).collect(Collectors.toList());
+		return db.getDoc2Sentences().getOrDefault(name, List.of()).stream().map(ArrayList::new).collect(Collectors.toList());
 	}
 
 	public List<String> getAllNodes() {

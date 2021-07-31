@@ -28,7 +28,7 @@ public abstract class DBTest extends TempFileTest {
 	protected DBReader reader;
 	protected DBWriter writer;
 
-	protected static DBFactory createDbFactory(AppConfig.DbType dbType) {
+	protected static DBFactory createDbFactory(final AppConfig.DbType dbType) {
 		final var mock = new AppConfig()
 				.setDb(dbType)
 				.setWorkingDir(tempDirectory.toString())
@@ -195,6 +195,16 @@ public abstract class DBTest extends TempFileTest {
 
 		assertTrue(reader.containsTerm("a"));
 		assertTrue(reader.containsTerm("f"));
+		assertFalse(reader.containsTerm("x"));
+	}
+
+	@Test
+	void testEmpty() {
+		assertTrue(reader.getCooccurrences().isEmpty());
+		assertTrue(reader.getSignificances(WeightingFunction.NONE).isEmpty());
+		assertTrue(reader.getDirectedSignificances(WeightingFunction.NONE).isEmpty());
+		assertTrue(reader.getAllSentencesInDocument("x").isEmpty());
+		assertTrue(reader.getTermFrequencies().isEmpty());
 		assertFalse(reader.containsTerm("x"));
 	}
 
