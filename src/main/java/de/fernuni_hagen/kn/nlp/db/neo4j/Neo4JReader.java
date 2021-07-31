@@ -84,7 +84,7 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
-			final var kmax = getMaxTermsCount(tx);
+			final var kmax = getMaxCount(tx);
 			final var map = new TreeMap<String, Map<String, Double>>();
 			while (result.hasNext()) {
 				final var row = result.next();
@@ -115,7 +115,7 @@ public class Neo4JReader implements DBReader {
 		try (final Transaction tx = graphDb.beginTx();
 			 final var result = tx.execute(stmt)) {
 			final var k = countSentences(tx);
-			final var kmax = getMaxTermsCount(tx);
+			final var kmax = getMaxCount(tx);
 			final var map = new TreeMap<String, Map<String, Double>>();
 			while (result.hasNext()) {
 				final var row = result.next();
@@ -128,6 +128,10 @@ public class Neo4JReader implements DBReader {
 			}
 			return map;
 		}
+	}
+
+	private long getMaxCount(final Transaction tx) {
+		return config.isUseSentenceCount() ? getMaxSentencesCount(tx) : getMaxTermsCount(tx);
 	}
 
 	/**
@@ -202,7 +206,7 @@ public class Neo4JReader implements DBReader {
 	public WeightedPath getShortestPath(final String start, final String end, final WeightingFunction function) {
 		try (final Transaction tx = graphDb.beginTx()) {
 			final var k = countSentences(tx);
-			final var kmax = getMaxTermsCount(tx);
+			final var kmax = getMaxCount(tx);
 			final var evaluator = new SignificanceEvaluator(k, kmax, function);
 			final var pathFinder = GraphAlgoFactory.dijkstra(PathExpanders.forType(RelationshipTypes.COOCCURS), evaluator, 1);
 			final var path = pathFinder.findSinglePath(tx.findNode(Labels.TERM, "name", start), tx.findNode(Labels.TERM, "name", end));

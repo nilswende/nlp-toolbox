@@ -38,7 +38,7 @@ class JsonConfigParserTest extends TempFileTest {
 		});
 		final var appConfig = parser.getAppConfig();
 		assertNotNull(appConfig);
-		assertTrue(appConfig.persistInMemoryDb());
+		assertTrue(appConfig.isPersistInMemoryDb());
 	}
 
 	@Test

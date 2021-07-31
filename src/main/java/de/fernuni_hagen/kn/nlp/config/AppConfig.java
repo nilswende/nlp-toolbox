@@ -29,6 +29,7 @@ public class AppConfig {
 	private Path dbDir;
 	private DbType db;
 	private boolean persistInMemoryDb;
+	private boolean useSentenceCount;
 	private double defaultSignificance = 0.01; // or Double.MIN_VALUE
 
 	/**
@@ -67,7 +68,7 @@ public class AppConfig {
 		return db == null ? DbType.IN_MEMORY : db;
 	}
 
-	public boolean persistInMemoryDb() {
+	public boolean isPersistInMemoryDb() {
 		return persistInMemoryDb;
 	}
 
@@ -75,8 +76,40 @@ public class AppConfig {
 		return defaultSignificance;
 	}
 
+	public boolean isUseTermCount() {
+		return !useSentenceCount;
+	}
+
 	/**
-	 * Set the default significance used for cooccurrences that should not be considered for an analysis.
+	 * Set true, if the significance calculation should use the max. term count for the {@code kmax} value, false otherwise.
+	 * Overrides the value set by {@link #setUseSentenceCount(boolean)}.
+	 *
+	 * @param useTermCount true, if the significance calculation should use the max. term count for the {@code kmax} value
+	 * @return this object
+	 */
+	public AppConfig setUseTermCount(boolean useTermCount) {
+		this.useSentenceCount = !useTermCount;
+		return this;
+	}
+
+	public boolean isUseSentenceCount() {
+		return useSentenceCount;
+	}
+
+	/**
+	 * Set true, if the significance calculation should use the max. sentence count for the {@code kmax} value, false otherwise.
+	 * Overrides the value set by {@link #setUseTermCount(boolean)}.
+	 *
+	 * @param useSentenceCount true, if the significance calculation should use the max. sentence count for the {@code kmax} value
+	 * @return this object
+	 */
+	public AppConfig setUseSentenceCount(boolean useSentenceCount) {
+		this.useSentenceCount = useSentenceCount;
+		return this;
+	}
+
+	/**
+	 * Set the default significance being used for cooccurrences that are not considered for an analysis.
 	 *
 	 * @param defaultSignificance the default significance
 	 * @return this object

@@ -168,7 +168,7 @@ public class InMemoryDB implements DB {
 
 	@Override
 	public void shutdown() {
-		if (config.persistInMemoryDb()) {
+		if (config.isPersistInMemoryDb()) {
 			InMemorySerializer.persist(getDbFilePath(config), content);
 		}
 	}

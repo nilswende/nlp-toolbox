@@ -45,7 +45,7 @@ public class InMemoryReader implements DBReader {
 	@Override
 	public Map<String, Map<String, Double>> getSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
-		final var kmax = db.getMaxTermCount();
+		final var kmax = getMaxCount();
 		final var data = db.getData();
 		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((ti, m) -> {
@@ -58,10 +58,14 @@ public class InMemoryReader implements DBReader {
 		return cooccs;
 	}
 
+	private long getMaxCount() {
+		return config.isUseSentenceCount() ? db.getMaxSentenceCount() : db.getMaxTermCount();
+	}
+
 	@Override
 	public Map<String, Map<String, Double>> getDirectedSignificances(final WeightingFunction function) {
 		final var k = db.getSentencesCount();
-		final var kmax = db.getMaxTermCount();
+		final var kmax = getMaxCount();
 		final var data = db.getData();
 		final var cooccs = Maps.<String, Map<String, Double>>newHashMap(data.size());
 		data.forEach((ti, m) -> {
