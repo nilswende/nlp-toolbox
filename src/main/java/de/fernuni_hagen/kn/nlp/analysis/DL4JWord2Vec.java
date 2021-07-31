@@ -73,6 +73,7 @@ public class DL4JWord2Vec extends UseCase {
 				.tokenizerFactory(tokenizerFactory)
 				.build();
 		vec.fit();
+		// Evaluate the Model...
 		result = new Result();
 	}
 
