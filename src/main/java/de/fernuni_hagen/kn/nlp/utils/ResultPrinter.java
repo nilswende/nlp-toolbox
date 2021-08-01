@@ -86,8 +86,19 @@ public class ResultPrinter {
 	 * @param map the map
 	 * @return this object
 	 */
-	public ResultPrinter printMap(final Map<String, Double> map) {
+	public ResultPrinter printMap(final Map<?, ?> map) {
 		printfMap(map, "None", "%s: %s");
+		return this;
+	}
+
+	/**
+	 * Prints the map of maps.
+	 *
+	 * @param map the map
+	 * @return this object
+	 */
+	public <K, V> ResultPrinter printMapMap(final Map<?, Map<K, V>> map) {
+		printfMapMap(map, "None", "%s and %s: %s");
 		return this;
 	}
 
@@ -158,7 +169,7 @@ public class ResultPrinter {
 	}
 
 	/**
-	 * Prints the map.
+	 * Prints the map of maps.
 	 *
 	 * @param <K>          inner key type
 	 * @param <V>          value type
