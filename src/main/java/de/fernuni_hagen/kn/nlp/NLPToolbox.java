@@ -47,6 +47,7 @@ public class NLPToolbox {
 	 * @see #run(List)
 	 */
 	public List<UseCase> run(final UseCase useCase, final UseCase... useCases) {
+		// let #run(List) handle illegal arguments
 		final var list = new ArrayList<UseCase>();
 		list.add(useCase);
 		if (useCases != null) {
