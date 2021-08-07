@@ -30,7 +30,7 @@ public class TikaDocumentConverter implements DocumentConverter {
 
 	@Override
 	public Path convert(final InputStream input, final String name) {
-		final Path tempFile = FileHelper.getTempFile(name);
+		final var tempFile = FileHelper.getTempFile(name);
 		try {
 			try (final var writer = FileHelper.newBufferedWriter(tempFile)) {
 				parseInput(input, writer, name);
