@@ -76,29 +76,12 @@ public class AppConfig {
 		return defaultSignificance;
 	}
 
-	public boolean isUseTermCount() {
-		return !useSentenceCount;
-	}
-
-	/**
-	 * Set true, if the significance calculation should use the max. term count for the {@code kmax} value, false otherwise.
-	 * Overrides the value set by {@link #setUseSentenceCount(boolean)}.
-	 *
-	 * @param useTermCount true, if the significance calculation should use the max. term count for the {@code kmax} value
-	 * @return this object
-	 */
-	public AppConfig setUseTermCount(boolean useTermCount) {
-		this.useSentenceCount = !useTermCount;
-		return this;
-	}
-
 	public boolean isUseSentenceCount() {
 		return useSentenceCount;
 	}
 
 	/**
-	 * Set true, if the significance calculation should use the max. sentence count for the {@code kmax} value, false otherwise.
-	 * Overrides the value set by {@link #setUseTermCount(boolean)}.
+	 * Set true, if the significance calculation should use the max. sentence count for the {@code kmax} value, false uses the max. term count (default).
 	 *
 	 * @param useSentenceCount true, if the significance calculation should use the max. sentence count for the {@code kmax} value
 	 * @return this object
