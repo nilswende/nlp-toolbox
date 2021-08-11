@@ -94,6 +94,8 @@ public class ResultPrinter {
 	/**
 	 * Prints the map of maps.
 	 *
+	 * @param <K> inner key type
+	 * @param <V> value type
 	 * @param map the map
 	 * @return this object
 	 */
