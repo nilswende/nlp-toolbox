@@ -1,5 +1,7 @@
 This is the reimplementation of the Hagen NLPToolbox for my Master's thesis.
 
+Using Java 11, tested with OpenJDK 17.
+
 # Hagen NLPToolbox Quick Start Guide
 
 The Hagen NLPToolbox is a collection of text mining tools for German and English texts written in Java. It offers an
@@ -140,4 +142,4 @@ At least for IntelliJ it is needed to add
 --add-opens=java.base/java.lang=ALL-UNNAMED
 ```
 
-to the VM options of your run configuration.
+to the VM options of your run configuration to be able to use Neo4j.
