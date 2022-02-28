@@ -1,10 +1,14 @@
+This is the reimplementation of the Hagen NLPToolbox for my Master's thesis.
+
 # Hagen NLPToolbox Quick Start Guide
-The Hagen NLPToolbox is a collection of text mining tools for German and English texts written in Java. 
-It offers an extensively configurable processing pipeline and easy extensibility. 
-Texts from arbitrary document formats can be read, linguistically preprocessed and stored in a graph database. 
-Various analyses such as PageRank or HITS can be performed on the co-occurrence graph generated in this way.
+
+The Hagen NLPToolbox is a collection of text mining tools for German and English texts written in Java. It offers an
+extensively configurable processing pipeline and easy extensibility. Texts from arbitrary document formats can be read,
+linguistically preprocessed and stored in a graph database. Various analyses such as PageRank or HITS can be performed
+on the co-occurrence graph generated in this way.
 
 The following general steps need to be performed in order to fully process an input document:
+
 1. Extract raw text from the input file
 2. Preprocess the extracted sentences one by one
    1. removal of unwanted characters
@@ -24,54 +28,52 @@ The following general steps need to be performed in order to fully process an in
    4. ...
 5. Print the results
 
-
 ## Setup
 This setup guide is written for Windows and Eclipse IDE.
 1. Clone the repository or extract the archive to a folder, e.g. `C:\Daten\Hagen_NLPToolbox\nlp-toolbox-master`
 2. Execute the `.bat` file in `src/main/resources` to register an external jar dependency with your local Maven installation
-    1. Maven needs to be in the Windows Path for the script to work
-    2. Make sure the Maven in your Path and the Maven used by your IDE are the same or point to the same local repository; default is `%USERPROFILE%\\.m2\\repository`
+   1. Maven needs to be in the Windows Path for the script to work
+   2. Make sure the Maven in your Path and the Maven used by your IDE are the same or point to the same local repository; default is `%USERPROFILE%\\.m2\\repository`
 3. Create your Eclipse workspace, e.g. in `C:\Daten\Hagen_NLPToolbox`
 4. Import the project's Maven POM file, which tells the IDE how the project is to be configured:
-    1. File -> Import -> Maven -> Existing Maven Projects
-    ![Eclipse: File -> Import -> Maven -> Existing Maven Projects](readme/eclipse_file_import_maven.png)
-    2. Import Maven Project
-    ![Eclipse: Import Maven Project](readme/eclipse_import_maven_project.png)
+   1. File -> Import -> Maven -> Existing Maven Projects
+      ![Eclipse: File -> Import -> Maven -> Existing Maven Projects](readme/eclipse_file_import_maven.png)
+   2. Import Maven Project
+      ![Eclipse: Import Maven Project](readme/eclipse_import_maven_project.png)
 5. Comment in the `junit-vintage-engine` dependency in the POM to enable the JUnit tests in Eclipse
 
-
 ## Usage
-The `src/test/java/usage` folder contains some usage examples that allow new users to quickly start their own analysis. 
+The `src/test/java/usage` folder contains some usage examples that allow new users to quickly start their own analysis.
 
 ```java
 class Full {
-  public static void main(final String[] args) {
-    // create the use case steps
-    final var preprocessor = new FilePreprocessor() [1]
-        .setRemoveAbbreviations(true)
-        .setExtractPhrases(true)
-        .setUseBaseFormReduction(true)
-        .setFilterNouns(true)
-        .setRemoveStopWords(true)
-        .setNormalizeCase(true);
-    final var pageRank = new PageRank()             [2]
-        .setResultLimit(10);
-    final var hits = new HITS()                     [2]
-        .setResultLimit(10);
-    // run the NLPToolbox
-    new NLPToolbox()                                [3]
-        .run(preprocessor, pageRank, hits)
-        // process the results
-        .stream()                                   [4]
-        .map(UseCase::getResult) 
-        .forEach(System.out::println);
-  }
+   public static void main(final String[] args) {
+      // create the use case steps
+      final var preprocessor = new FilePreprocessor() [1]
+              .setRemoveAbbreviations(true)
+              .setExtractPhrases(true)
+              .setUseBaseFormReduction(true)
+              .setFilterNouns(true)
+              .setRemoveStopWords(true)
+              .setNormalizeCase(true);
+      final var pageRank = new PageRank()             [2]
+              .setResultLimit(10);
+      final var hits = new HITS()                     [2]
+              .setResultLimit(10);
+      // run the NLPToolbox
+      new NLPToolbox()                                [3]
+              .run(preprocessor, pageRank, hits)
+              // process the results
+              .stream()                                   [4]
+              .map(UseCase::getResult)
+              .forEach(System.out::println);
+   }
 }
 ```
 
 One of these examples is the class `Full` shown above:
 1. The main method first creates and configures an instance of `FilePreprocessor`, which by default reads files from the default input folder `data/input`.
-   Several options for the linguistic preprocessing like phrase extraction and base form reduction are enabled via the fluent setter interface. 
+   Several options for the linguistic preprocessing like phrase extraction and base form reduction are enabled via the fluent setter interface.
    The preprocessed terms are saved to the default in-memory database.
 2. The `PageRank` and `HITS` use cases are created and receive a result limit of 10, which causes only the ten terms with the highest scores to be retained. 
 3. A new instance of the `NLPToolbox` is then created, and the previously configured use cases are passed to the `run` method, where they are executed.
@@ -83,7 +85,7 @@ Neo4j is always persisted.
 An example of this is the `Persist` class, in which files can be parsed and stored as a co-occurrence graph. 
 With the help of the `Analyze` class, the persisted database can be read and analyzed again. 
 This makes it possible to perform the lengthy construction of the graph only once, save it and analyze it several times.
-The use case `ClearDatabase` can be executed to clear the persisted data. 
+The use case `ClearDatabase` can be executed to clear the persisted data.
 
 If the database is persisted, the results of analyses can also serve as input for other analyses. 
 This is illustrated in the `PipeResults` class: A co-occurrence graph is built as usual and the PageRank scores are calculated. 
@@ -98,7 +100,6 @@ They are completely replaced by the dynamic configuration via use cases.
 Last but not least, the `Recover` example shows how unchecked exceptions can be caught and how a possibly failed use case and the following ones can be executed again. 
 All use cases before the failed one are successfully executed and fully usable.
 
-
 ## Creating and executing a JAR
 The Maven POM file includes the necessary configuration to be able to create an executable JAR file. 
 To create a JAR, follow these steps:
@@ -106,12 +107,11 @@ To create a JAR, follow these steps:
 ![Eclipse: Run -> Run Configurations](readme/eclipse_run_runConfigurations.png)
 ![Eclipse: Run Configurations: mvn package](readme/eclipse_runConfigurations_mvnPackage.png)
 2. Run the Run Configuration. The JAR file will be placed in `C:\Daten\Hagen_NLPToolbox\nlp-toolbox-master\target`
-    1. If you want a JAR that is executable on its own, i.e. that contains all of its dependencies, comment in the `maven-shade-plugin` entry in the POM
+   1. If you want a JAR that is executable on its own, i.e. that contains all of its dependencies, comment in the `maven-shade-plugin` entry in the POM
 3. Move the JAR and the external resources (`resources/`, `lanikernel.ini`) to a common folder, so that the application can access them
 4. Execute the JAR:
 ![PS: Executing the JAR](readme/ps_jar_execute.png)
-    1. Further information about calling the main method can be found in its javadoc
-
+   1. Further information about calling the main method can be found in its javadoc
 
 ## As dependency in other projects
 To add the NLPToolbox as a dependency in another Maven project, create a new Maven Run Configuration with the goal `install`:
@@ -121,10 +121,23 @@ The `maven-shade-plugin` entry in the POM should be commented out for this, sinc
 Perspectively, builds should be uploaded to a remote repository like [Nexus](https://de.sonatype.com/products/repository-oss) or [Maven Central](https://maven.apache.org/repository).
 
 To declare the dependency in another project, add the following dependency element to its POM:
+
 ```xml
+
 <dependency>
-  <groupId>de.fernuni_hagen.kn.nlp</groupId>
-  <artifactId>nlp-toolbox</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+   <groupId>de.fernuni_hagen.kn.nlp</groupId>
+   <artifactId>nlp-toolbox</artifactId>
+   <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
+
+# IntelliJ
+
+At least for IntelliJ it is needed to add
+
+```
+--add-opens=java.base/java.nio=ALL-UNNAMED
+--add-opens=java.base/java.lang=ALL-UNNAMED
+```
+
+to the VM options of your run configuration.
